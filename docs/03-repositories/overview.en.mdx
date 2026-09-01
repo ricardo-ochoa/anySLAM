@@ -25,6 +25,35 @@ need today.
 
 The trade-off is that without a central index nobody knows what exists. That index is this portal.
 
+## The work areas
+
+Weekly work is organised on a **Kanban board in Azure DevOps**, split into six areas:
+
+[dev.azure.com/EI-AD2026-Robotica](https://dev.azure.com/EI-AD2026-Robotica)
+
+It requires Microsoft Entra sign-in, so this portal cannot read it: the board is the source of
+truth for *what is being worked on this week*, and the portal is the source of truth for *how the
+system is built*.
+
+| Board area | Corresponding repository | Confidence |
+| --- | --- | --- |
+| SLAM | [`ros2-anymal-slam`](/en/docs/05-software/slam) | Confirmed |
+| RL IsaacLab | [`Anymal-Research`](/en/docs/05-software/learning) | Confirmed |
+| Navegación | [`FLOWMAS`](/en/docs/09-research/papers) | Inferred |
+| Gestión de Datos_plus_Viz | [`ANYmal_data_management`](/en/docs/06-infrastructure/docker) | Inferred |
+| Integración Software | [`ros1-anymal-client`](/en/docs/05-software/ros) | Inferred |
+| Comm Larga Distancia | **none** | — |
+
+<Callout type="warn" title="One area with no repository">
+**Comm Larga Distancia** appears as a work area but has no matching repository in the catalog.
+Either its code lives in a repository we do not know about, or it has not started yet, or it is
+developed inside another one. Whichever it is, it needs resolving: a work area with no identified
+repository is exactly the kind of gap this portal exists to prevent.
+
+The three rows marked *inferred* also need confirming: the mapping was deduced from the name, not
+from a written source.
+</Callout>
+
 ## Loose coupling, explicit interfaces
 
 Because repositories evolve separately, what **must** be documented precisely are the interfaces

@@ -101,6 +101,18 @@ const cell = (v) => String(v ?? '').replaceAll('|', '\\|');
 
 const norm = (t, v) => (v === 'Unknown' || v == null ? t.unknown : v);
 
+/**
+ * Enlace al responsable. Por defecto se asume un usuario de GitHub; una entrada
+ * puede sobrescribirlo con `owner_url` (p. ej. una organización de Azure DevOps),
+ * o poner `owner_url: none` para mostrar el nombre sin enlace.
+ */
+function ownerLink(r) {
+  const name = cell(r.owner_name);
+  if (r.owner_url === 'none') return name;
+  const url = r.owner_url ?? `https://github.com/${r.owner}`;
+  return `[${name}](${cell(url)})`;
+}
+
 function slugAnchor(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
@@ -127,9 +139,9 @@ function render(lang) {
 
   for (const r of data.repositories) {
     lines.push(
-      `| [\`${cell(r.name)}\`](#${slugAnchor(r.name)}) | ${cell(area(r))} | [${cell(
-        r.owner_name,
-      )}](https://github.com/${cell(r.owner)}) | ${cell(norm(t, r.status))} | ${cell(
+      `| [\`${cell(r.name)}\`](#${slugAnchor(r.name)}) | ${cell(area(r))} | ${ownerLink(
+        r,
+      )} | ${cell(norm(t, r.status))} | ${cell(
         t.visibility[r.visibility] ?? r.visibility,
       )} | ${cell(t.confidence[r.confidence] ?? r.confidence)} |`,
     );
@@ -151,9 +163,7 @@ function render(lang) {
     lines.push(`| | |`);
     lines.push(`| --- | --- |`);
     lines.push(`| ${t.fields.area} | ${cell(area(r))} |`);
-    lines.push(
-      `| ${t.fields.owner} | [${cell(r.owner_name)}](https://github.com/${cell(r.owner)}) |`,
-    );
+    lines.push(`| ${t.fields.owner} | ${ownerLink(r)} |`);
     lines.push(`| ${t.fields.status} | ${cell(norm(t, r.status))} |`);
     lines.push(`| ${t.fields.language} | ${cell(norm(t, r.language))} |`);
     lines.push(`| ${t.fields.license} | ${cell(norm(t, r.license))} |`);
@@ -176,7 +186,7 @@ function render(lang) {
     lines.push(
       `| [${cell(r.name)}](${cell(r.url)}) | ${cell(
         lang === 'en' ? r.kind_en : r.kind,
-      )} | [${cell(r.owner_name)}](https://github.com/${cell(r.owner)}) |`,
+      )} | ${ownerLink(r)} |`,
     );
   }
   lines.push('');

@@ -156,6 +156,26 @@ repositories:
 # Recursos que no son repositorios de código pero forman parte del conocimiento
 # del proyecto.
 resources:
+  - id: azure-devops-board
+    name: Azure DevOps — tablero Kanban del proyecto
+    url: https://dev.azure.com/EI-AD2026-Robotica
+    kind: gestión
+    kind_en: project management
+    owner: EI-AD2026-Robotica
+    owner_name: Equipo anySLAM
+    owner_url: none
+    confidence: confirmed
+    description: >-
+      Organización de Azure DevOps donde el equipo lleva el tablero Kanban de los
+      sprints semanales. Está dividida en seis áreas de trabajo: Comm Larga
+      Distancia, Gestión de Datos_plus_Viz, Integración Software, Navegación,
+      RL IsaacLab y SLAM. Requiere inicio de sesión con Microsoft Entra.
+    description_en: >-
+      The Azure DevOps organisation where the team keeps the Kanban board for its
+      weekly sprints. It is split into six work areas: Comm Larga Distancia,
+      Gestión de Datos_plus_Viz, Integración Software, Navegación, RL IsaacLab
+      and SLAM. Requires Microsoft Entra sign-in.
+
   - id: icra2025-poster
     name: Póster ICRA 2025 — Flow Matching Architecture for Navigation
     url: https://haironthecircuits.net/wiki/icra2025/

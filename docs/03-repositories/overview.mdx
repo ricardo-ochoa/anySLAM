@@ -25,6 +25,35 @@ que hoy no necesitamos.
 
 La contrapartida es que sin un índice central nadie sabe qué existe. Ese índice es este portal.
 
+## Las áreas de trabajo
+
+El trabajo semanal se organiza en un **tablero Kanban en Azure DevOps**, dividido en seis áreas:
+
+[dev.azure.com/EI-AD2026-Robotica](https://dev.azure.com/EI-AD2026-Robotica)
+
+Requiere inicio de sesión con Microsoft Entra, así que este portal no puede leerlo: el tablero es
+la fuente de verdad de *qué se está haciendo esta semana*, y el portal lo es de *cómo está
+construido el sistema*.
+
+| Área en el tablero | Repositorio que le corresponde | Confianza |
+| --- | --- | --- |
+| SLAM | [`ros2-anymal-slam`](/es/docs/05-software/slam) | Confirmado |
+| RL IsaacLab | [`Anymal-Research`](/es/docs/05-software/learning) | Confirmado |
+| Navegación | [`FLOWMAS`](/es/docs/09-research/papers) | Inferido |
+| Gestión de Datos_plus_Viz | [`ANYmal_data_management`](/es/docs/06-infrastructure/docker) | Inferido |
+| Integración Software | [`ros1-anymal-client`](/es/docs/05-software/ros) | Inferido |
+| Comm Larga Distancia | **ninguno** | — |
+
+<Callout type="warn" title="Un área sin repositorio">
+**Comm Larga Distancia** aparece como área de trabajo pero no le corresponde ningún repositorio
+del catálogo. O su código vive en un repositorio que no conocemos, o todavía no ha empezado, o se
+desarrolla dentro de otro. Sea cual sea el caso, hay que resolverlo: un área de trabajo sin
+repositorio identificado es exactamente el tipo de hueco que este portal existe para evitar.
+
+Las tres filas marcadas como *inferido* también deben confirmarse: la correspondencia se dedujo
+del nombre, no de una fuente escrita.
+</Callout>
+
 ## Acoplamiento débil, interfaces explícitas
 
 Como los repositorios evolucionan por separado, lo que **sí** debe estar documentado con

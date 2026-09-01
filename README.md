@@ -30,6 +30,14 @@ graph LR
   G["Isaac Lab<br/>PPO"] --> H["policy.pt"] --> I["anymal_controller"] --> A
 ```
 
+## Dónde está cada cosa
+
+| Necesitas | Ve a |
+| --- | --- |
+| Saber en qué trabajar esta semana | [Tablero Kanban en Azure DevOps](https://dev.azure.com/EI-AD2026-Robotica) |
+| Entender cómo está construido el sistema | Este portal |
+| El código de un componente | Su repositorio, abajo |
+
 ## Los repositorios
 
 | Repositorio | Área | Responsable |

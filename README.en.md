@@ -30,6 +30,14 @@ graph LR
   G["Isaac Lab<br/>PPO"] --> H["policy.pt"] --> I["anymal_controller"] --> A
 ```
 
+## Where each thing lives
+
+| You need | Go to |
+| --- | --- |
+| To know what to work on this week | [Kanban board on Azure DevOps](https://dev.azure.com/EI-AD2026-Robotica) |
+| To understand how the system is built | This portal |
+| A component's code | Its repository, below |
+
 ## The repositories
 
 | Repository | Area | Maintainer |

@@ -16,13 +16,27 @@ Read, in this order:
 By the end you should be able to answer: *which robot is it, what is being researched on it, and
 what parts does the system have?*
 
-## 2. Locate the repositories (5 minutes)
+## 2. Get onto the board (5 minutes)
+
+Weekly work is tracked on a Kanban board in Azure DevOps:
+
+[dev.azure.com/EI-AD2026-Robotica](https://dev.azure.com/EI-AD2026-Robotica)
+
+Ask for access if you do not have it. It is split into six areas — Comm Larga Distancia, Gestión
+de Datos_plus_Viz, Integración Software, Navegación, RL IsaacLab and SLAM — and it shows what the
+team is working on right now.
+
+The two places divide the work like this: **the board says what is being done this week; the
+portal says how the system is built.** Looking for a task, go to the board. Looking to understand
+a component, stay here.
+
+## 3. Locate the repositories (5 minutes)
 
 Open the [catalog](/en/docs/03-repositories/repository-catalog) and find the repository for the
 area you will work in. Note two columns: **maintainer** (who to ask) and **confidence** (how much
 of what the documentation says is verified).
 
-## 3. Set up your environment
+## 4. Set up your environment
 
 It depends on what you will work on. See
 [development environment](/en/docs/06-infrastructure/development-environment).
@@ -39,7 +53,7 @@ npm run dev
 If you are going to train policies, the Isaac Sim installation takes several hours. Start it
 early.
 
-## 4. Make your first contribution
+## 5. Make your first contribution
 
 The best first contribution from any new person is **documenting what was hard to understand**.
 While you are learning you have an advantage the rest of the team has already lost: you can see
@@ -52,13 +66,14 @@ Concretely:
 3. Ask them, write the answer on the right page, strike the item off.
 4. Open a Pull Request.
 
-## 5. Check that you understood
+## 6. Check that you understood
 
 Go to the [project map](/en/docs/08-onboarding/project-map) and answer its ten questions. The
 ones you cannot answer are documentation gaps, not your failings: open an issue for them.
 
 ## If you get stuck
 
+- **Not sure what to work on** → the Azure DevOps board, in your area.
 - **Technical question about a component** → its maintainer, per the
   [catalog](/en/docs/03-repositories/repository-catalog).
 - **Missing information in the portal** → open an issue in this repository.
