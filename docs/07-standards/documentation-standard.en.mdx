@@ -55,6 +55,26 @@ If `title` or `description` contain `: `, the YAML fails to parse. Use an em das
 the whole value.
 </Callout>
 
+## Exporting a page as Markdown
+
+Every page has two actions at the top:
+
+- **Copy Markdown** — copies the page's full content to the clipboard.
+- **View as Markdown** — opens the same page as plain text.
+
+Both use the same route: any page can be read as Markdown by appending `.md` to its URL.
+
+```
+/en/docs/05-software/slam       → the page
+/en/docs/05-software/slam.md    → its Markdown
+```
+
+It is useful for pasting a section into an issue, the board or a chat, and for giving context to
+an AI assistant without copying by hand.
+
+Diagrams come back as ` ```mermaid ` blocks and `<Callout>`s as blockquotes, so the copied text
+reads well in any Markdown viewer.
+
 ## File names
 
 - Lowercase and hyphens: `system-overview.mdx`.

@@ -62,6 +62,15 @@ npm run dev
 
 It comes up at `http://localhost:3000`. It is bilingual: `/es` and `/en`.
 
+## Copying a page as Markdown
+
+Every page has a **Copy Markdown** button at the top. You can also append `.md` to any URL to get
+the content as plain text:
+
+```
+/en/docs/05-software/slam.md
+```
+
 ## Reading without the portal
 
 All content is Markdown files under [`docs/`](docs/), readable straight from GitHub. Diagrams are

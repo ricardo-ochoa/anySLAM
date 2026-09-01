@@ -118,3 +118,67 @@
   font-size: 0.875rem;
   line-height: 1.6;
 }
+
+/* --- Acciones de página (copiar Markdown) --- */
+
+.anyslam-pageactions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-fd-border);
+}
+
+.anyslam-pageaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+  border: 1px solid var(--color-fd-border);
+  border-radius: 0.5rem;
+  background: var(--color-fd-card);
+  color: var(--color-fd-muted-foreground);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.anyslam-pageaction:hover:not(:disabled) {
+  background: var(--color-fd-accent);
+  color: var(--color-fd-accent-foreground);
+}
+
+.anyslam-pageaction:focus-visible {
+  outline: 2px solid var(--color-fd-primary);
+  outline-offset: 2px;
+}
+
+.anyslam-pageaction:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.anyslam-pageaction[data-state='done'] {
+  color: var(--color-fd-primary);
+  border-color: var(--color-fd-primary);
+}
+
+.anyslam-pageaction[data-state='error'] {
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+@media (prefers-color-scheme: dark) {
+  .anyslam-pageaction[data-state='error'] {
+    color: #f87171;
+    border-color: #f87171;
+  }
+}

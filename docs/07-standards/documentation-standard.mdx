@@ -55,6 +55,26 @@ Si `title` o `description` contienen `: `, el YAML falla al parsear. Usa una ray
 entrecomilla el valor completo.
 </Callout>
 
+## Exportar una página como Markdown
+
+Cada página tiene arriba dos acciones:
+
+- **Copiar Markdown** — copia al portapapeles el contenido completo de la página.
+- **Ver en Markdown** — abre la misma página en texto plano.
+
+Ambas usan la misma ruta: cualquier página se puede leer como Markdown añadiendo `.md` a su URL.
+
+```
+/es/docs/05-software/slam       → la página
+/es/docs/05-software/slam.md    → su Markdown
+```
+
+Sirve para pegar una sección en un issue, en el tablero o en un chat, y para dar contexto a un
+asistente de IA sin copiar a mano.
+
+Los diagramas vuelven a salir como bloques ` ```mermaid `, y los `<Callout>` como citas, así que
+el texto copiado se lee bien en cualquier visor de Markdown.
+
 ## Nombres de archivo
 
 - Minúsculas y guiones: `system-overview.mdx`.

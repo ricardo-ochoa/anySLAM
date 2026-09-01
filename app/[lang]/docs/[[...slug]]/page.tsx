@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { source } from '@/lib/source';
 import { getMDXComponents } from '@/components/mdx';
+import { CopyMarkdown } from '@/components/copy-markdown';
 
 export default async function Page(props: PageProps<'/[lang]/docs/[[...slug]]'>) {
   const params = await props.params;
@@ -15,6 +16,7 @@ export default async function Page(props: PageProps<'/[lang]/docs/[[...slug]]'>)
     <DocsPage toc={page.data.toc} full={page.data.full}>
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
+      <CopyMarkdown markdownUrl={`${page.url}.md`} lang={params.lang} />
       <DocsBody>
         <MDX components={getMDXComponents()} />
       </DocsBody>

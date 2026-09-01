@@ -51,6 +51,16 @@ app/ lib/      la aplicación Next.js del portal
 6. **Cuidado con los dos puntos en el frontmatter.** Un `title` o `description` que contenga `: `
    rompe el parseo del YAML. Usa una raya (`—`).
 
+## Exportar una página como Markdown
+
+Cualquier página se lee como Markdown añadiendo `.md` a su URL, y cada página tiene arriba un
+botón **Copiar Markdown**. Lo sirve `app/llms.mdx/[lang]/docs/[[...slug]]/route.ts`, con la
+reescritura declarada en `next.config.mjs`.
+
+Para que el texto exportado se lea bien, `Mermaid` y `Callout` definen su forma en Markdown con
+`asMarkdown()` (ver `components/mdx/`). Si añades un componente MDX propio que deba exportarse
+como algo distinto a JSX, haz lo mismo.
+
 ## El catálogo de repositorios se genera
 
 No edites `docs/03-repositories/repository-catalog.mdx` ni su versión en inglés: se sobrescriben.
