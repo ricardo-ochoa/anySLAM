@@ -193,6 +193,12 @@ de lo que hoy falta.
 | 4 — Automation | 🔜 GitHub Actions, metadatos automáticos |
 | 5 — Project Brain | 🔮 búsqueda semántica sobre el conocimiento del proyecto |
 
+## Licencia
+
+[Apache License 2.0](LICENSE).
+
+---
+
 Lo que falta por documentar, y de quién depende cada dato, está en
 [datos pendientes](docs/03-repositories/missing-data.mdx). El hueco principal hoy es el
 **hardware físico**: sabemos qué tópico publica cada sensor, pero no qué sensor es.

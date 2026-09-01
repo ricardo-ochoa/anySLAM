@@ -192,6 +192,12 @@ is currently missing.
 | 4 — Automation | 🔜 GitHub Actions, automatic metadata |
 | 5 — Project Brain | 🔮 semantic search over the project's knowledge |
 
+## Licence
+
+[Apache License 2.0](LICENSE).
+
+---
+
 What is still undocumented, and who each fact depends on, is in
 [missing data](docs/03-repositories/missing-data.en.mdx). The main gap today is the **physical
 hardware**: we know which topic each sensor publishes, but not which sensor it is.
