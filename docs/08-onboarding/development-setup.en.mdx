@@ -1,0 +1,74 @@
+---
+title: Development setup
+description: Step-by-step installation depending on the area you will work in.
+---
+
+Pick the route matching your work. Do not install what you will not use: the simulation stack is
+heavy and you do not need it to write documentation or to work on ROS.
+
+## Route A — Documentation and portal
+
+The lightest one. You only need Node.js 20.9 or newer.
+
+```bash
+git clone <url-of-this-repository>
+cd anySLAM
+npm install
+npm run dev
+```
+
+Available commands:
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Serves the portal at `http://localhost:3000` |
+| `npm run build` | Compiles and validates every page |
+| `npm run gen:catalog` | Regenerates the catalog from `data/repositories.yaml` |
+
+## Route B — Reinforcement-learning training
+
+Requires Ubuntu 22.04+, an NVIDIA GPU and patience: the full install takes several hours.
+
+1. Install NVIDIA drivers and verify with `nvidia-smi`.
+2. Install NVIDIA Omniverse and, from its launcher, Isaac Sim 5.0.0.
+3. Clone and install Isaac Lab:
+
+   ```bash
+   git clone https://github.com/isaac-sim/IsaacLab.git
+   cd IsaacLab
+   ./isaaclab.sh --install
+   ```
+
+4. Clone `Anymal-Research` **outside** the Isaac Lab directory and install the extension in
+   editable mode:
+
+   ```bash
+   git clone https://github.com/jesusMBhuy/Anymal-Research.git
+   cd Anymal-Research/anymal-d-managerbased/anymalDTraining
+   /path/to/isaaclab.sh -p -m pip install -e source/anymalDTraining
+   ```
+
+5. Verify:
+
+   ```bash
+   python scripts/list_envs.py
+   ```
+
+The full procedure, including USD asset configuration details, is in that repository's README.
+
+## Route C — ROS 2 development
+
+Ubuntu 22.04+ with ROS 2 Humble or newer, Python 3.10+, and PyTorch 2.3.0+ if you are going to
+load the trained policy.
+
+<Callout type="warn" title="Pending">
+The specific steps for the physical robot — network, access, onboard system startup — are
+undocumented. See [network architecture](/en/docs/02-architecture/network-architecture).
+</Callout>
+
+## Route D — SLAM, vision or data
+
+<Callout type="warn" title="Pending">
+These components live in private repositories and their dependencies are undocumented. Contact
+the maintainer via the [catalog](/en/docs/03-repositories/repository-catalog).
+</Callout>

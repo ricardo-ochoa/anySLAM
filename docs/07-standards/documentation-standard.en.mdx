@@ -1,0 +1,72 @@
+---
+title: Documentation standard
+description: How documentation is written in this project.
+---
+
+## Principles
+
+1. **Documentation as Code.** Documentation lives in Git, is reviewed by Pull Request, and is
+   versioned alongside the code.
+2. **A single source of truth.** No fact is written in two places. If something repeats, one of
+   the two should be a link.
+3. **Information lives next to the code it describes.** See [scope](/en/docs/01-introduction/scope).
+4. **Distinguish verified from assumed.** Never present an assumption as a fact.
+
+## The rule that matters most here
+
+> A visible gap is better than an invented description.
+
+When you do not know something, write it as pending and say who the fact depends on. A plausible
+but false description is worse than a blank, because nobody questions it and it spreads.
+
+Use an explicit callout:
+
+```mdx
+<Callout type="warn" title="Pending page">
+We have no access to this repository. **Maintainer:** @handle
+</Callout>
+```
+
+And add the item to [missing data](/en/docs/03-repositories/missing-data).
+
+## Format
+
+- **Markdown / MDX.** All content must read well on GitHub without the portal.
+- **JSX components only where they earn it.** In practice: `<Callout>` and little else. A file
+  full of components stops being readable from GitHub.
+- **Diagrams in Mermaid**, inside ` ```mermaid ` code blocks. GitHub renders them natively, and
+  the portal converts them to SVG automatically. Do not use ASCII art.
+- **Tables** for anything that is a list of attributes.
+- **Numbers with their source.** If you quote a figure, say which file it came from.
+
+## Frontmatter
+
+Every page carries:
+
+```yaml
+---
+title: Page title
+description: One sentence explaining what it contains.
+---
+```
+
+<Callout title="Watch out for colons">
+If `title` or `description` contain `: `, the YAML fails to parse. Use an em dash (`—`) or quote
+the whole value.
+</Callout>
+
+## File names
+
+- Lowercase and hyphens: `system-overview.mdx`.
+- Spanish unsuffixed, English with `.en`: `system-overview.mdx` and `system-overview.en.mdx`.
+- Sidebar order is defined by each folder's `meta.json`, not by file name.
+
+## Internal links
+
+Links between pages carry a language prefix: `/es/docs/...` in Spanish files and `/en/docs/...`
+in English files.
+
+## Tone
+
+Write for someone competent who does not know this project. Do not explain what ROS is; do
+explain why this project uses ROS 1 and ROS 2 at the same time.

@@ -1,0 +1,42 @@
+---
+title: Cameras
+description: The ANYmal's ten cameras and their ROS topics.
+---
+
+The lab ANYmal exposes **ten cameras**, all reachable as ROS topics. The list is confirmed from
+`ros_bridge.py` in the operator app, which enumerates them for the cameras tab.
+
+| Camera | Topic | Use |
+| --- | --- | --- |
+| Front wide-angle | `/wide_angle_camera_front/image_raw` | Teleoperation |
+| Rear wide-angle | `/wide_angle_camera_rear/image_raw` | Teleoperation |
+| PTZ with 20x zoom | `/ptz_camera/image_raw` | Remote inspection |
+| Thermal | `/thermal_camera/image_raw` | Thermal inspection |
+| Depth 1 | `/depth_camera_1/image_raw` | Close-range perception |
+| Depth 2 | `/depth_camera_2/image_raw` | Close-range perception |
+| Depth 3 | `/depth_camera_3/image_raw` | Close-range perception |
+| Depth 4 | `/depth_camera_4/image_raw` | Close-range perception |
+| Depth 5 | `/depth_camera_5/image_raw` | Close-range perception |
+| Depth 6 | `/depth_camera_6/image_raw` | Close-range perception |
+
+The six depth cameras and the wide-angle pair are the ANYmal D's standard set; the PTZ and the
+thermal camera belong to the inspection payload.
+
+<Callout title="No camera feeds SLAM today">
+The project's SLAM is purely LiDAR-based: the gRPC bridge only streams odometry and a 2D scan.
+The cameras are used for teleoperation and inspection, not localisation. See
+[communication](/en/docs/05-software/communication).
+</Callout>
+
+## The navigation experiment's camera
+
+Separate from, and unrelated to, the ANYmal: the shuttle experiment in the
+[ICRA 2025 poster](/en/docs/09-research/papers) uses a stereo **MultiSense S21**, whose RGB image
+is the dense input to the navigation model.
+
+## What is missing
+
+- Model and manufacturer of each camera.
+- Resolution and publication rate.
+- Mounting positions and `tf` frames.
+- Where intrinsic and extrinsic calibration files live.

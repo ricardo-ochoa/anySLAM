@@ -1,0 +1,85 @@
+---
+title: Datos pendientes
+description: Lo que falta por documentar, y de quién depende cada dato.
+---
+
+Esta página es el registro honesto de lo que **no** sabemos. Existe para que ningún hueco quede
+disimulado detrás de una descripción plausible pero inventada.
+
+Última verificación: **1 de septiembre de 2026**, leyendo directamente cada repositorio.
+
+## Acceso a los repositorios
+
+Cuatro de los cinco repositorios son privados en GitHub. De ellos, **tres se pudieron clonar**
+con las credenciales de git del equipo, y su contenido ya está documentado en el portal.
+
+| Repositorio | Acceso | Estado en el portal |
+| --- | --- | --- |
+| [`Anymal-Research`](https://github.com/jesusMBhuy/Anymal-Research) | Público | ✅ Documentado |
+| [`ros2-anymal-slam`](https://github.com/Alponcho6594/ros2-anymal-slam) | Privado, accesible | ✅ Documentado |
+| [`ros1-anymal-client`](https://github.com/Alponcho6594/ros1-anymal-client) | Privado, accesible | ✅ Documentado |
+| [`ANYmal_data_management`](https://github.com/Dravid-hex/ANYmal_data_management) | Privado, accesible | ✅ Documentado |
+| [`FLOWMAS`](https://github.com/saucesaft/FLOWMAS) | **Sin acceso** | ⚠️ Solo lo del póster |
+
+**Acción pendiente:** [@saucesaft](https://github.com/saucesaft) — dar acceso a `FLOWMAS` o
+hacerlo público.
+
+<Callout title="Nota para quien clone el portal">
+Que tres repositorios privados se puedan clonar depende de las credenciales de git de cada
+persona. Si `./scripts/bootstrap.sh` te falla en alguno, pide acceso a su responsable.
+</Callout>
+
+## Huecos por sección
+
+### Hardware — el bloqueo más grande
+
+- [ ] Modelo del LiDAR montado en el ANYmal → **equipo hardware**
+- [ ] Modelo y fabricante de las diez cámaras → **equipo hardware**
+- [ ] Modelo exacto de la Jetson (Orin, Xavier, Nano) y su JetPack → **equipo hardware**
+- [ ] Posiciones de montaje y marcos `tf` de cada sensor → **equipo hardware**
+- [ ] Ubicación de los archivos de calibración → **equipo hardware**
+- [ ] Modelo de IMU y sensores de fuerza en los pies → **equipo hardware**
+
+### Arquitectura
+
+- [ ] ¿Se conecta la salida del SLAM con el controlador de locomoción? → **@Alponcho6594** y **@jesusMBhuy**
+- [ ] Contenido y motivo de la configuración de `fastdds.xml` → **@jesusMBhuy**
+- [ ] Tópicos exactos del nodo `anymal_controller` → **@jesusMBhuy**
+- [ ] ¿Se usa el segundo campo de escaneo (`scan2`) del puente? → **@Alponcho6594**
+
+### Software
+
+- [ ] Parámetros de operación normal del SLAM (partículas, resolución del mapa) → **@Alponcho6594**
+- [ ] ¿Corre FLOWMAS sobre el ANYmal o solo sobre el shuttle? → **@saucesaft**
+- [ ] Licencias de los repositorios privados → **sus responsables**
+
+### Datos y resultados
+
+- [ ] Dónde se archivan los bags y los mapas a largo plazo → **@Dravid-hex**
+- [ ] Política de versionado de datasets → **@Dravid-hex**
+- [ ] Métricas de la política de locomoción entrenada → **@jesusMBhuy**
+- [ ] Precisión medida del SLAM en el laboratorio → **@Alponcho6594**
+- [ ] ¿Se ha probado la política en el robot real? → **@jesusMBhuy**
+- [ ] ¿En qué repositorio vive la herramienta de preprocesamiento del póster? → **@saucesaft**
+
+### Proyecto
+
+- [ ] Licencia de este repositorio de documentación → **por decidir**
+- [ ] URL pública del portal, y si las páginas con IPs deben restringirse → **por decidir**
+- [ ] Confirmar roles y nombres completos del equipo → **todos**
+- [ ] `ROS_DOMAIN_ID` asignados por persona o banco de pruebas → **equipo ROS**
+
+## Cómo cerrar un punto
+
+1. Consigue el dato de la fuente correcta (código, la persona responsable, o una medición).
+2. Edita la página que corresponda en `docs/`, en los dos idiomas.
+3. Tacha el punto de esta lista.
+4. Abre un Pull Request.
+
+Si un dato resulta ser distinto de lo que esta documentación supone, corrige la suposición
+**y** deja escrito qué era lo que se creía. Ese registro evita que el error vuelva.
+
+## Para responsables de repositorio
+
+Si mantienes un componente, `templates/repo-intake.md` es un cuestionario de doce preguntas que
+cierra la mayoría de estos puntos de una sentada.

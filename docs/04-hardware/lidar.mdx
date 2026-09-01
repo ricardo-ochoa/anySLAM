@@ -1,0 +1,39 @@
+---
+title: LiDAR
+description: Sensores LiDAR utilizados en el proyecto.
+---
+
+## El LiDAR del ANYmal
+
+El robot publica una nube de puntos 3D en `/lidar/point_cloud` (`sensor_msgs/PointCloud2`) sobre
+ROS 1. El servidor gRPC la **reduce a un escaneo 2D** antes de enviarla al lado ROS 2, porque el
+SLAM del proyecto es planar. Ver [comunicación](/es/docs/05-software/communication).
+
+El mensaje `SensorPacket` del puente lleva dos campos de escaneo (`scan` y `scan2`), lo que
+indica soporte previsto para **un segundo LiDAR**.
+
+<Callout type="warn" title="Falta el modelo">
+Sabemos qué tópico publica y cómo se consume, pero no qué sensor es. Falta el modelo, su posición
+de montaje y sus características.
+</Callout>
+
+## El LiDAR del experimento de navegación
+
+Corresponde al experimento de navegación sobre shuttle del
+[póster de ICRA 2025](/es/docs/09-research/papers), **no al ANYmal**:
+
+| Modelo | Velodyne HDL-32 |
+| --- | --- |
+| Canales | 32 |
+| Uso en el proyecto | Nube de puntos dispersa como entrada del modelo de navegación |
+
+En ese trabajo la nube no se consume en crudo: se codifica primero con un descriptor tipo
+Scan Context++, que resume la estructura espacial en una representación compacta.
+
+## Qué hay que documentar
+
+- Modelo de LiDAR montado en el ANYmal, si lo hay.
+- Posición de montaje y marco de referencia (`tf`).
+- Frecuencia de publicación y tópico ROS.
+- Archivos de calibración extrínseca respecto a la base del robot.
+- Rango, resolución y alcance efectivo en las condiciones del laboratorio.

@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "index",
+    "01-introduction",
+    "02-architecture",
+    "03-repositories",
+    "04-hardware",
+    "05-software",
+    "06-infrastructure",
+    "07-standards",
+    "08-onboarding",
+    "09-research",
+    "10-roadmap"
+  ]
+}

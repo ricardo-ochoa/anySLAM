@@ -1,0 +1,64 @@
+---
+title: Primeros pasos
+description: De cero contexto a entender el proyecto anySLAM.
+---
+
+Esta página está pensada para alguien que acaba de entrar al equipo. Sigue el orden.
+
+## 1. Entiende de qué va el proyecto (15 minutos)
+
+Lee, en este orden:
+
+1. [Visión general](/es/docs/01-introduction/overview) — qué es el proyecto y quién lo hace.
+2. [Objetivos](/es/docs/01-introduction/goals) — qué se persigue.
+3. [Visión general del sistema](/es/docs/02-architecture/system-overview) — cómo encaja todo.
+
+Al terminar deberías poder responder: *¿qué robot es, qué se investiga sobre él, y qué partes
+tiene el sistema?*
+
+## 2. Ubica los repositorios (5 minutos)
+
+Abre el [catálogo](/es/docs/03-repositories/repository-catalog) y localiza el repositorio del
+área en la que vas a trabajar. Fíjate en dos columnas: **responsable** (a quién preguntar) y
+**confianza** (cuánto de lo que dice la documentación está verificado).
+
+## 3. Prepara tu entorno
+
+Depende de en qué vayas a trabajar. Ver
+[entorno de desarrollo](/es/docs/06-infrastructure/development-environment).
+
+La ruta más rápida para tener algo funcionando el primer día es el propio portal:
+
+```bash
+git clone <url-de-este-repositorio>
+cd anySLAM
+npm install
+npm run dev
+```
+
+Si vas a entrenar políticas, la instalación de Isaac Sim toma varias horas. Empiézala pronto.
+
+## 4. Haz tu primera contribución
+
+La mejor primera contribución de cualquier persona nueva es **documentar lo que le costó
+entender**. Mientras aprendes, tienes una ventaja que el resto del equipo ya perdió: ves qué
+falta explicar.
+
+Concretamente:
+
+1. Abre [datos pendientes](/es/docs/03-repositories/missing-data).
+2. Busca un punto que puedas cerrar preguntándole a alguien.
+3. Pregúntale, escribe la respuesta en la página que corresponda, tacha el punto.
+4. Abre un Pull Request.
+
+## 5. Comprueba que entendiste
+
+Ve al [mapa del proyecto](/es/docs/08-onboarding/project-map) y responde sus diez preguntas. Las
+que no puedas responder son huecos de la documentación, no fallos tuyos: ábreles un issue.
+
+## Si te atoras
+
+- **Duda técnica de un componente** → el responsable, según el
+  [catálogo](/es/docs/03-repositories/repository-catalog).
+- **Falta información en el portal** → abre un issue en este repositorio.
+- **Duda sobre cómo documentar** → [estándar de documentación](/es/docs/07-standards/documentation-standard).

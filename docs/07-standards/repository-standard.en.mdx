@@ -1,0 +1,52 @@
+---
+title: Repository standard
+description: What every anySLAM project repository must satisfy.
+---
+
+Every repository that is part of the project must satisfy these points. The goal is not
+bureaucracy: it is that anyone can understand and run a component without asking its author
+anything.
+
+## Required
+
+- [ ] **README** following the [standard template](/en/docs/07-standards/readme-standard).
+- [ ] **Link back to the portal** in the README's `Project` section.
+- [ ] **Declared maintainer** in the `Maintainers` section, with their GitHub handle.
+- [ ] **Declared status**: `Active`, `Development`, `Experimental` or `Deprecated`.
+- [ ] **Licence** in a `LICENSE` file.
+- [ ] **Installation instructions** that work from scratch on a clean machine.
+- [ ] **Documented interfaces**: topics, services, APIs, ports, files, sensors.
+- [ ] **Catalog entry** in the portal (`data/repositories.yaml`).
+
+## Recommended
+
+- [ ] A `.gitignore` appropriate to the language.
+- [ ] A minimal example that runs in under five minutes.
+- [ ] Tests, however few, and how to run them.
+- [ ] Pinned versions for critical dependencies.
+- [ ] A `CHANGELOG.md` if the repository publishes releases.
+
+## Naming
+
+Proposed convention for new repositories, so the catalog reads consistently:
+
+```
+<middleware>-anymal-<component>
+```
+
+Examples already following the pattern: `ros2-anymal-slam`, `ros1-anymal-client`.
+
+Write `anymal` in lowercase in repository and package names; **ANYmal** in brand spelling in
+prose and documentation.
+
+## When a repository joins the project
+
+When its contents are necessary to understand or run the system. A personal experiment notebook
+does not need a catalog entry; a component another one depends on does.
+
+To register a repository:
+
+1. Satisfy the list above.
+2. Add its entry to `data/repositories.yaml` in this repository.
+3. Run `npm run gen:catalog`.
+4. Open a Pull Request.

@@ -1,0 +1,39 @@
+---
+title: LiDAR
+description: LiDAR sensors used in the project.
+---
+
+## The ANYmal's LiDAR
+
+The robot publishes a 3D point cloud on `/lidar/point_cloud` (`sensor_msgs/PointCloud2`) over
+ROS 1. The gRPC server **reduces it to a 2D scan** before sending it to the ROS 2 side, because
+the project's SLAM is planar. See [communication](/en/docs/05-software/communication).
+
+The bridge's `SensorPacket` message carries two scan fields (`scan` and `scan2`), indicating
+planned support for **a second LiDAR**.
+
+<Callout type="warn" title="The model is missing">
+We know which topic it publishes and how it is consumed, but not which sensor it is. The model,
+its mounting position and its characteristics are missing.
+</Callout>
+
+## The navigation experiment's LiDAR
+
+It belongs to the shuttle navigation experiment from the
+[ICRA 2025 poster](/en/docs/09-research/papers), **not to the ANYmal**:
+
+| Model | Velodyne HDL-32 |
+| --- | --- |
+| Channels | 32 |
+| Use in the project | Sparse point cloud as input to the navigation model |
+
+In that work the cloud is not consumed raw: it is first encoded with a Scan Context++-style
+descriptor, which summarises spatial structure into a compact representation.
+
+## What needs documenting
+
+- LiDAR model mounted on the ANYmal, if any.
+- Mounting position and reference frame (`tf`).
+- Publication rate and ROS topic.
+- Extrinsic calibration files relative to the robot base.
+- Range, resolution and effective reach under lab conditions.

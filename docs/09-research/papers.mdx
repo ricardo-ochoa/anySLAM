@@ -1,0 +1,70 @@
+---
+title: Publicaciones
+description: Trabajo publicado por el equipo y referencias que lo sustentan.
+---
+
+## Trabajo del equipo
+
+### Flow Matching Architecture for Navigation
+
+Póster presentado en **ICRA 2025** (IEEE International Conference on Robotics and Automation),
+Atlanta.
+
+**Autores:** Eduardo Hernández Valdez, Alan Ulises Díaz Arenas, Arturo Eduardo Cerón López
+· Tecnológico de Monterrey, Campus Monterrey, School of Engineering and Sciences.
+
+**Póster:** [haironthecircuits.net/wiki/icra2025](https://haironthecircuits.net/wiki/icra2025/)
+
+**Agradecimientos:** Departamento de Mecatrónica ITESM MTY, Dana Elizabeth Torres Estrada,
+Dr. Luis Yoichi Morales, Dr. Luis Alberto Muñoz Ubando. Contacto: `vanttec@servicios.tec.mx`
+
+#### Qué propone
+
+Evaluar la viabilidad de un enfoque multimodal que genere trayectorias libres de colisión de
+forma casi instantánea, para navegación robótica en entornos nuevos.
+
+La arquitectura combina imagen RGB (entrada densa) con nube de puntos 3D (entrada dispersa,
+codificada con un descriptor basado en Scan Context++). Ambas se concatenan junto a un
+*time embedding* y pasan por una UNet 1D con atención de canal eficiente (ECA) y un cuello de
+botella transformer con conexiones residuales. La salida se obtiene por *flow matching*,
+integrando con el solver dopri5.
+
+#### Resultados reportados
+
+- Validación en el entorno **PushT**, con una variante que usa solo RGB y condiciona sobre la
+  posición del actuador.
+- Generación efectiva de trayectorias con **~40 millones de parámetros**, frente a los más de
+  200 millones de Diffusion Policy.
+- Entrenamiento sobre el dataset **SCAND**.
+
+#### Limitaciones que el propio trabajo reconoce
+
+- Falta un multi-encoder unificado capaz de fusionar RGB y nube de puntos en crudo; hoy las
+  modalidades solo se concatenan.
+- No hay corrección en línea de trayectorias durante el despliegue; se plantea integrar
+  aprendizaje por refuerzo en línea.
+- La validación en el mundo real está pendiente. El experimento planeado usa un shuttle
+  EG6088K con Velodyne HDL-32 y MultiSense S21.
+
+## Referencias citadas en el póster
+
+| # | Referencia |
+| --- | --- |
+| 1 | Lipman, Chen, Ben-Hamu, Nickel & Le (2022). *Flow Matching for Generative Modeling*. [arXiv:2210.02747](https://arxiv.org/abs/2210.02747) |
+| 2 | Sridhar, Shah, Glossop & Levine (2023). *NoMaD: Goal Masked Diffusion Policies for Navigation and Exploration*. [arXiv:2310.07896](https://arxiv.org/abs/2310.07896) |
+| 3 | Chi, Xu, Feng, Cousineau, Du, Burchfiel, Tedrake & Song (2023). *Diffusion Policy: Visuomotor Policy Learning via Action Diffusion*. [arXiv:2303.04137](https://arxiv.org/abs/2303.04137) |
+| 4 | Kim, Choi, Bae & Kim (2021). *Scan Context++: Structural Place Recognition Robust to Rotation and Lateral Variations in Urban Environments*. [arXiv:2109.13494](https://arxiv.org/abs/2109.13494) |
+| 5 | Karnan, Nair, Xiao, Warnell, Pirk, Toshev, Hart, Biswas & Stone (2022). *Socially Compliant Navigation Dataset (SCAND)*. [arXiv:2203.15041](https://arxiv.org/abs/2203.15041) |
+| 6 | Tong, Fatras, Malkin, Huguet, Zhang, Rector-Brooks, Wolf & Bengio (2024). *Improving and generalizing flow-based generative models with minibatch optimal transport*. TMLR |
+| 7 | Wang, Wu, Zhu, Li, Zuo & Hu (2020). *ECA-Net: Efficient Channel Attention for Deep Convolutional Neural Networks*. [arXiv:1910.03151](https://arxiv.org/abs/1910.03151) |
+
+<Callout title="Nota sobre la referencia 5">
+El póster lista al primer autor de SCAND como "Harnan, H."; la publicación aparece
+indexada como Karnan et al. Se recoge aquí la grafía corregida.
+</Callout>
+
+## Qué falta
+
+- Publicaciones sobre el trabajo de SLAM y de locomoción, si las hay.
+- Tesis y proyectos de titulación asociados al proyecto.
+- Enlace a una versión en PDF o a las actas del póster, si existe.

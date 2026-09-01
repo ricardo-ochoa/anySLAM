@@ -1,0 +1,26 @@
+---
+title: Networking
+description: Lab and robot network configuration.
+---
+
+The content of this section lives in
+[network architecture](/en/docs/02-architecture/network-architecture), where the target diagram
+and the list of open questions are.
+
+## Status summary
+
+| Aspect | Status |
+| --- | --- |
+| Fast DDS configuration | A `fastdds.xml` exists, contents undocumented |
+| `ROS_DOMAIN_ID` | Not formally assigned |
+| Lab network topology | Undocumented |
+| Remote access to the robot | Undocumented |
+
+## What is worth settling soon
+
+Even with the rest missing, two conventions are cheap to establish and prevent immediate clashes:
+
+1. **One `ROS_DOMAIN_ID` per person or test bench.** Without it, two people running nodes on the
+   same network see each other's topics and cause behaviour that is hard to diagnose.
+2. **Write down how to reach the robot.** Address, user and access method. It is the first thing
+   any new person asks.

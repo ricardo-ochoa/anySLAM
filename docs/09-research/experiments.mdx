@@ -1,0 +1,56 @@
+---
+title: Experimentos
+description: Experimentos realizados y planeados en el proyecto.
+---
+
+## Realizados
+
+### Entrenamiento de locomoción en Isaac Lab
+
+**Estado:** en curso · **Responsable:** [@jesusMBhuy](https://github.com/jesusMBhuy)
+
+Entrenamiento de una política de seguimiento de comandos de velocidad para el ANYmal D sobre
+terreno irregular, con 4096 entornos en paralelo y hasta 800 iteraciones de PPO. Experimento
+identificado como `Anymal_d_2` en la configuración.
+
+Los parámetros completos están en [políticas aprendidas](/es/docs/05-software/learning).
+
+<Callout type="warn" title="Faltan los resultados">
+El repositorio contiene la configuración y un checkpoint (`policy.pt`), pero no métricas de
+desempeño. Sin ellas no se puede saber si la política funciona ni compararla con futuras
+versiones. Falta documentar: curva de recompensa, tasa de éxito por nivel de terreno, y si se ha
+probado en el robot real.
+</Callout>
+
+### Validación en PushT
+
+**Estado:** completado · **Responsable:** [@saucesaft](https://github.com/saucesaft)
+
+Validación inicial de la arquitectura de flow matching en el entorno PushT, usando una variante
+con entrada RGB únicamente y condicionando sobre la posición del actuador. Reportado en el
+[póster de ICRA 2025](/es/docs/09-research/papers).
+
+Resultado: generación efectiva de trayectorias con ~40 millones de parámetros.
+
+## Planeados
+
+### Despliegue en shuttle EG6088K
+
+**Estado:** planeado · Descrito en el póster de ICRA 2025.
+
+Validación de la arquitectura de navegación en exteriores dinámicos, sobre un Shuttle Personnel
+Carrier EG6088K equipado con Velodyne HDL-32 y MultiSense S21.
+
+## Cómo documentar un experimento nuevo
+
+Añade una entrada aquí con esta estructura:
+
+- **Qué se pregunta** — la hipótesis, en una frase.
+- **Montaje** — hardware, software, datasets, versiones.
+- **Método** — qué se hizo, con qué parámetros.
+- **Resultados** — números, no impresiones.
+- **Conclusión** — qué respondió y qué no.
+- **Dónde están los datos** — enlace al repositorio o al almacenamiento.
+
+Un experimento sin resultados escritos se pierde en cuanto la persona que lo hizo cambia de
+proyecto.

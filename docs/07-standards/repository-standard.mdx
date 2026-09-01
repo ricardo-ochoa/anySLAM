@@ -1,0 +1,52 @@
+---
+title: Estándar de repositorio
+description: Qué debe cumplir cualquier repositorio del proyecto anySLAM.
+---
+
+Todo repositorio que forme parte del proyecto debe cumplir estos puntos. El objetivo no es
+burocracia: es que cualquier persona pueda entender y ejecutar un componente sin preguntarle
+nada a su autor.
+
+## Obligatorio
+
+- [ ] **README** que siga la [plantilla estándar](/es/docs/07-standards/readme-standard).
+- [ ] **Enlace de vuelta al portal** en la sección `Project` del README.
+- [ ] **Responsable declarado** en la sección `Maintainers`, con su usuario de GitHub.
+- [ ] **Estado declarado**: `Active`, `Development`, `Experimental` o `Deprecated`.
+- [ ] **Licencia** en un archivo `LICENSE`.
+- [ ] **Instrucciones de instalación** que funcionen desde cero en una máquina limpia.
+- [ ] **Interfaces documentadas**: tópicos, servicios, APIs, puertos, archivos, sensores.
+- [ ] **Entrada en el catálogo** del portal (`data/repositories.yaml`).
+
+## Recomendado
+
+- [ ] `.gitignore` apropiado al lenguaje.
+- [ ] Un ejemplo mínimo que se pueda ejecutar en menos de cinco minutos.
+- [ ] Pruebas, aunque sean pocas, y cómo ejecutarlas.
+- [ ] Fijar versiones de las dependencias críticas.
+- [ ] `CHANGELOG.md` si el repositorio publica releases.
+
+## Nombres
+
+Convención propuesta para repositorios nuevos, para que el catálogo se lea de forma consistente:
+
+```
+<middleware>-anymal-<componente>
+```
+
+Ejemplos que ya siguen el patrón: `ros2-anymal-slam`, `ros1-anymal-client`.
+
+Se escribe `anymal` en minúsculas en nombres de repositorio y de paquete; **ANYmal** con la
+grafía de marca en prosa y en documentación.
+
+## Cuándo se añade un repositorio al proyecto
+
+Cuando su contenido es necesario para entender o ejecutar el sistema. Un cuaderno de
+experimentos personal no necesita entrar al catálogo; un componente del que depende otro, sí.
+
+Para dar de alta un repositorio:
+
+1. Cumple la lista de arriba.
+2. Añade su entrada en `data/repositories.yaml` de este repositorio.
+3. Ejecuta `npm run gen:catalog`.
+4. Abre un Pull Request.

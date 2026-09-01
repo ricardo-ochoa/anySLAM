@@ -1,0 +1,79 @@
+---
+title: Docker
+description: The containers the whole operation system runs on.
+---
+
+Docker is not optional in this project: **the entire operation chain runs in containers**. It is
+the system's most important infrastructure decision, and the reason the same code works on a
+Jetson and on a desktop.
+
+## The containers
+
+| Container | Repository | What runs inside |
+| --- | --- | --- |
+| `ros1-anymal-client` | `ros1-anymal-client` | ROS 1 environment + gRPC server |
+| `ros2-anymal` | `ros2-anymal-slam` | ROS 2 + gRPC client + `slam_node` |
+
+Both are built from their repository's `Dockerfile` with `./build.sh`, and created once with
+`./run.sh`. After that, the operator app starts them with `docker start` and launches the
+processes with `docker exec`.
+
+## Automatic platform detection
+
+The build scripts do not pin versions: they **detect the host and pick a compatible
+environment**. That is what lets the same repository work on the robot's Jetson and on a
+developer's laptop.
+
+What they detect:
+
+| Detected | Options |
+| --- | --- |
+| Machine type | Jetson or NVIDIA desktop |
+| Ubuntu version | 20.04, 22.04, 24.04 |
+| JetPack | 4, 5 or 6 |
+| ROS distribution | ROS 1 in the client; ROS 2 Dashing / Foxy / Humble / Jazzy in SLAM |
+| CUDA image | The right one for Jetson or desktop |
+| CUDA compute capability | Stored in `.robot_cuda_arch` |
+
+## Host requirements
+
+- Docker installed and usable **without `sudo`** (the app invokes it directly).
+- NVIDIA Container Toolkit, so containers can reach the GPU.
+- NVIDIA drivers compatible with the chosen CUDA image.
+
+## Mounts and environment
+
+Each container mounts its repository as `/workspace`. That is why the repositories cloned on the
+Jetson cannot be deleted even though they sit in the app's `.gitignore`: the scripts the app runs
+through `docker exec` live there.
+
+The scripts also set up the container user, UID and GID, the ROS and CUDA environment, and USB
+device access.
+
+## Scripts
+
+```bash
+./build.sh   # builds the image, detecting the platform
+./run.sh     # creates and starts the container (once)
+./shell.sh   # enters an already-created container
+```
+
+In `ros2-anymal-slam` additionally:
+
+```bash
+./run_slam.sh          # launches slam_node
+./record_ros2_exp.sh   # records an experiment to a bag
+./play_ros2_exp.sh     # replays a recorded experiment
+```
+
+## Visualisation
+
+The operator app ships `rviz_docker.sh`, which brings up RViz 2 in an `osrf/ros:humble-desktop`
+container with host networking, opening the `anymal.rviz` configuration (grid, TF, `LaserScan` on
+`/scan`, odometry on `/odom`, and the front camera image).
+
+## What is still not containerised
+
+The **training** environment (Isaac Sim / Isaac Lab) is installed natively; the `Anymal-Research`
+repository ships no `Dockerfile`. Given the rest of the project is already containerised, it is a
+reasonable candidate for unification.

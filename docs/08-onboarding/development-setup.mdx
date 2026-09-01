@@ -1,0 +1,75 @@
+---
+title: Preparación del entorno
+description: Instalación paso a paso según el área en la que vayas a trabajar.
+---
+
+Elige la ruta que corresponda a tu trabajo. No instales lo que no vayas a usar: la pila de
+simulación es pesada y no la necesitas para documentar ni para trabajar en ROS.
+
+## Ruta A — Documentación y portal
+
+La más ligera. Solo necesitas Node.js 20.9 o superior.
+
+```bash
+git clone <url-de-este-repositorio>
+cd anySLAM
+npm install
+npm run dev
+```
+
+Comandos disponibles:
+
+| Comando | Qué hace |
+| --- | --- |
+| `npm run dev` | Levanta el portal en `http://localhost:3000` |
+| `npm run build` | Compila y valida todas las páginas |
+| `npm run gen:catalog` | Regenera el catálogo desde `data/repositories.yaml` |
+
+## Ruta B — Entrenamiento por refuerzo
+
+Requiere Ubuntu 22.04+, GPU NVIDIA y paciencia: la instalación completa lleva varias horas.
+
+1. Instala los drivers NVIDIA y verifica con `nvidia-smi`.
+2. Instala NVIDIA Omniverse y, desde su launcher, Isaac Sim 5.0.0.
+3. Clona e instala Isaac Lab:
+
+   ```bash
+   git clone https://github.com/isaac-sim/IsaacLab.git
+   cd IsaacLab
+   ./isaaclab.sh --install
+   ```
+
+4. Clona `Anymal-Research` **fuera** del directorio de Isaac Lab e instala la extensión en modo
+   editable:
+
+   ```bash
+   git clone https://github.com/jesusMBhuy/Anymal-Research.git
+   cd Anymal-Research/anymal-d-managerbased/anymalDTraining
+   /ruta/a/isaaclab.sh -p -m pip install -e source/anymalDTraining
+   ```
+
+5. Verifica:
+
+   ```bash
+   python scripts/list_envs.py
+   ```
+
+El procedimiento completo, con los detalles de configuración del activo USD, está en el README
+de ese repositorio.
+
+## Ruta C — Desarrollo sobre ROS 2
+
+Ubuntu 22.04+ con ROS 2 Humble o superior, Python 3.10+ y PyTorch 2.3.0+ si vas a cargar la
+política entrenada.
+
+<Callout type="warn" title="Pendiente">
+Los pasos específicos para el robot real —red, acceso, arranque del sistema a bordo— no están
+documentados. Ver [arquitectura de red](/es/docs/02-architecture/network-architecture).
+</Callout>
+
+## Ruta D — SLAM, visión o datos
+
+<Callout type="warn" title="Pendiente">
+Estos componentes viven en repositorios privados y sus dependencias no están documentadas.
+Contacta al responsable según el [catálogo](/es/docs/03-repositories/repository-catalog).
+</Callout>

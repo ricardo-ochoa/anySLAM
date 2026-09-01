@@ -1,0 +1,51 @@
+---
+title: Cómo se organizan los repositorios
+description: Por qué el proyecto usa múltiples repositorios y qué implica para quien contribuye.
+---
+
+## La estrategia
+
+El proyecto usa **múltiples repositorios independientes más un repositorio central de
+documentación** (este). No es un monorepo, y no se usan submódulos de Git.
+
+Cada repositorio conserva:
+
+- Su propio dueño o equipo responsable.
+- Su historial de Git.
+- Sus issues y sus pull requests.
+- Su ciclo de desarrollo y sus releases.
+- Su README.
+
+## Por qué así
+
+Los repositorios pertenecen a personas distintas y avanzan a ritmos distintos. Un monorepo
+obligaría a coordinar permisos, revisiones y releases entre gente que trabaja en problemas
+separados. Los submódulos añadirían fricción al flujo de Git a cambio de una reproducibilidad
+que hoy no necesitamos.
+
+La contrapartida es que sin un índice central nadie sabe qué existe. Ese índice es este portal.
+
+## Acoplamiento débil, interfaces explícitas
+
+Como los repositorios evolucionan por separado, lo que **sí** debe estar documentado con
+precisión son las interfaces entre ellos: tópicos y servicios de ROS, APIs, puertos, formatos de
+archivo y sensores. Un cambio en una interfaz pública es uno de los disparadores para actualizar
+este portal.
+
+## Y si necesitamos reproducir el sistema completo
+
+No con submódulos. La ruta prevista es un script de bootstrap que clone los repositorios a partir
+del catálogo:
+
+```bash
+./scripts/bootstrap.sh
+```
+
+Para entornos ROS también puede evaluarse un archivo `.repos` con
+[`vcstool`](https://github.com/dirk-thomas/vcstool), que es la herramienta estándar del
+ecosistema para esto. Ambas opciones están en la [fase 4 del roadmap](/es/docs/10-roadmap/roadmap).
+
+## Siguiente paso
+
+- [Catálogo de repositorios](/es/docs/03-repositories/repository-catalog) — la lista completa.
+- [Estándar de repositorio](/es/docs/07-standards/repository-standard) — qué debe cumplir uno nuevo.

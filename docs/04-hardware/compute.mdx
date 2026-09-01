@@ -1,0 +1,50 @@
+---
+title: Cómputo
+description: Recursos de cómputo para entrenamiento y para ejecución a bordo.
+---
+
+## Máquina de entrenamiento (confirmado)
+
+Requisitos declarados en el README de
+[`Anymal-Research`](https://github.com/jesusMBhuy/Anymal-Research):
+
+| Recurso | Mínimo | Recomendado |
+| --- | --- | --- |
+| GPU | NVIDIA con CUDA | Serie RTX |
+| RAM | 16 GB | 32 GB |
+| Almacenamiento | 50 GB | — |
+| CPU | 8 núcleos | — |
+| CUDA | 12.1+ | — |
+
+Estos requisitos vienen de correr 4096 entornos en paralelo en Isaac Sim, con física a 200 Hz.
+La memoria de GPU es el cuello de botella habitual: el propio código eleva
+`gpu_max_rigid_patch_count` a `10 * 2^17` para acomodar el número de contactos.
+
+## Cómputo a bordo
+
+El robot lleva **una NVIDIA Jetson montada como payload**, con pantalla táctil. Ahí corre toda la
+cadena de operación: los dos contenedores del puente y el `slam_node`. El SLAM, por tanto, se
+ejecuta **a bordo**, no en una estación externa.
+
+| Aspecto | Valor |
+| --- | --- |
+| Plataforma | NVIDIA Jetson (JetPack 4, 5 o 6 — los scripts detectan cuál) |
+| Interfaz | Pantalla táctil con la app de operación en Tkinter |
+| Aceleración | CUDA, usada por el filtro de partículas del SLAM |
+| Contenedores | `ros1-anymal-client` y `ros2-anymal` |
+| Requisito | Docker sin `sudo` y NVIDIA Container Toolkit |
+
+Además de la Jetson, el ANYmal tiene sus propias computadoras internas: la **LPC** (donde corre
+el máster ROS 1) y la **NPC**. Ver [arquitectura de red](/es/docs/02-architecture/network-architecture).
+
+<Callout type="warn" title="Pendiente">
+Falta el modelo exacto de Jetson (Orin, Xavier, Nano) y su versión de JetPack. También falta el
+presupuesto de latencia del lazo de control y las cifras de rendimiento del SLAM a bordo.
+</Callout>
+
+## Cómputo de inferencia del modelo de navegación
+
+El [póster de ICRA 2025](/es/docs/09-research/papers) reporta una cifra útil: la arquitectura
+alcanza generación efectiva de trayectorias con **unos 40 millones de parámetros**, frente a los
+más de 200 millones de Diffusion Policy. El argumento de diseño es explícitamente el de caber en
+hardware embebido.

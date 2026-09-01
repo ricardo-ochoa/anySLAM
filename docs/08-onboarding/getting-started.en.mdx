@@ -1,0 +1,65 @@
+---
+title: Getting started
+description: From zero context to understanding the anySLAM project.
+---
+
+This page is aimed at someone who has just joined the team. Follow the order.
+
+## 1. Understand what the project is about (15 minutes)
+
+Read, in this order:
+
+1. [Overview](/en/docs/01-introduction/overview) — what the project is and who does it.
+2. [Goals](/en/docs/01-introduction/goals) — what it is after.
+3. [System overview](/en/docs/02-architecture/system-overview) — how it all fits together.
+
+By the end you should be able to answer: *which robot is it, what is being researched on it, and
+what parts does the system have?*
+
+## 2. Locate the repositories (5 minutes)
+
+Open the [catalog](/en/docs/03-repositories/repository-catalog) and find the repository for the
+area you will work in. Note two columns: **maintainer** (who to ask) and **confidence** (how much
+of what the documentation says is verified).
+
+## 3. Set up your environment
+
+It depends on what you will work on. See
+[development environment](/en/docs/06-infrastructure/development-environment).
+
+The fastest route to having something running on day one is the portal itself:
+
+```bash
+git clone <url-of-this-repository>
+cd anySLAM
+npm install
+npm run dev
+```
+
+If you are going to train policies, the Isaac Sim installation takes several hours. Start it
+early.
+
+## 4. Make your first contribution
+
+The best first contribution from any new person is **documenting what was hard to understand**.
+While you are learning you have an advantage the rest of the team has already lost: you can see
+what needs explaining.
+
+Concretely:
+
+1. Open [missing data](/en/docs/03-repositories/missing-data).
+2. Find an item you can close by asking someone.
+3. Ask them, write the answer on the right page, strike the item off.
+4. Open a Pull Request.
+
+## 5. Check that you understood
+
+Go to the [project map](/en/docs/08-onboarding/project-map) and answer its ten questions. The
+ones you cannot answer are documentation gaps, not your failings: open an issue for them.
+
+## If you get stuck
+
+- **Technical question about a component** → its maintainer, per the
+  [catalog](/en/docs/03-repositories/repository-catalog).
+- **Missing information in the portal** → open an issue in this repository.
+- **Question about how to document** → [documentation standard](/en/docs/07-standards/documentation-standard).

@@ -1,0 +1,60 @@
+---
+title: Hardware architecture
+description: Robotic platform, sensors and compute used by the project.
+---
+
+## Platform
+
+The project robot is an **ANYmal D** by ANYbotics: a research quadruped with twelve actuated
+joints (three per leg: HAA, HFE and KFE) and series-elastic actuators.
+
+What is confirmed about the team's use of it comes from the
+[`Anymal-Research`](https://github.com/jesusMBhuy/Anymal-Research) repository, which trains
+against the official ANYmal D USD model shipped with Isaac Lab:
+
+```
+Assets/Isaac/5.0/Isaac/IsaacLab/Robots/ANYbotics/ANYmal_D/anymal_d.usd
+```
+
+This confirms the variant (**D**) and that the dynamic model used in simulation is the
+manufacturer's, including LSTM-based actuator modelling.
+
+<Callout type="warn" title="Pending">
+The actual physical configuration of the lab robot — which sensors are mounted, in what
+positions, and with which onboard computer — is not documented in any public repository. It is
+the most important gap in this section.
+</Callout>
+
+## Navigation experiment sensors
+
+The [ICRA 2025 poster](/en/docs/09-research/papers) documents the hardware of a **different**
+experiment, on a shuttle:
+
+| Component | Model | Purpose |
+| --- | --- | --- |
+| Platform | Shuttle Personnel Carrier EG6088K | Test vehicle |
+| 3D LiDAR | Velodyne HDL-32 | Sparse point cloud |
+| Camera | MultiSense S21 | Stereo RGB imagery |
+
+Do not assume this is the ANYmal's hardware. It is documented here because it is the only sensor
+setup for which we have a written source.
+
+## Training compute
+
+Requirements declared in the `Anymal-Research` README for the training machine:
+
+| Resource | Requirement |
+| --- | --- |
+| GPU | NVIDIA with CUDA (RTX series recommended) |
+| RAM | 16 GB minimum, 32 GB recommended |
+| Storage | 50 GB or more |
+| CPU | 8 cores or more |
+
+## What is missing
+
+- Inventory of the hardware actually mounted on the lab ANYmal.
+- Onboard computer: model, operating system, compute capacity.
+- Mounting diagram and reference frames (`tf`) for each sensor.
+- Calibration: where intrinsic and extrinsic calibration files live.
+
+See [missing data](/en/docs/03-repositories/missing-data).

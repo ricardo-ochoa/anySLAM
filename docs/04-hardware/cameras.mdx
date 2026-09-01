@@ -1,0 +1,43 @@
+---
+title: Cámaras
+description: Las diez cámaras del ANYmal y sus tópicos ROS.
+---
+
+El ANYmal del laboratorio expone **diez cámaras**, todas accesibles como tópicos ROS. La lista
+está confirmada desde `ros_bridge.py` de la app de operación, que las enumera para mostrarlas en
+la pestaña de cámaras.
+
+| Cámara | Tópico | Uso |
+| --- | --- | --- |
+| Gran angular frontal | `/wide_angle_camera_front/image_raw` | Teleoperación |
+| Gran angular trasera | `/wide_angle_camera_rear/image_raw` | Teleoperación |
+| PTZ con zoom 20x | `/ptz_camera/image_raw` | Inspección a distancia |
+| Térmica | `/thermal_camera/image_raw` | Inspección térmica |
+| Profundidad 1 | `/depth_camera_1/image_raw` | Percepción de cercanía |
+| Profundidad 2 | `/depth_camera_2/image_raw` | Percepción de cercanía |
+| Profundidad 3 | `/depth_camera_3/image_raw` | Percepción de cercanía |
+| Profundidad 4 | `/depth_camera_4/image_raw` | Percepción de cercanía |
+| Profundidad 5 | `/depth_camera_5/image_raw` | Percepción de cercanía |
+| Profundidad 6 | `/depth_camera_6/image_raw` | Percepción de cercanía |
+
+Las seis cámaras de profundidad y el par de gran angular son el conjunto estándar del ANYmal D;
+la PTZ y la térmica corresponden al payload de inspección.
+
+<Callout title="Ninguna cámara alimenta el SLAM hoy">
+El SLAM del proyecto es puramente LiDAR: el puente gRPC solo transmite odometría y escaneo 2D.
+Las cámaras se usan para teleoperación e inspección, no para localización. Ver
+[comunicación](/es/docs/05-software/communication).
+</Callout>
+
+## La cámara del experimento de navegación
+
+Distinta y ajena al ANYmal: el experimento sobre shuttle del
+[póster de ICRA 2025](/es/docs/09-research/papers) usa una **MultiSense S21** estéreo, cuya
+imagen RGB es la entrada densa del modelo de navegación.
+
+## Lo que falta
+
+- Modelo y fabricante de cada cámara.
+- Resolución y frecuencia de publicación.
+- Posiciones de montaje y marcos `tf`.
+- Dónde viven los archivos de calibración intrínseca y extrínseca.

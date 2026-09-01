@@ -1,0 +1,95 @@
+---
+title: Plantilla de README
+description: La estructura común que sigue el README de cada repositorio del proyecto.
+---
+
+Todos los repositorios del proyecto usan la misma estructura de README. Esto permite que quien
+salta de un componente a otro sepa siempre dónde buscar cada cosa.
+
+La plantilla está en `templates/README.template.md` de este repositorio, lista para copiar.
+
+## Estructura
+
+````markdown
+# Nombre del repositorio
+
+Breve descripción del componente, en una o dos frases.
+
+## Project
+
+Este repositorio forma parte del proyecto **anySLAM**.
+
+[← Volver al portal principal](URL_DEL_PORTAL)
+
+## Overview
+
+Para qué existe este repositorio y qué problema resuelve.
+
+## Responsibilities
+
+Qué responsabilidades tiene este componente dentro del sistema, y cuáles
+explícitamente no.
+
+## Architecture
+
+Cómo está organizado por dentro: módulos, nodos, flujo principal.
+
+## Dependencies
+
+Dependencias necesarias, con versiones.
+
+## Interfaces
+
+Cómo se comunica con el resto del sistema:
+
+- ROS topics (nombre, tipo, dirección, frecuencia)
+- ROS services y actions
+- APIs
+- sockets y puertos
+- archivos
+- sensores
+
+## Installation
+
+Pasos para instalarlo desde cero en una máquina limpia.
+
+## Usage
+
+Cómo ejecutarlo, con al menos un ejemplo concreto.
+
+## Configuration
+
+Variables de entorno y archivos de configuración.
+
+## Development
+
+Cómo trabajar en el código localmente.
+
+## Testing
+
+Cómo ejecutar las pruebas.
+
+## Maintainers
+
+Responsables actuales, con su usuario de GitHub.
+
+## Status
+
+Active / Development / Experimental / Deprecated
+
+## Related repositories
+
+Repositorios relacionados y en qué se relacionan.
+````
+
+## Las dos secciones que más se olvidan
+
+**`Interfaces`** es la sección que hace posible el trabajo en paralelo. Sin ella, cambiar un
+tópico rompe a otro equipo sin aviso.
+
+**`Status`** evita que alguien invierta una semana en un componente abandonado.
+
+## Qué no poner en el README
+
+Documentación que pertenece al portal: la visión global del proyecto, el catálogo de los demás
+repositorios, o la arquitectura del sistema completo. El README enlaza al portal para eso.

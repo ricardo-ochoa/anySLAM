@@ -1,0 +1,55 @@
+---
+title: Experiments
+description: Experiments carried out and planned in the project.
+---
+
+## Carried out
+
+### Locomotion training in Isaac Lab
+
+**Status:** ongoing · **Maintainer:** [@jesusMBhuy](https://github.com/jesusMBhuy)
+
+Training a velocity-command-tracking policy for the ANYmal D over rough terrain, with 4096
+parallel environments and up to 800 PPO iterations. Experiment identified as `Anymal_d_2` in the
+configuration.
+
+Full parameters are in [learned policies](/en/docs/05-software/learning).
+
+<Callout type="warn" title="Results are missing">
+The repository contains the configuration and a checkpoint (`policy.pt`), but no performance
+metrics. Without them there is no way to know whether the policy works, nor to compare it with
+future versions. Still to document: reward curve, success rate per terrain level, and whether it
+has been tested on the physical robot.
+</Callout>
+
+### PushT validation
+
+**Status:** completed · **Maintainer:** [@saucesaft](https://github.com/saucesaft)
+
+Initial validation of the flow-matching architecture in the PushT environment, using an
+RGB-only variant conditioned on the actuator position. Reported in the
+[ICRA 2025 poster](/en/docs/09-research/papers).
+
+Result: effective trajectory generation with ~40 million parameters.
+
+## Planned
+
+### EG6088K shuttle deployment
+
+**Status:** planned · Described in the ICRA 2025 poster.
+
+Validation of the navigation architecture in dynamic outdoor environments, on a Shuttle
+Personnel Carrier EG6088K equipped with a Velodyne HDL-32 and a MultiSense S21.
+
+## How to document a new experiment
+
+Add an entry here with this structure:
+
+- **What is being asked** — the hypothesis, in one sentence.
+- **Setup** — hardware, software, datasets, versions.
+- **Method** — what was done, with which parameters.
+- **Results** — numbers, not impressions.
+- **Conclusion** — what it answered and what it did not.
+- **Where the data is** — link to the repository or storage.
+
+An experiment with no written results is lost the moment the person who ran it moves on.

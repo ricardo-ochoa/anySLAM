@@ -1,0 +1,48 @@
+---
+title: Objetivos
+description: Qué persigue el proyecto anySLAM y qué persigue este portal.
+---
+
+Hay dos niveles de objetivos y conviene no confundirlos: los del **proyecto de investigación** y
+los del **portal de documentación**.
+
+## Objetivos del proyecto de investigación
+
+Estos objetivos están inferidos del trabajo publicado y del contenido de los repositorios.
+Deben confirmarse con los responsables de cada línea.
+
+1. **Locomoción robusta aprendida.** Entrenar políticas de control en simulación (Isaac Lab)
+   capaces de atravesar terreno irregular, y transferirlas al ANYmal D físico con la menor
+   brecha sim-a-real posible.
+2. **Percepción multimodal.** Combinar LiDAR 3D y cámaras RGB para localización y construcción
+   de mapas.
+3. **Navegación generalizable.** Generar trayectorias libres de colisión en entornos nuevos sin
+   necesidad de reentrenar para cada escenario. Este es el objetivo declarado del trabajo
+   presentado en [ICRA 2025](/es/docs/09-research/papers).
+4. **Inferencia en tiempo real.** Que los modelos corran a bordo, dentro del presupuesto de
+   cómputo del robot.
+
+## Objetivos del portal
+
+Estos sí son concretos y verificables:
+
+1. **Dar contexto general** del proyecto a quien llega sin conocerlo.
+2. **Documentar la arquitectura** completa del sistema.
+3. **Mantener un catálogo** de los repositorios que lo forman.
+4. **Identificar responsables** de cada componente.
+5. **Explicar las interfaces** entre hardware, software, sensores y servicios.
+6. **Establecer estándares** comunes de documentación entre equipos.
+7. **Facilitar el onboarding** de nuevos integrantes.
+8. **Preparar la base** para automatización y, más adelante, para un índice de conocimiento
+   consultable.
+
+## Cómo se mide si el portal funciona
+
+Un criterio único y comprobable:
+
+> Una persona nueva, sin contexto previo, debe poder llegar desde la página de inicio hasta
+> ejecutar el sistema, sin preguntarle nada a nadie.
+
+Si en algún punto tiene que preguntar, ese punto es un hueco en la documentación y merece un
+issue. Las diez preguntas que debe poder responder están en
+[el mapa del proyecto](/es/docs/08-onboarding/project-map).

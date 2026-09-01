@@ -1,0 +1,77 @@
+---
+title: Arquitectura de software
+description: Capas de software, del entrenamiento en simulación al control del robot.
+---
+
+## Capas
+
+```mermaid
+graph TB
+  subgraph SIM["Simulación y entrenamiento"]
+    A["Isaac Sim 5.0 (PhysX)"]
+    B["Isaac Lab 5.0"]
+    C["RSL-RL — PPO"]
+  end
+  subgraph ART["Artefacto"]
+    D["policy.pt + env.yaml"]
+  end
+  subgraph RT["Tiempo de ejecución a bordo"]
+    E["ROS 2 Humble+"]
+    F["anymal_controller"]
+    G["Teleoperación"]
+  end
+  subgraph ROB["Robot"]
+    H["ANYmal D"]
+  end
+
+  A --> B --> C --> D --> F
+  E --- F
+  G --> F
+  F --> H
+  H --> F
+```
+
+## Stack confirmado
+
+Del README y del árbol de `Anymal-Research`:
+
+| Capa | Tecnología | Versión declarada |
+| --- | --- | --- |
+| Simulación | NVIDIA Isaac Sim | 5.0.0 |
+| Entorno de RL | NVIDIA Isaac Lab | 5.0.0 |
+| Algoritmo | RSL-RL (PPO) | — |
+| Aprendizaje | PyTorch | 2.3.0+ |
+| CUDA | — | 12.1+ |
+| Middleware | ROS 2 | Humble o superior |
+| Lenguaje | Python | 3.10 – 3.11 |
+| Sistema | Ubuntu | 22.04+ |
+
+El middleware DDS se configura con un `fastdds.xml` en la raíz del workspace ROS 2, lo que
+indica que el equipo ajusta el transporte de Fast DDS en lugar de usar el de fábrica. Los
+detalles de esa configuración están en [comunicación](/es/docs/05-software/communication).
+
+## Estructura del repositorio de entrenamiento
+
+```
+Anymal-Research/
+├── anymal-d-managerbased/anymalDTraining/
+│   ├── scripts/                 # list_envs, random_agent, zero_agent
+│   │   └── rsl_rl/              # train.py, play.py, cli_args.py
+│   └── source/anymalDTraining/
+│       └── .../anymaldtraining/
+│           ├── anymaldtraining_env_cfg.py   # configuración del entorno
+│           ├── agents/rsl_rl_ppo_cfg.py     # hiperparámetros de PPO
+│           └── mdp/                          # rewards, terminations, curriculums, symmetry
+└── ros2Anymal_ws/
+    ├── fastdds.xml
+    └── src/anymal_controller_policy/anymal_controller/
+        ├── policy/{policy.pt, env.yaml}
+        ├── scripts/anymal_teleop.py
+        └── launch/anymal_teleop.launch.py
+```
+
+## Capas por confirmar
+
+SLAM, visión y el cliente ROS 1 viven en repositorios privados. Sus páginas
+([SLAM](/es/docs/05-software/slam), [visión](/es/docs/05-software/vision),
+[comunicación](/es/docs/05-software/communication)) están marcadas como pendientes.

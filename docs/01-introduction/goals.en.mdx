@@ -1,0 +1,45 @@
+---
+title: Goals
+description: What the anySLAM project pursues, and what this portal pursues.
+---
+
+There are two levels of goals, and it is worth not conflating them: those of the **research
+project** and those of the **documentation portal**.
+
+## Research project goals
+
+These goals are inferred from published work and from repository contents. They should be
+confirmed with the people leading each line of work.
+
+1. **Robust learned locomotion.** Train control policies in simulation (Isaac Lab) capable of
+   traversing irregular terrain, and transfer them to the physical ANYmal D with the smallest
+   possible sim-to-real gap.
+2. **Multimodal perception.** Combine 3D LiDAR and RGB cameras for localisation and mapping.
+3. **Generalisable navigation.** Generate collision-free trajectories in novel environments
+   without retraining per scenario. This is the stated goal of the work presented at
+   [ICRA 2025](/en/docs/09-research/papers).
+4. **Real-time inference.** Run the models onboard, within the robot's compute budget.
+
+## Portal goals
+
+These are concrete and verifiable:
+
+1. **Give general context** about the project to someone arriving cold.
+2. **Document the full architecture** of the system.
+3. **Maintain a catalog** of the repositories that compose it.
+4. **Identify maintainers** for each component.
+5. **Explain the interfaces** between hardware, software, sensors and services.
+6. **Establish shared documentation standards** across teams.
+7. **Ease onboarding** of new members.
+8. **Prepare the ground** for automation and, later, a queryable knowledge index.
+
+## How we measure whether the portal works
+
+A single, checkable criterion:
+
+> A new person, with no prior context, must be able to go from the home page to running the
+> system without asking anyone anything.
+
+If at any point they have to ask, that point is a documentation gap and deserves an issue. The
+ten questions they must be able to answer are in
+[the project map](/en/docs/08-onboarding/project-map).

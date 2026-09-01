@@ -1,0 +1,142 @@
+---
+title: Políticas aprendidas
+description: Entrenamiento por refuerzo de la locomoción del ANYmal D en Isaac Lab, y su despliegue en ROS 2.
+---
+
+Esta es la única parte del sistema que hoy puede documentarse con detalle verificado, porque
+[`Anymal-Research`](https://github.com/jesusMBhuy/Anymal-Research) es público. Todos los valores
+de esta página están leídos del código, no del README.
+
+**Responsable:** [@jesusMBhuy](https://github.com/jesusMBhuy) · **Licencia:** BSD-3-Clause
+
+## Qué hace
+
+Entrena una política de locomoción para el ANYmal D en simulación y la despliega en el robot
+real como un nodo de ROS 2. La tarea es seguimiento de comandos de velocidad sobre terreno
+irregular.
+
+## El entorno de simulación
+
+Definido en `anymaldtraining_env_cfg.py`, sobre el framework *manager-based* de Isaac Lab.
+
+| Parámetro | Valor |
+| --- | --- |
+| Entornos en paralelo | 4096 |
+| Separación entre entornos | 2.5 m |
+| Paso de física (`sim.dt`) | 0.005 s (200 Hz) |
+| Decimación | 3 → control a ~66.7 Hz |
+| Duración del episodio | 20 s |
+| Terreno | `ROUGH_TERRAINS_CFG` con curriculum, nivel inicial máximo 7 |
+| Robot | `ANYMAL_D_CFG` (activo oficial de Isaac Lab) |
+
+## Observaciones
+
+El grupo `policy` concatena siete términos, todos con ruido aditivo uniforme para robustez
+sim-a-real:
+
+| Observación | Ruido |
+| --- | --- |
+| Velocidad lineal de la base | ±0.1 |
+| Velocidad angular de la base | ±0.2 |
+| Gravedad proyectada | ±0.05 |
+| Comando de velocidad | — |
+| Posición articular (relativa) | ±0.01 |
+| Velocidad articular (relativa) | ±1.5 |
+| Última acción | — |
+
+<Callout title="El height scanner está desactivado">
+El `RayCasterCfg` que produciría el *height scan* del terreno **está comentado** en el archivo
+de configuración. La política actual, por tanto, es *ciega*: no recibe información exteroceptiva
+del terreno y debe sortearlo solo con propiocepción. Vale la pena confirmar si es una decisión
+deliberada o trabajo en curso.
+</Callout>
+
+## Acciones
+
+`JointPositionActionCfg` sobre las doce articulaciones (`.*`), con escala 0.5 y offset por
+defecto. La política emite objetivos de posición articular, no pares.
+
+## Recompensas
+
+Doce términos. Los positivos premian la tarea; los negativos regularizan el movimiento.
+
+| Término | Peso | Qué hace |
+| --- | --- | --- |
+| `track_lin_vel_xy_exp` | +1.2 | Seguir el comando de velocidad lineal |
+| `track_ang_vel_z_exp` | +0.8 | Seguir el comando de velocidad angular |
+| `feet_air_time` | +0.125 | Fomentar zancadas, no arrastrar las patas |
+| `lin_vel_z_l2` | −2.0 | Penalizar el rebote vertical |
+| `ang_vel_xy_l2` | −0.05 | Penalizar cabeceo y alabeo |
+| `dof_torques_l2` | −1.0e−5 | Minimizar par articular |
+| `dof_acc_l2` | −2.5e−7 | Suavizar aceleraciones |
+| `action_rate_l2` | −0.01 | Suavizar el cambio de acciones |
+| `undesired_contacts` | −1.0 | Penalizar contactos con los muslos (`.*THIGH`) |
+| `stuck_penalty` | −0.5 | Penalizar quedarse atascado |
+| `flat_orientation_l2` | −0.005 | Mantener el torso horizontal |
+| `dof_pos_limits` | 0.0 | Definido pero **desactivado** (peso cero) |
+
+`stuck_penalty` es un término **propio del equipo**, no parte de Isaac Lab: penaliza al robot
+cuando se le ordena moverse a más de 0.2 m/s pero avanza a menos de 0.05 m/s durante más de
+0.3 s. Vive en `mdp/rewards.py`.
+
+## Aleatorización de dominio
+
+Para cerrar la brecha sim-a-real, en `EventCfg`:
+
+- **Al arrancar:** fricción del material, masa de la base (±5 kg) y centro de masa (±5 cm en X e
+  Y, ±1 cm en Z).
+- **Al reiniciar:** pose y velocidad de la base aleatorias, articulaciones escaladas entre 0.5 y 1.5.
+- **Cada 10–15 s:** empujón lateral de hasta 0.5 m/s.
+
+## Terminaciones
+
+- `time_out` — se agota el episodio.
+- `base_contact` — el torso toca el suelo (umbral 1.0 N).
+
+## Hiperparámetros de PPO
+
+De `agents/rsl_rl_ppo_cfg.py`, con RSL-RL:
+
+| Parámetro | Valor |
+| --- | --- |
+| Pasos por entorno | 24 |
+| Iteraciones máximas | 800 |
+| Intervalo de guardado | 200 |
+| Red del actor | [256, 128], activación ELU |
+| Red del crítico | [256, 256], activación ELU |
+| `clip_param` | 0.2 |
+| `entropy_coef` | 0.01 |
+| Épocas de aprendizaje | 5 |
+| Mini-batches | 12 |
+| Learning rate | 2.5e−4 (sin schedule) |
+| `gamma` | 0.993 |
+| `lam` (GAE) | 0.95 |
+| `desired_kl` | 0.01 |
+| `max_grad_norm` | 0.5 |
+
+Nombre del experimento: `Anymal_d_2`.
+
+## Despliegue en el robot
+
+El workspace `ros2Anymal_ws` contiene el paquete `anymal_controller`, que carga
+`policy/policy.pt` junto con `policy/env.yaml` y expone un nodo de teleoperación
+(`anymal_teleop.py`, lanzado por `anymal_teleop.launch.py`).
+
+Los nombres exactos de los tópicos aún no están verificados — ver
+[flujo de datos](/es/docs/02-architecture/data-flow).
+
+## Cómo ejecutarlo
+
+Las instrucciones completas de instalación viven en el README del repositorio, no aquí. Un
+resumen de lo que hace falta:
+
+- Isaac Sim 5.0.0 y Isaac Lab
+- Python 3.10–3.11, PyTorch 2.3.0+, CUDA 12.1+
+- GPU NVIDIA, 16 GB de RAM (32 GB recomendados), 50 GB de disco
+- ROS 2 Humble o superior sobre Ubuntu 22.04+ para la parte de despliegue
+
+Listar las tareas disponibles:
+
+```bash
+python scripts/list_envs.py
+```

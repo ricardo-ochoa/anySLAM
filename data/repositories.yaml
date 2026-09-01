@@ -1,0 +1,174 @@
+# ---------------------------------------------------------------------------
+# Catálogo de repositorios del proyecto anySLAM.
+#
+# ESTE ARCHIVO ES LA FUENTE ÚNICA DE VERDAD del catálogo.
+# Las tablas en docs/03-repositories/repository-catalog.{mdx,en.mdx} se
+# GENERAN desde aquí con `npm run gen:catalog`. No las edites a mano.
+#
+# Campo `confidence` — qué tan verificada está la entrada:
+#   confirmed : leído directamente del repositorio o de una fuente pública
+#   inferred  : deducido de contexto (póster ICRA, nombre del repo). Verificar.
+#   unknown   : no tenemos acceso. Pendiente de que su responsable lo complete.
+#
+# Última verificación: 2026-09-01 (contenido leído directamente de cada repositorio)
+# ---------------------------------------------------------------------------
+
+repositories:
+  - id: anymal-research
+    name: Anymal-Research
+    url: https://github.com/jesusMBhuy/Anymal-Research
+    visibility: public
+    area: Aprendizaje / Locomoción
+    area_en: Learning / Locomotion
+    owner: jesusMBhuy
+    owner_name: Jesús M. B.
+    status: Active
+    language: Python
+    license: BSD-3-Clause
+    last_push: 2025-06-23
+    confidence: confirmed
+    description: >-
+      Entrenamiento por refuerzo de políticas de locomoción para el ANYmal D en
+      NVIDIA Isaac Lab 5.0 / Isaac Sim 5.0 (PPO via RSL-RL, 4096 entornos en
+      paralelo, curriculum de terreno, actuadores modelados con LSTM), más un
+      workspace ROS 2 (`anymal_controller`) que despliega la política entrenada
+      en formato PyTorch al robot real.
+    description_en: >-
+      Reinforcement-learning training of locomotion policies for the ANYmal D on
+      NVIDIA Isaac Lab 5.0 / Isaac Sim 5.0 (PPO via RSL-RL, 4096 parallel
+      environments, terrain curriculum, LSTM-modelled actuators), plus a ROS 2
+      workspace (`anymal_controller`) that deploys the trained PyTorch policy to
+      the physical robot.
+
+  - id: ros2-anymal-slam
+    name: ros2-anymal-slam
+    url: https://github.com/Alponcho6594/ros2-anymal-slam
+    visibility: private
+    area: SLAM y localización
+    area_en: SLAM and localisation
+    owner: Alponcho6594
+    owner_name: Alan Ulises Díaz Arenas
+    status: Active
+    language: C++ / CUDA
+    license: Unknown
+    last_push: 2026-08-20
+    confidence: confirmed
+    description: >-
+      Framework de SLAM y localización Monte Carlo acelerado por CUDA sobre
+      ROS 2. Implementa filtro de partículas, mapeo por rejilla de ocupación con
+      log-odds, campo de verosimilitud, graph SLAM con keyframes y cierre de
+      bucle. Incluye el cliente del puente gRPC que traduce los datos del ANYmal
+      en ROS 1 a los tópicos `/scan` y `/odom` de ROS 2. Todo corre en Docker,
+      con detección automática de plataforma (Jetson JetPack 4/5/6 o escritorio)
+      y de distribución de ROS 2.
+    description_en: >-
+      CUDA-accelerated SLAM and Monte Carlo Localization framework on ROS 2. It
+      implements a particle filter, log-odds occupancy-grid mapping, a likelihood
+      field, and graph SLAM with keyframes and loop closure. It includes the gRPC
+      bridge client that translates the ANYmal's ROS 1 data into the ROS 2
+      `/scan` and `/odom` topics. Everything runs in Docker, with automatic
+      platform detection (Jetson JetPack 4/5/6 or desktop) and ROS 2
+      distribution selection.
+
+  - id: ros1-anymal-client
+    name: ros1-anymal-client
+    url: https://github.com/Alponcho6594/ros1-anymal-client
+    visibility: private
+    area: Comunicación / ROS 1
+    area_en: Communication / ROS 1
+    owner: Alponcho6594
+    owner_name: Alan Ulises Díaz Arenas
+    status: Active
+    language: Python / Docker
+    license: Unknown
+    last_push: 2026-08-02
+    confidence: confirmed
+    description: >-
+      Entorno Docker con un cliente ROS 1 para hablar con el máster ROS del
+      ANYmal sin instalar la pila completa de ANYbotics en la máquina de
+      desarrollo. Incluye las definiciones de mensajes, servicios y acciones del
+      robot (`anymal_interfaces`), gestión del lease de control, teleoperación
+      por teclado, grabación y reproducción de rosbags, y el servidor gRPC que
+      transmite odometría y escaneos al lado ROS 2.
+    description_en: >-
+      A Docker environment with a ROS 1 client for talking to the ANYmal's ROS
+      master without installing the full ANYbotics stack on the development
+      machine. It ships the robot's message, service and action definitions
+      (`anymal_interfaces`), control-lease management, keyboard teleoperation,
+      rosbag recording and replay, and the gRPC server that streams odometry and
+      scans to the ROS 2 side.
+
+  - id: flowmas
+    name: FLOWMAS
+    url: https://github.com/saucesaft/FLOWMAS
+    visibility: private
+    area: Navegación / Modelos generativos
+    area_en: Navigation / Generative models
+    owner: saucesaft
+    owner_name: Eduardo Hernández Valdez
+    status: Research
+    language: Python
+    license: Unknown
+    last_push: Unknown
+    confidence: inferred
+    description: >-
+      Arquitectura de flow matching para navegación, asociada al póster de
+      ICRA 2025 del equipo. Sin acceso al repositorio: la relación entre este
+      código y el póster está inferida por el nombre y el contexto, no
+      confirmada. Es el único repositorio del proyecto al que no hemos podido
+      acceder. El experimento del póster se despliega sobre un shuttle EG6088K,
+      no sobre el ANYmal.
+    description_en: >-
+      Flow-matching architecture for navigation, associated with the team's
+      ICRA 2025 poster. No repository access: the link between this code and the
+      poster is inferred from the name and context, not confirmed. It is the only
+      project repository we have not been able to access. The poster's experiment
+      deploys on an EG6088K shuttle, not on the ANYmal.
+
+  - id: anymal-data-management
+    name: ANYmal_data_management
+    url: https://github.com/Dravid-hex/ANYmal_data_management
+    visibility: private
+    area: Interfaz de operación
+    area_en: Operator interface
+    owner: Dravid-hex
+    owner_name: Dravid
+    status: Active
+    language: Python (Tkinter)
+    license: Unknown
+    last_push: 2026-08-31
+    confidence: confirmed
+    description: >-
+      Aplicación en Tkinter para la pantalla táctil de la Jetson montada como
+      payload del ANYmal. Orquesta la cadena de datos completa: arranca y
+      monitorea los contenedores de `ros1-anymal-client` y `ros2-anymal-slam`,
+      muestra el estado de los tres eslabones (robot, puente ROS 1, puente ROS 2)
+      y expone pestañas de acciones, datos ROS, LiDAR y cámaras. Incluye un nodo
+      de datos simulados para probar la interfaz sin robot.
+    description_en: >-
+      A Tkinter application for the touchscreen of the Jetson mounted as the
+      ANYmal payload. It orchestrates the full data chain: starting and
+      monitoring the `ros1-anymal-client` and `ros2-anymal-slam` containers,
+      showing the status of all three links (robot, ROS 1 bridge, ROS 2 bridge),
+      and exposing tabs for actions, ROS data, LiDAR and cameras. It ships a
+      simulated-data node for testing the UI without a robot.
+
+# Recursos que no son repositorios de código pero forman parte del conocimiento
+# del proyecto.
+resources:
+  - id: icra2025-poster
+    name: Póster ICRA 2025 — Flow Matching Architecture for Navigation
+    url: https://haironthecircuits.net/wiki/icra2025/
+    kind: publicación
+    kind_en: publication
+    owner: saucesaft
+    owner_name: Eduardo Hernández Valdez
+    confidence: confirmed
+    description: >-
+      Póster presentado en ICRA 2025 (Atlanta) por Eduardo Hernández Valdez,
+      Alan Ulises Díaz Arenas y Arturo Eduardo Cerón López. Incluye el diagrama
+      de arquitectura completo del modelo de navegación.
+    description_en: >-
+      Poster presented at ICRA 2025 (Atlanta) by Eduardo Hernandez Valdez, Alan
+      Ulises Diaz Arenas and Arturo Eduardo Ceron Lopez. Includes the full
+      architecture diagram of the navigation model.

@@ -1,0 +1,79 @@
+---
+title: Docker
+description: Los contenedores sobre los que corre todo el sistema de operación.
+---
+
+Docker no es opcional en este proyecto: **toda la cadena de operación corre en contenedores**.
+Es la decisión de infraestructura más importante del sistema y la razón de que el mismo código
+funcione en una Jetson y en un escritorio.
+
+## Los contenedores
+
+| Contenedor | Repositorio | Qué corre dentro |
+| --- | --- | --- |
+| `ros1-anymal-client` | `ros1-anymal-client` | Entorno ROS 1 + servidor gRPC |
+| `ros2-anymal` | `ros2-anymal-slam` | ROS 2 + cliente gRPC + `slam_node` |
+
+Ambos se construyen desde el `Dockerfile` de su repositorio, con `./build.sh`, y se crean una
+sola vez con `./run.sh`. Después, la app de operación los arranca con `docker start` y lanza los
+procesos con `docker exec`.
+
+## Detección automática de plataforma
+
+Los scripts de construcción no fijan versiones: **detectan el host y eligen un entorno
+compatible**. Esto es lo que permite que el mismo repositorio funcione en la Jetson del robot y
+en la laptop de quien desarrolla.
+
+Lo que detectan:
+
+| Se detecta | Opciones |
+| --- | --- |
+| Tipo de máquina | Jetson o escritorio con NVIDIA |
+| Versión de Ubuntu | 20.04, 22.04, 24.04 |
+| JetPack | 4, 5 o 6 |
+| Distribución de ROS | ROS 1 en el cliente; ROS 2 Dashing / Foxy / Humble / Jazzy en el SLAM |
+| Imagen CUDA | La adecuada para Jetson o escritorio |
+| Capacidad de cómputo CUDA | Se guarda en `.robot_cuda_arch` |
+
+## Requisitos del host
+
+- Docker instalado y utilizable **sin `sudo`** (la app lo invoca directamente).
+- NVIDIA Container Toolkit, para que los contenedores accedan a la GPU.
+- Drivers NVIDIA compatibles con la imagen CUDA que se elija.
+
+## Montajes y entorno
+
+Cada contenedor monta su repositorio como `/workspace`. Por eso los repositorios clonados en la
+Jetson no se pueden borrar aunque estén en `.gitignore` de la app: ahí viven los scripts que la
+app ejecuta por `docker exec`.
+
+Los scripts configuran también el usuario del contenedor, UID y GID, el entorno de ROS y CUDA, y
+el acceso a dispositivos USB.
+
+## Scripts
+
+```bash
+./build.sh   # construye la imagen detectando plataforma
+./run.sh     # crea y arranca el contenedor (una sola vez)
+./shell.sh   # entra a un contenedor ya creado
+```
+
+En `ros2-anymal-slam` además:
+
+```bash
+./run_slam.sh          # lanza el slam_node
+./record_ros2_exp.sh   # graba un experimento en bag
+./play_ros2_exp.sh     # reproduce un experimento grabado
+```
+
+## Visualización
+
+La app de operación incluye `rviz_docker.sh`, que levanta RViz 2 en un contenedor
+`osrf/ros:humble-desktop` con red de host, y abre la configuración `anymal.rviz` (rejilla, TF,
+`LaserScan` en `/scan`, odometría en `/odom` e imagen de la cámara frontal).
+
+## Lo que sigue sin contenerizar
+
+El entorno de **entrenamiento** (Isaac Sim / Isaac Lab) se instala de forma nativa; el
+repositorio `Anymal-Research` no incluye `Dockerfile`. Dado que el resto del proyecto ya está
+contenerizado, es un candidato razonable para unificar.

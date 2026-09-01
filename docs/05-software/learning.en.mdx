@@ -1,0 +1,140 @@
+---
+title: Learned policies
+description: Reinforcement-learning training of ANYmal D locomotion in Isaac Lab, and its ROS 2 deployment.
+---
+
+This is the only part of the system that can be documented in verified detail today, because
+[`Anymal-Research`](https://github.com/jesusMBhuy/Anymal-Research) is public. Every value on
+this page was read from the code, not from the README.
+
+**Maintainer:** [@jesusMBhuy](https://github.com/jesusMBhuy) · **Licence:** BSD-3-Clause
+
+## What it does
+
+Trains a locomotion policy for the ANYmal D in simulation and deploys it to the physical robot
+as a ROS 2 node. The task is velocity-command tracking over rough terrain.
+
+## The simulation environment
+
+Defined in `anymaldtraining_env_cfg.py`, on top of Isaac Lab's *manager-based* framework.
+
+| Parameter | Value |
+| --- | --- |
+| Parallel environments | 4096 |
+| Environment spacing | 2.5 m |
+| Physics step (`sim.dt`) | 0.005 s (200 Hz) |
+| Decimation | 3 → control at ~66.7 Hz |
+| Episode length | 20 s |
+| Terrain | `ROUGH_TERRAINS_CFG` with curriculum, max initial level 7 |
+| Robot | `ANYMAL_D_CFG` (official Isaac Lab asset) |
+
+## Observations
+
+The `policy` group concatenates seven terms, all with additive uniform noise for sim-to-real
+robustness:
+
+| Observation | Noise |
+| --- | --- |
+| Base linear velocity | ±0.1 |
+| Base angular velocity | ±0.2 |
+| Projected gravity | ±0.05 |
+| Velocity command | — |
+| Joint position (relative) | ±0.01 |
+| Joint velocity (relative) | ±1.5 |
+| Last action | — |
+
+<Callout title="The height scanner is disabled">
+The `RayCasterCfg` that would produce the terrain *height scan* is **commented out** in the
+configuration file. The current policy is therefore *blind*: it receives no exteroceptive
+terrain information and must handle terrain from proprioception alone. Worth confirming whether
+this is deliberate or work in progress.
+</Callout>
+
+## Actions
+
+`JointPositionActionCfg` over all twelve joints (`.*`), with scale 0.5 and default offset. The
+policy emits joint position targets, not torques.
+
+## Rewards
+
+Twelve terms. Positive ones reward the task; negative ones regularise the motion.
+
+| Term | Weight | What it does |
+| --- | --- | --- |
+| `track_lin_vel_xy_exp` | +1.2 | Track the linear velocity command |
+| `track_ang_vel_z_exp` | +0.8 | Track the angular velocity command |
+| `feet_air_time` | +0.125 | Encourage strides rather than dragging feet |
+| `lin_vel_z_l2` | −2.0 | Penalise vertical bouncing |
+| `ang_vel_xy_l2` | −0.05 | Penalise pitch and roll |
+| `dof_torques_l2` | −1.0e−5 | Minimise joint torque |
+| `dof_acc_l2` | −2.5e−7 | Smooth accelerations |
+| `action_rate_l2` | −0.01 | Smooth action changes |
+| `undesired_contacts` | −1.0 | Penalise thigh contacts (`.*THIGH`) |
+| `stuck_penalty` | −0.5 | Penalise getting stuck |
+| `flat_orientation_l2` | −0.005 | Keep the torso level |
+| `dof_pos_limits` | 0.0 | Defined but **disabled** (zero weight) |
+
+`stuck_penalty` is a **team-authored** term, not part of Isaac Lab: it penalises the robot when
+commanded above 0.2 m/s but moving below 0.05 m/s for more than 0.3 s. It lives in
+`mdp/rewards.py`.
+
+## Domain randomisation
+
+To close the sim-to-real gap, in `EventCfg`:
+
+- **At startup:** material friction, base mass (±5 kg) and centre of mass (±5 cm in X and Y,
+  ±1 cm in Z).
+- **On reset:** random base pose and velocity, joints scaled between 0.5 and 1.5.
+- **Every 10–15 s:** a lateral push of up to 0.5 m/s.
+
+## Terminations
+
+- `time_out` — the episode runs out.
+- `base_contact` — the torso touches the ground (1.0 N threshold).
+
+## PPO hyperparameters
+
+From `agents/rsl_rl_ppo_cfg.py`, using RSL-RL:
+
+| Parameter | Value |
+| --- | --- |
+| Steps per environment | 24 |
+| Max iterations | 800 |
+| Save interval | 200 |
+| Actor network | [256, 128], ELU activation |
+| Critic network | [256, 256], ELU activation |
+| `clip_param` | 0.2 |
+| `entropy_coef` | 0.01 |
+| Learning epochs | 5 |
+| Mini-batches | 12 |
+| Learning rate | 2.5e−4 (no schedule) |
+| `gamma` | 0.993 |
+| `lam` (GAE) | 0.95 |
+| `desired_kl` | 0.01 |
+| `max_grad_norm` | 0.5 |
+
+Experiment name: `Anymal_d_2`.
+
+## Deployment on the robot
+
+The `ros2Anymal_ws` workspace contains the `anymal_controller` package, which loads
+`policy/policy.pt` together with `policy/env.yaml` and exposes a teleoperation node
+(`anymal_teleop.py`, launched by `anymal_teleop.launch.py`).
+
+Exact topic names are not verified yet — see [data flow](/en/docs/02-architecture/data-flow).
+
+## How to run it
+
+Full installation instructions live in the repository README, not here. A summary of what is
+needed:
+
+- Isaac Sim 5.0.0 and Isaac Lab
+- Python 3.10–3.11, PyTorch 2.3.0+, CUDA 12.1+
+- NVIDIA GPU, 16 GB RAM (32 GB recommended), 50 GB disk
+- ROS 2 Humble or newer on Ubuntu 22.04+ for the deployment side
+
+List the available tasks:
+
+```bash
+python scripts/list_envs.py
+```

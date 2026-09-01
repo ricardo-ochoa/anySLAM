@@ -1,0 +1,51 @@
+---
+title: How the repositories are organised
+description: Why the project uses multiple repositories, and what that means for contributors.
+---
+
+## The strategy
+
+The project uses **multiple independent repositories plus one central documentation
+repository** (this one). It is not a monorepo, and Git submodules are not used.
+
+Each repository keeps:
+
+- Its own owner or responsible team.
+- Its Git history.
+- Its issues and pull requests.
+- Its development cycle and releases.
+- Its README.
+
+## Why this way
+
+The repositories belong to different people and move at different speeds. A monorepo would force
+coordination of permissions, reviews and releases between people working on separate problems.
+Submodules would add friction to the Git workflow in exchange for a reproducibility we do not
+need today.
+
+The trade-off is that without a central index nobody knows what exists. That index is this portal.
+
+## Loose coupling, explicit interfaces
+
+Because repositories evolve separately, what **must** be documented precisely are the interfaces
+between them: ROS topics and services, APIs, ports, file formats and sensors. A change to a
+public interface is one of the triggers for updating this portal.
+
+## If we need to reproduce the whole system
+
+Not with submodules. The planned route is a bootstrap script that clones the repositories from
+the catalog:
+
+```bash
+./scripts/bootstrap.sh
+```
+
+For ROS environments a `.repos` file with
+[`vcstool`](https://github.com/dirk-thomas/vcstool) is also worth evaluating — it is the
+ecosystem's standard tool for this. Both options sit in
+[phase 4 of the roadmap](/en/docs/10-roadmap/roadmap).
+
+## Next
+
+- [Repository catalog](/en/docs/03-repositories/repository-catalog) — the full list.
+- [Repository standard](/en/docs/07-standards/repository-standard) — what a new one must satisfy.

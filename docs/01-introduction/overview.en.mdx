@@ -1,0 +1,65 @@
+---
+title: Overview
+description: What anySLAM is, which robot it runs on, and who develops it.
+---
+
+## The project
+
+**anySLAM** groups the research the team carries out on the **ANYmal D** quadruped robot, built
+by [ANYbotics](https://www.anybotics.com/). The robot's name is written *ANYmal* (not
+"Animal"): that is the manufacturer's convention, used across all of their publications and
+technical documentation.
+
+The work spans three mutually supporting fronts:
+
+1. **Learned locomotion** — training reinforcement-learning control policies in simulation and
+   deploying them on the physical robot.
+2. **SLAM and perception** — building maps and localising the robot with LiDAR and cameras.
+3. **Navigation** — generating collision-free trajectories in environments the robot has not seen.
+
+## Who develops it
+
+The project is developed at **Tecnológico de Monterrey, Campus Monterrey**, within the School of
+Engineering and Sciences, with participation from the **Mechatronics Department** and the
+**VantTEC** student group.
+
+Members identified from the [ICRA 2025 poster](/en/docs/09-research/papers) and from the project
+repositories:
+
+| Person | GitHub | Area |
+| --- | --- | --- |
+| Eduardo Hernández Valdez | [@saucesaft](https://github.com/saucesaft) | Navigation, generative models |
+| Alan Ulises Díaz Arenas | [@Alponcho6594](https://github.com/Alponcho6594) | SLAM, ROS integration |
+| Arturo Eduardo Cerón López | — | Navigation |
+| Jesús M. B. | [@jesusMBhuy](https://github.com/jesusMBhuy) | Reinforcement learning, locomotion |
+| Dravid | [@Dravid-hex](https://github.com/Dravid-hex) | Data management |
+
+Academic advisors: Dana Elizabeth Torres Estrada, Dr. Luis Yoichi Morales and
+Dr. Luis Alberto Muñoz Ubando.
+
+<Callout title="Correct us">
+This table was assembled from public sources. If your role is described wrongly, or someone is
+missing, open a Pull Request against this file — it is the fastest way to fix it.
+</Callout>
+
+## What this portal is
+
+A documentation repository that provides the **unified view** of the system. The project
+strategy is *multi-repo*: each component keeps its own repository, history, issues and
+development cycle. This portal only holds the information needed to understand how each piece
+fits into the whole.
+
+The principle governing all of the content:
+
+> Each repository owns its detailed technical documentation.
+> The central portal owns the global view of the system.
+
+The practical consequence is spelled out in [scope](/en/docs/01-introduction/scope).
+
+## How to read this documentation
+
+The portal is bilingual (Spanish and English). The language switcher is in the top bar. Pages
+that are not translated yet fall back to Spanish, so navigation never breaks.
+
+All content is Markdown files versioned in Git, so it can also be read straight from GitHub
+without the portal. Diagrams are written in Mermaid, which GitHub renders natively.

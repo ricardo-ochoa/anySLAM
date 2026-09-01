@@ -1,0 +1,60 @@
+---
+title: Arquitectura de hardware
+description: Plataforma robótica, sensores y cómputo del proyecto.
+---
+
+## Plataforma
+
+El robot del proyecto es un **ANYmal D** de ANYbotics: un cuadrúpedo de investigación con doce
+articulaciones actuadas (tres por pata: HAA, HFE y KFE) y actuadores serie-elásticos.
+
+Lo que sí está confirmado del uso que le da el equipo viene del repositorio
+[`Anymal-Research`](https://github.com/jesusMBhuy/Anymal-Research), que entrena contra el modelo
+USD oficial del ANYmal D distribuido con Isaac Lab:
+
+```
+Assets/Isaac/5.0/Isaac/IsaacLab/Robots/ANYbotics/ANYmal_D/anymal_d.usd
+```
+
+Esto confirma la variante (**D**) y que el modelo dinámico usado en simulación es el del
+fabricante, incluyendo el modelado de actuadores mediante una red LSTM.
+
+<Callout type="warn" title="Pendiente">
+La configuración física real del robot del laboratorio —qué sensores lleva montados, en qué
+posiciones, y con qué computadora a bordo— no está documentada en ningún repositorio público.
+Es el hueco más importante de esta sección.
+</Callout>
+
+## Sensores del experimento de navegación
+
+El [póster de ICRA 2025](/es/docs/09-research/papers) documenta el hardware de un experimento
+**distinto**, sobre un shuttle:
+
+| Componente | Modelo | Para qué |
+| --- | --- | --- |
+| Plataforma | Shuttle Personnel Carrier EG6088K | Vehículo de pruebas |
+| LiDAR 3D | Velodyne HDL-32 | Nube de puntos dispersa |
+| Cámara | MultiSense S21 | Imagen RGB estéreo |
+
+No asumas que este es el hardware del ANYmal. Se documenta aquí porque es el único setup
+sensorial del que tenemos una fuente escrita.
+
+## Cómputo de entrenamiento
+
+Requisitos declarados en el README de `Anymal-Research` para la máquina de entrenamiento:
+
+| Recurso | Requisito |
+| --- | --- |
+| GPU | NVIDIA con CUDA (se recomienda la serie RTX) |
+| RAM | 16 GB mínimo, 32 GB recomendado |
+| Almacenamiento | 50 GB o más |
+| CPU | 8 núcleos o más |
+
+## Qué falta
+
+- Inventario del hardware real montado en el ANYmal del laboratorio.
+- Computadora a bordo: modelo, sistema operativo, capacidad de cómputo.
+- Diagrama de montaje y marcos de referencia (`tf`) de cada sensor.
+- Calibración: dónde viven los archivos de calibración intrínseca y extrínseca.
+
+Ver [datos pendientes](/es/docs/03-repositories/missing-data).

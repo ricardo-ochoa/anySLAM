@@ -1,0 +1,51 @@
+---
+title: Compute
+description: Compute resources for training and for onboard execution.
+---
+
+## Training machine (confirmed)
+
+Requirements declared in the
+[`Anymal-Research`](https://github.com/jesusMBhuy/Anymal-Research) README:
+
+| Resource | Minimum | Recommended |
+| --- | --- | --- |
+| GPU | NVIDIA with CUDA | RTX series |
+| RAM | 16 GB | 32 GB |
+| Storage | 50 GB | — |
+| CPU | 8 cores | — |
+| CUDA | 12.1+ | — |
+
+These requirements come from running 4096 parallel environments in Isaac Sim with physics at
+200 Hz. GPU memory is the usual bottleneck: the code itself raises
+`gpu_max_rigid_patch_count` to `10 * 2^17` to accommodate the contact count.
+
+## Onboard compute
+
+The robot carries **an NVIDIA Jetson mounted as a payload**, with a touchscreen. The whole
+operation chain runs there: both bridge containers and the `slam_node`. SLAM therefore runs
+**onboard**, not on an external station.
+
+| Aspect | Value |
+| --- | --- |
+| Platform | NVIDIA Jetson (JetPack 4, 5 or 6 — the scripts detect which) |
+| Interface | Touchscreen running the Tkinter operator app |
+| Acceleration | CUDA, used by the SLAM particle filter |
+| Containers | `ros1-anymal-client` and `ros2-anymal` |
+| Requirement | Docker without `sudo` and the NVIDIA Container Toolkit |
+
+Besides the Jetson, the ANYmal has its own internal computers: the **LPC** (where the ROS 1
+master runs) and the **NPC**. See
+[network architecture](/en/docs/02-architecture/network-architecture).
+
+<Callout type="warn" title="Pending">
+The exact Jetson model (Orin, Xavier, Nano) and its JetPack version are missing. So are the
+control-loop latency budget and onboard SLAM performance figures.
+</Callout>
+
+## Navigation model inference compute
+
+The [ICRA 2025 poster](/en/docs/09-research/papers) reports a useful figure: the architecture
+achieves effective trajectory generation with **around 40 million parameters**, against the
+200-plus million of Diffusion Policy. The design argument is explicitly about fitting on
+embedded hardware.

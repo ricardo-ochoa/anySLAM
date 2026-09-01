@@ -1,0 +1,47 @@
+---
+title: Bienvenida
+description: Punto de entrada a la documentación del proyecto anySLAM, la investigación de SLAM y navegación sobre el robot ANYmal D.
+---
+
+Este es el **portal central de documentación** del proyecto **anySLAM**: la línea de
+investigación en SLAM, navegación y locomoción aprendida que el equipo desarrolla sobre el
+robot cuadrúpedo **ANYmal D** de ANYbotics, en el Tecnológico de Monterrey, Campus Monterrey.
+
+El proyecto vive en varios repositorios, de distintos dueños, con ciclos de desarrollo
+independientes. Este portal no los reemplaza ni copia su documentación técnica. Su trabajo es
+responder cinco preguntas sobre el sistema completo:
+
+| Pregunta | Dónde se responde |
+| --- | --- |
+| ¿**Qué** existe? | [Catálogo de repositorios](/es/docs/03-repositories/repository-catalog) |
+| ¿**Por qué** existe? | [Objetivos](/es/docs/01-introduction/goals) |
+| ¿**Dónde** está? | [Catálogo de repositorios](/es/docs/03-repositories/repository-catalog) |
+| ¿**Quién** lo mantiene? | [Catálogo de repositorios](/es/docs/03-repositories/repository-catalog) |
+| ¿**Cómo** se relaciona? | [Arquitectura del sistema](/es/docs/02-architecture/system-overview) |
+
+Cómo instalar, configurar, ejecutar y probar cada componente se documenta **en el repositorio
+de ese componente**, no aquí. Esa separación es deliberada y se explica en
+[alcance](/es/docs/01-introduction/scope).
+
+## Por dónde empezar
+
+- **Eres nuevo en el equipo** → [Primeros pasos](/es/docs/08-onboarding/getting-started)
+- **Buscas un repositorio concreto** → [Catálogo](/es/docs/03-repositories/repository-catalog)
+- **Quieres entender cómo encaja todo** → [Arquitectura](/es/docs/02-architecture/system-overview)
+- **Vas a crear o mantener un repositorio** → [Estándares](/es/docs/07-standards/repository-standard)
+- **Buscas publicaciones o datasets** → [Investigación](/es/docs/09-research/papers)
+
+## Estado de esta documentación
+
+<Callout title="Primera versión">
+La cadena de operación completa —robot, puente gRPC, SLAM y app de la Jetson— está documentada
+con sus tópicos e interfaces reales, leídos del código.
+
+Lo que falta es sobre todo **hardware físico**: sabemos qué publica cada sensor, pero no qué
+sensor es. Y un repositorio, `FLOWMAS`, sigue sin acceso. Esos huecos están marcados como
+pendientes en lugar de rellenados con suposiciones: es preferible un hueco visible a una
+descripción inventada que alguien tome por cierta.
+
+Lo que falta, y de quién depende cada dato, está en
+[datos pendientes](/es/docs/03-repositories/missing-data).
+</Callout>

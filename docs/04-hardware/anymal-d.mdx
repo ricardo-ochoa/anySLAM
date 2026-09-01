@@ -1,0 +1,59 @@
+---
+title: ANYmal D
+description: La plataforma robótica del proyecto.
+---
+
+El **ANYmal D** es un robot cuadrúpedo de investigación fabricado por
+[ANYbotics](https://www.anybotics.com/). Es la plataforma sobre la que corre todo el proyecto.
+
+## Nomenclatura
+
+Se escribe **ANYmal**, con las tres primeras letras en mayúscula. No es "Animal": el nombre
+viene de la marca ANYbotics. Usar la grafía correcta importa porque es la que aparece en la
+documentación del fabricante, en los activos de Isaac Lab (`ANYMAL_D_CFG`) y en la literatura.
+
+## Configuración cinemática
+
+Doce articulaciones actuadas, tres por pata:
+
+| Sigla | Articulación |
+| --- | --- |
+| HAA | Hip Abduction/Adduction |
+| HFE | Hip Flexion/Extension |
+| KFE | Knee Flexion/Extension |
+
+Las patas se nombran LF (izquierda delantera), RF (derecha delantera), LH (izquierda trasera) y
+RH (derecha trasera). Los pies aparecen en la configuración de simulación con el patrón
+`.*FOOT`, y los muslos con `.*THIGH`.
+
+## Modelo de simulación
+
+El equipo entrena contra el activo oficial distribuido con Isaac Lab:
+
+```
+Assets/Isaac/5.0/Isaac/IsaacLab/Robots/ANYbotics/ANYmal_D/anymal_d.usd
+```
+
+En el código se usa mediante `ANYMAL_D_CFG` de `isaaclab_assets.robots.anymal`, que incluye el
+modelado de la dinámica de actuadores mediante una red LSTM — importante para reducir la brecha
+sim-a-real en actuadores serie-elásticos.
+
+Detalles del entorno de entrenamiento en [políticas aprendidas](/es/docs/05-software/learning).
+
+## Control
+
+La política aprendida emite **objetivos de posición articular** (no pares), a
+aproximadamente 66.7 Hz, sobre una simulación de física que corre a 200 Hz.
+
+## Lo que falta
+
+<Callout type="warn" title="El robot físico no está documentado">
+Todo lo anterior describe el modelo de simulación. La configuración real del robot del
+laboratorio no está en ningún repositorio accesible:
+
+- Número de serie y versión de firmware.
+- Sensores montados y sus posiciones.
+- Computadora a bordo.
+- Procedimiento de encendido y de parada de emergencia.
+- Restricciones de operación del laboratorio.
+</Callout>

@@ -1,0 +1,72 @@
+---
+title: Estándar de documentación
+description: Cómo se escribe la documentación de este proyecto.
+---
+
+## Principios
+
+1. **Documentation as Code.** La documentación vive en Git, se revisa por Pull Request y se
+   versiona junto al código.
+2. **Una sola fuente de verdad.** Ningún dato se escribe en dos sitios. Si algo se repite, uno de
+   los dos debe ser un enlace.
+3. **La información vive junto al código que describe.** Ver [alcance](/es/docs/01-introduction/scope).
+4. **Distinguir lo verificado de lo supuesto.** Nunca presentar una suposición como un hecho.
+
+## La regla que más importa aquí
+
+> Es mejor un hueco visible que una descripción inventada.
+
+Cuando no sepas algo, escríbelo como pendiente y di de quién depende el dato. Una descripción
+plausible pero falsa es peor que un vacío, porque nadie la cuestiona y se propaga.
+
+Usa un aviso explícito:
+
+```mdx
+<Callout type="warn" title="Página pendiente">
+No tenemos acceso a este repositorio. **Responsable:** @usuario
+</Callout>
+```
+
+Y añade el punto a [datos pendientes](/es/docs/03-repositories/missing-data).
+
+## Formato
+
+- **Markdown / MDX.** Todo el contenido debe leerse bien en GitHub sin pasar por el portal.
+- **Componentes JSX solo cuando aporten.** En la práctica: `<Callout>` y poco más. Un archivo
+  lleno de componentes deja de ser legible desde GitHub.
+- **Diagramas en Mermaid**, en bloques de código ` ```mermaid `. GitHub los renderiza de forma
+  nativa, y el portal los convierte a SVG automáticamente. No uses arte ASCII.
+- **Tablas** para cualquier cosa que sea una lista de atributos.
+- **Cifras con su fuente.** Si citas un número, di de qué archivo salió.
+
+## Frontmatter
+
+Cada página lleva:
+
+```yaml
+---
+title: Título de la página
+description: Una frase que explique qué contiene.
+---
+```
+
+<Callout title="Cuidado con los dos puntos">
+Si `title` o `description` contienen `: `, el YAML falla al parsear. Usa una raya (`—`) o
+entrecomilla el valor completo.
+</Callout>
+
+## Nombres de archivo
+
+- Minúsculas y guiones: `system-overview.mdx`.
+- Español sin sufijo, inglés con `.en`: `system-overview.mdx` y `system-overview.en.mdx`.
+- El orden del menú lateral se define en el `meta.json` de cada carpeta, no por el nombre.
+
+## Enlaces internos
+
+Los enlaces entre páginas llevan prefijo de idioma: `/es/docs/...` en los archivos en español y
+`/en/docs/...` en los archivos en inglés.
+
+## Tono
+
+Escribe para alguien competente que no conoce este proyecto. No expliques qué es ROS; sí explica
+por qué este proyecto usa ROS 1 y ROS 2 a la vez.

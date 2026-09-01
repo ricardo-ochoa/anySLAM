@@ -1,0 +1,85 @@
+---
+title: Missing data
+description: What is still undocumented, and who each item depends on.
+---
+
+This page is the honest record of what we do **not** know. It exists so that no gap is hidden
+behind a plausible but invented description.
+
+Last verified: **1 September 2026**, reading each repository directly.
+
+## Repository access
+
+Four of the five repositories are private on GitHub. Of those, **three could be cloned** with the
+team's git credentials, and their contents are already documented in the portal.
+
+| Repository | Access | Status in the portal |
+| --- | --- | --- |
+| [`Anymal-Research`](https://github.com/jesusMBhuy/Anymal-Research) | Public | ✅ Documented |
+| [`ros2-anymal-slam`](https://github.com/Alponcho6594/ros2-anymal-slam) | Private, accessible | ✅ Documented |
+| [`ros1-anymal-client`](https://github.com/Alponcho6594/ros1-anymal-client) | Private, accessible | ✅ Documented |
+| [`ANYmal_data_management`](https://github.com/Dravid-hex/ANYmal_data_management) | Private, accessible | ✅ Documented |
+| [`FLOWMAS`](https://github.com/saucesaft/FLOWMAS) | **No access** | ⚠️ Only what the poster says |
+
+**Pending action:** [@saucesaft](https://github.com/saucesaft) — grant access to `FLOWMAS` or
+make it public.
+
+<Callout title="Note for anyone cloning the portal">
+Whether three private repositories can be cloned depends on each person's git credentials. If
+`./scripts/bootstrap.sh` fails on one of them, request access from its maintainer.
+</Callout>
+
+## Gaps by section
+
+### Hardware — the biggest blocker
+
+- [ ] Model of the LiDAR mounted on the ANYmal → **hardware team**
+- [ ] Model and manufacturer of the ten cameras → **hardware team**
+- [ ] Exact Jetson model (Orin, Xavier, Nano) and its JetPack → **hardware team**
+- [ ] Mounting positions and `tf` frames for each sensor → **hardware team**
+- [ ] Location of calibration files → **hardware team**
+- [ ] IMU model and foot force sensors → **hardware team**
+
+### Architecture
+
+- [ ] Does the SLAM output connect to the locomotion controller? → **@Alponcho6594** and **@jesusMBhuy**
+- [ ] Contents and rationale of the `fastdds.xml` configuration → **@jesusMBhuy**
+- [ ] Exact topics of the `anymal_controller` node → **@jesusMBhuy**
+- [ ] Is the bridge's second scan field (`scan2`) used? → **@Alponcho6594**
+
+### Software
+
+- [ ] Normal operating parameters for SLAM (particles, map resolution) → **@Alponcho6594**
+- [ ] Does FLOWMAS run on the ANYmal or only on the shuttle? → **@saucesaft**
+- [ ] Licences of the private repositories → **their maintainers**
+
+### Data and results
+
+- [ ] Where bags and maps are archived long term → **@Dravid-hex**
+- [ ] Dataset versioning policy → **@Dravid-hex**
+- [ ] Metrics for the trained locomotion policy → **@jesusMBhuy**
+- [ ] Measured SLAM accuracy in the lab → **@Alponcho6594**
+- [ ] Has the policy been tested on the physical robot? → **@jesusMBhuy**
+- [ ] Which repository holds the poster's preprocessing tool? → **@saucesaft**
+
+### Project
+
+- [ ] Licence for this documentation repository → **to decide**
+- [ ] Public URL for the portal, and whether pages with IPs should be restricted → **to decide**
+- [ ] Confirm team roles and full names → **everyone**
+- [ ] `ROS_DOMAIN_ID` assignment per person or test bench → **ROS team**
+
+## How to close an item
+
+1. Get the fact from the right source (code, the responsible person, or a measurement).
+2. Edit the corresponding page under `docs/`, in both languages.
+3. Strike the item off this list.
+4. Open a Pull Request.
+
+If a fact turns out to differ from what this documentation assumed, correct the assumption
+**and** leave a note of what was previously believed. That record keeps the error from coming back.
+
+## For repository maintainers
+
+If you maintain a component, `templates/repo-intake.md` is a twelve-question form that closes
+most of these items in one sitting.

@@ -1,0 +1,10 @@
+{
+  "title": "Arquitectura",
+  "pages": [
+    "system-overview",
+    "hardware-architecture",
+    "software-architecture",
+    "network-architecture",
+    "data-flow"
+  ]
+}

@@ -1,0 +1,47 @@
+---
+title: Welcome
+description: Entry point to the anySLAM project documentation, the SLAM and navigation research running on the ANYmal D robot.
+---
+
+This is the **central documentation portal** for **anySLAM**: the SLAM, navigation and
+learned-locomotion research the team develops on the **ANYmal D** quadruped robot by ANYbotics,
+at Tecnológico de Monterrey, Campus Monterrey.
+
+The project lives across several repositories, owned by different people, with independent
+development cycles. This portal neither replaces them nor copies their technical documentation.
+Its job is to answer five questions about the system as a whole:
+
+| Question | Where it is answered |
+| --- | --- |
+| **What** exists? | [Repository catalog](/en/docs/03-repositories/repository-catalog) |
+| **Why** does it exist? | [Goals](/en/docs/01-introduction/goals) |
+| **Where** is it? | [Repository catalog](/en/docs/03-repositories/repository-catalog) |
+| **Who** maintains it? | [Repository catalog](/en/docs/03-repositories/repository-catalog) |
+| **How** does it connect? | [System architecture](/en/docs/02-architecture/system-overview) |
+
+How to install, configure, run and test each component is documented **in that component's own
+repository**, not here. That separation is deliberate and is explained in
+[scope](/en/docs/01-introduction/scope).
+
+## Where to start
+
+- **New to the team** → [Getting started](/en/docs/08-onboarding/getting-started)
+- **Looking for a specific repository** → [Catalog](/en/docs/03-repositories/repository-catalog)
+- **Want to understand how it all fits** → [Architecture](/en/docs/02-architecture/system-overview)
+- **About to create or maintain a repository** → [Standards](/en/docs/07-standards/repository-standard)
+- **Looking for papers or datasets** → [Research](/en/docs/09-research/papers)
+
+## Status of this documentation
+
+<Callout title="First release">
+The full operation chain — robot, gRPC bridge, SLAM and Jetson app — is documented with its real
+topics and interfaces, read from the code.
+
+What is missing is mostly **physical hardware**: we know what each sensor publishes, but not
+which sensor it is. And one repository, `FLOWMAS`, remains inaccessible. Those gaps are marked as
+pending rather than filled in with guesses: a visible gap is better than an invented description
+someone might take as fact.
+
+What is missing, and who each item depends on, is tracked in
+[missing data](/en/docs/03-repositories/missing-data).
+</Callout>

@@ -1,0 +1,95 @@
+---
+title: README template
+description: The shared structure every project repository README follows.
+---
+
+All project repositories use the same README structure. That way anyone jumping between
+components always knows where to look for each thing.
+
+The template lives at `templates/README.template.en.md` in this repository, ready to copy.
+
+## Structure
+
+````markdown
+# Repository name
+
+Short description of the component, in one or two sentences.
+
+## Project
+
+This repository is part of the **anySLAM** project.
+
+[← Back to the main portal](PORTAL_URL)
+
+## Overview
+
+Why this repository exists and what problem it solves.
+
+## Responsibilities
+
+What this component is responsible for within the system, and what it
+explicitly is not.
+
+## Architecture
+
+How it is organised internally: modules, nodes, main flow.
+
+## Dependencies
+
+Required dependencies, with versions.
+
+## Interfaces
+
+How it communicates with the rest of the system:
+
+- ROS topics (name, type, direction, rate)
+- ROS services and actions
+- APIs
+- sockets and ports
+- files
+- sensors
+
+## Installation
+
+Steps to install from scratch on a clean machine.
+
+## Usage
+
+How to run it, with at least one concrete example.
+
+## Configuration
+
+Environment variables and configuration files.
+
+## Development
+
+How to work on the code locally.
+
+## Testing
+
+How to run the tests.
+
+## Maintainers
+
+Current maintainers, with their GitHub handles.
+
+## Status
+
+Active / Development / Experimental / Deprecated
+
+## Related repositories
+
+Related repositories and how they relate.
+````
+
+## The two most-forgotten sections
+
+**`Interfaces`** is the section that makes parallel work possible. Without it, changing a topic
+breaks another team with no warning.
+
+**`Status`** stops someone sinking a week into an abandoned component.
+
+## What not to put in the README
+
+Documentation that belongs to the portal: the global project view, the catalog of other
+repositories, or the whole-system architecture. The README links to the portal for that.

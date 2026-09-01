@@ -1,0 +1,66 @@
+---
+title: Visión general
+description: Qué es anySLAM, sobre qué robot corre y quién lo desarrolla.
+---
+
+## El proyecto
+
+**anySLAM** agrupa el trabajo de investigación que el equipo realiza sobre el robot cuadrúpedo
+**ANYmal D**, fabricado por [ANYbotics](https://www.anybotics.com/). El nombre del robot se
+escribe *ANYmal* (no "Animal"): es la convención del fabricante y la que usan todas sus
+publicaciones y su documentación técnica.
+
+El trabajo cubre tres frentes que se apoyan entre sí:
+
+1. **Locomoción aprendida** — entrenar políticas de control por refuerzo en simulación y
+   desplegarlas en el robot real.
+2. **SLAM y percepción** — construir mapas y localizar el robot con LiDAR y cámaras.
+3. **Navegación** — generar trayectorias libres de colisión en entornos que el robot no conoce.
+
+## Quién lo desarrolla
+
+El proyecto se desarrolla en el **Tecnológico de Monterrey, Campus Monterrey**, dentro de la
+School of Engineering and Sciences, con participación del **Departamento de Mecatrónica** y del
+grupo estudiantil **VantTEC**.
+
+Integrantes identificados a partir del [póster de ICRA 2025](/es/docs/09-research/papers) y de
+los repositorios del proyecto:
+
+| Persona | GitHub | Área |
+| --- | --- | --- |
+| Eduardo Hernández Valdez | [@saucesaft](https://github.com/saucesaft) | Navegación, modelos generativos |
+| Alan Ulises Díaz Arenas | [@Alponcho6594](https://github.com/Alponcho6594) | SLAM, integración ROS |
+| Arturo Eduardo Cerón López | — | Navegación |
+| Jesús M. B. | [@jesusMBhuy](https://github.com/jesusMBhuy) | Aprendizaje por refuerzo, locomoción |
+| Dravid | [@Dravid-hex](https://github.com/Dravid-hex) | Gestión de datos |
+
+Asesoría académica: Dana Elizabeth Torres Estrada, Dr. Luis Yoichi Morales y
+Dr. Luis Alberto Muñoz Ubando.
+
+<Callout title="Corrígenos">
+Esta tabla se armó a partir de fuentes públicas. Si tu rol está mal descrito, o falta alguien,
+abre un Pull Request sobre este archivo — es la forma más rápida de arreglarlo.
+</Callout>
+
+## Qué es este portal
+
+Un repositorio de documentación que da la **vista unificada** del sistema. La estrategia del
+proyecto es *multi-repo*: cada componente conserva su repositorio, su historial, sus issues y su
+propio ciclo de desarrollo. Este portal solo mantiene la información necesaria para entender
+cómo encaja cada pieza en el conjunto.
+
+El principio que gobierna todo el contenido:
+
+> Cada repositorio es dueño de su documentación técnica detallada.
+> El portal central es dueño de la visión global del sistema.
+
+La consecuencia práctica está en [alcance](/es/docs/01-introduction/scope).
+
+## Cómo leer esta documentación
+
+El portal es bilingüe (español e inglés). El selector de idioma está en la barra superior. Las
+páginas que aún no tienen traducción se sirven en español, para no romper la navegación.
+
+Todo el contenido son archivos Markdown versionados en Git, así que también puede leerse
+directamente desde GitHub sin pasar por el portal. Los diagramas están escritos en Mermaid, que
+GitHub renderiza de forma nativa.

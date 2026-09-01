@@ -1,0 +1,58 @@
+---
+title: ANYmal D
+description: The project's robotic platform.
+---
+
+The **ANYmal D** is a research quadruped robot built by
+[ANYbotics](https://www.anybotics.com/). It is the platform the whole project runs on.
+
+## Naming
+
+It is written **ANYmal**, with the first three letters capitalised. It is not "Animal": the name
+comes from the ANYbotics brand. Using the correct spelling matters because it is what appears in
+the manufacturer's documentation, in Isaac Lab assets (`ANYMAL_D_CFG`) and in the literature.
+
+## Kinematic configuration
+
+Twelve actuated joints, three per leg:
+
+| Abbreviation | Joint |
+| --- | --- |
+| HAA | Hip Abduction/Adduction |
+| HFE | Hip Flexion/Extension |
+| KFE | Knee Flexion/Extension |
+
+Legs are named LF (left front), RF (right front), LH (left hind) and RH (right hind). Feet
+appear in the simulation configuration under the `.*FOOT` pattern, and thighs under `.*THIGH`.
+
+## Simulation model
+
+The team trains against the official asset shipped with Isaac Lab:
+
+```
+Assets/Isaac/5.0/Isaac/IsaacLab/Robots/ANYbotics/ANYmal_D/anymal_d.usd
+```
+
+In code it is used via `ANYMAL_D_CFG` from `isaaclab_assets.robots.anymal`, which includes
+LSTM-based actuator dynamics modelling — important for narrowing the sim-to-real gap on
+series-elastic actuators.
+
+Training environment details are in [learned policies](/en/docs/05-software/learning).
+
+## Control
+
+The learned policy emits **joint position targets** (not torques), at roughly 66.7 Hz, over a
+physics simulation running at 200 Hz.
+
+## What is missing
+
+<Callout type="warn" title="The physical robot is undocumented">
+Everything above describes the simulation model. The actual configuration of the lab robot is in
+no accessible repository:
+
+- Serial number and firmware version.
+- Mounted sensors and their positions.
+- Onboard computer.
+- Power-up and emergency-stop procedure.
+- Lab operating restrictions.
+</Callout>

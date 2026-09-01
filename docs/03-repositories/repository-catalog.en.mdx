@@ -1,0 +1,117 @@
+---
+title: Repository catalog
+description: Every repository that makes up the anySLAM project, with its area, maintainer and status.
+---
+
+{/* GENERADO POR scripts/gen-catalog.mjs — NO EDITAR A MANO */}
+
+This page is generated from `data/repositories.yaml`. Do not edit it by hand: edit the YAML and run `npm run gen:catalog`.
+
+## Repositories
+
+| Repository | Area | Maintainer | Status | Access | Confidence |
+| --- | --- | --- | --- | --- | --- |
+| [`Anymal-Research`](#anymal-research) | Learning / Locomotion | [Jesús M. B.](https://github.com/jesusMBhuy) | Active | Public | Confirmed |
+| [`ros2-anymal-slam`](#ros2-anymal-slam) | SLAM and localisation | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) | Active | Private | Confirmed |
+| [`ros1-anymal-client`](#ros1-anymal-client) | Communication / ROS 1 | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) | Active | Private | Confirmed |
+| [`FLOWMAS`](#flowmas) | Navigation / Generative models | [Eduardo Hernández Valdez](https://github.com/saucesaft) | Research | Private | Inferred |
+| [`ANYmal_data_management`](#anymal-data-management) | Operator interface | [Dravid](https://github.com/Dravid-hex) | Active | Private | Confirmed |
+
+- **Confirmed** — read directly from the repository or from a public source.
+- **Inferred** — deduced from context. Must be verified with the maintainer.
+- **No data** — we have no access to the repository. Pending on its owner.
+
+What is still undocumented, and who it depends on, is tracked in [missing data](/en/docs/03-repositories/missing-data).
+
+## Repository details
+
+### Anymal-Research
+
+Reinforcement-learning training of locomotion policies for the ANYmal D on NVIDIA Isaac Lab 5.0 / Isaac Sim 5.0 (PPO via RSL-RL, 4096 parallel environments, terrain curriculum, LSTM-modelled actuators), plus a ROS 2 workspace (`anymal_controller`) that deploys the trained PyTorch policy to the physical robot.
+
+| | |
+| --- | --- |
+| Area | Learning / Locomotion |
+| Maintainer | [Jesús M. B.](https://github.com/jesusMBhuy) |
+| Status | Active |
+| Primary language | Python |
+| License | BSD-3-Clause |
+| Last push | 2025-06-23 |
+| Access | Public |
+| Data confidence | Confirmed |
+
+[https://github.com/jesusMBhuy/Anymal-Research](https://github.com/jesusMBhuy/Anymal-Research)
+
+### ros2-anymal-slam
+
+CUDA-accelerated SLAM and Monte Carlo Localization framework on ROS 2. It implements a particle filter, log-odds occupancy-grid mapping, a likelihood field, and graph SLAM with keyframes and loop closure. It includes the gRPC bridge client that translates the ANYmal's ROS 1 data into the ROS 2 `/scan` and `/odom` topics. Everything runs in Docker, with automatic platform detection (Jetson JetPack 4/5/6 or desktop) and ROS 2 distribution selection.
+
+| | |
+| --- | --- |
+| Area | SLAM and localisation |
+| Maintainer | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) |
+| Status | Active |
+| Primary language | C++ / CUDA |
+| License | To confirm |
+| Last push | 2026-08-20 |
+| Access | Private |
+| Data confidence | Confirmed |
+
+[https://github.com/Alponcho6594/ros2-anymal-slam](https://github.com/Alponcho6594/ros2-anymal-slam)
+
+### ros1-anymal-client
+
+A Docker environment with a ROS 1 client for talking to the ANYmal's ROS master without installing the full ANYbotics stack on the development machine. It ships the robot's message, service and action definitions (`anymal_interfaces`), control-lease management, keyboard teleoperation, rosbag recording and replay, and the gRPC server that streams odometry and scans to the ROS 2 side.
+
+| | |
+| --- | --- |
+| Area | Communication / ROS 1 |
+| Maintainer | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) |
+| Status | Active |
+| Primary language | Python / Docker |
+| License | To confirm |
+| Last push | 2026-08-02 |
+| Access | Private |
+| Data confidence | Confirmed |
+
+[https://github.com/Alponcho6594/ros1-anymal-client](https://github.com/Alponcho6594/ros1-anymal-client)
+
+### FLOWMAS
+
+Flow-matching architecture for navigation, associated with the team's ICRA 2025 poster. No repository access: the link between this code and the poster is inferred from the name and context, not confirmed. It is the only project repository we have not been able to access. The poster's experiment deploys on an EG6088K shuttle, not on the ANYmal.
+
+| | |
+| --- | --- |
+| Area | Navigation / Generative models |
+| Maintainer | [Eduardo Hernández Valdez](https://github.com/saucesaft) |
+| Status | Research |
+| Primary language | Python |
+| License | To confirm |
+| Last push | To confirm |
+| Access | Private |
+| Data confidence | Inferred |
+
+[https://github.com/saucesaft/FLOWMAS](https://github.com/saucesaft/FLOWMAS)
+
+### ANYmal_data_management
+
+A Tkinter application for the touchscreen of the Jetson mounted as the ANYmal payload. It orchestrates the full data chain: starting and monitoring the `ros1-anymal-client` and `ros2-anymal-slam` containers, showing the status of all three links (robot, ROS 1 bridge, ROS 2 bridge), and exposing tabs for actions, ROS data, LiDAR and cameras. It ships a simulated-data node for testing the UI without a robot.
+
+| | |
+| --- | --- |
+| Area | Operator interface |
+| Maintainer | [Dravid](https://github.com/Dravid-hex) |
+| Status | Active |
+| Primary language | Python (Tkinter) |
+| License | To confirm |
+| Last push | 2026-08-31 |
+| Access | Private |
+| Data confidence | Confirmed |
+
+[https://github.com/Dravid-hex/ANYmal_data_management](https://github.com/Dravid-hex/ANYmal_data_management)
+
+## Other project resources
+
+| Resource | Kind | Maintainer |
+| --- | --- | --- |
+| [Póster ICRA 2025 — Flow Matching Architecture for Navigation](https://haironthecircuits.net/wiki/icra2025/) | publication | [Eduardo Hernández Valdez](https://github.com/saucesaft) |

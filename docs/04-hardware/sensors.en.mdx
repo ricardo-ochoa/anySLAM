@@ -1,0 +1,41 @@
+---
+title: Other sensors
+description: IMU, contact sensors and other system sensors.
+---
+
+## Sensors in simulation (confirmed)
+
+The training environment configures these sensors:
+
+| Sensor | Configuration | Status |
+| --- | --- | --- |
+| Contact forces | `ContactSensorCfg` over all bodies, 3-step history, with air-time tracking | **Active** |
+| Height scanner | `RayCasterCfg` on the base, 0.1 m grid pattern over a 1.6 × 1.0 m area | **Commented out** |
+
+The contact sensor is used in two rewards (`feet_air_time`, `undesired_contacts`) and in the
+torso-contact termination.
+
+<Callout title="The height scanner is disabled">
+The `RayCasterCfg` configuration exists but is commented out in
+`anymaldtraining_env_cfg.py`. That means the trained policy **receives no terrain information**:
+it is a blind policy relying on proprioception alone.
+
+This may be deliberate (blind policies are more robust to perception failures and easier to
+transfer) or work in progress. Worth confirming with
+[@jesusMBhuy](https://github.com/jesusMBhuy) and recording the reason here.
+</Callout>
+
+## Proprioception used by the policy
+
+From the environment observations:
+
+- Base linear and angular velocity — typically from an IMU on the physical robot.
+- Projected gravity — orientation derived from the IMU.
+- Position and velocity of the twelve joints — from encoders.
+
+## Sensors on the physical robot
+
+<Callout type="warn" title="Pending">
+The physical sensor inventory is missing: IMU model, encoders, foot force sensors, and any
+sensor added by the team.
+</Callout>

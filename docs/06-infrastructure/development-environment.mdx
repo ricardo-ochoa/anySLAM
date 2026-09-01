@@ -1,0 +1,60 @@
+---
+title: Entorno de desarrollo
+description: Qué necesitas instalar para trabajar en el proyecto.
+---
+
+No hay un entorno único: depende de en qué parte del sistema vayas a trabajar.
+
+## Para el portal de documentación (este repositorio)
+
+Lo más ligero, y no necesita nada de robótica:
+
+| Requisito | Versión |
+| --- | --- |
+| Node.js | 20.9 o superior |
+| npm | 10+ |
+
+```bash
+npm install
+npm run dev
+```
+
+El portal queda en `http://localhost:3000`.
+
+## Para entrenamiento por refuerzo
+
+El entorno más pesado. Requisitos de
+[`Anymal-Research`](https://github.com/jesusMBhuy/Anymal-Research):
+
+| Requisito | Versión |
+| --- | --- |
+| Ubuntu | 22.04+ |
+| Python | 3.10 – 3.11 |
+| NVIDIA Isaac Sim | 5.0.0 |
+| NVIDIA Isaac Lab | compatible con Isaac Sim 5.0 |
+| PyTorch | 2.3.0+ |
+| CUDA | 12.1+ |
+| GPU | NVIDIA, serie RTX recomendada |
+
+El orden de instalación importa: primero Omniverse e Isaac Sim, después Isaac Lab, y al final la
+extensión del proyecto en modo editable. El README del repositorio tiene el procedimiento
+completo.
+
+## Para desarrollo sobre ROS 2
+
+| Requisito | Versión |
+| --- | --- |
+| Ubuntu | 22.04+ |
+| ROS 2 | Humble o superior |
+| Python | 3.10+ |
+| PyTorch | 2.3.0+ (para cargar la política) |
+
+<Callout type="warn" title="Pendiente">
+Falta documentar el entorno de las partes privadas del proyecto: SLAM, cliente ROS 1 y gestión
+de datos. Cada responsable debe declarar sus dependencias en el README de su repositorio,
+siguiendo la [plantilla estándar](/es/docs/07-standards/readme-standard).
+</Callout>
+
+## Ruta recomendada para alguien nuevo
+
+Ver [primeros pasos](/es/docs/08-onboarding/getting-started).

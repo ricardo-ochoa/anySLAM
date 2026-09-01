@@ -1,0 +1,27 @@
+---
+title: Redes
+description: Configuración de red del laboratorio y del robot.
+---
+
+El contenido de esta sección vive en
+[arquitectura de red](/es/docs/02-architecture/network-architecture), donde está el diagrama
+objetivo y la lista de preguntas abiertas.
+
+## Resumen del estado
+
+| Aspecto | Estado |
+| --- | --- |
+| Configuración de Fast DDS | Existe un `fastdds.xml`, contenido sin documentar |
+| `ROS_DOMAIN_ID` | Sin asignar formalmente |
+| Topología de red del laboratorio | Sin documentar |
+| Acceso remoto al robot | Sin documentar |
+
+## Lo que sí conviene fijar pronto
+
+Aunque falte el resto, dos convenciones son baratas de establecer y evitan choques inmediatos:
+
+1. **Un `ROS_DOMAIN_ID` por persona o banco de pruebas.** Sin esto, dos personas corriendo nodos
+   en la misma red se ven mutuamente los tópicos y provocan comportamientos difíciles de
+   diagnosticar.
+2. **Dejar escrito cómo se llega al robot.** Dirección, usuario y método de acceso. Es la primera
+   cosa que pregunta cualquier persona nueva.

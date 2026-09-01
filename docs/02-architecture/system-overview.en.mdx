@@ -1,0 +1,99 @@
+---
+title: System overview
+description: How the robot, the gRPC bridge, SLAM and the learned models fit together in anySLAM.
+---
+
+The system has two flows that currently run separately: the **operation and SLAM chain**, which
+goes from the robot to the Jetson, and the **learning chain**, which goes from simulation to the
+robot.
+
+## The operation and SLAM chain
+
+This is the project's main path, and it is complete end to end.
+
+```mermaid
+graph TB
+  ANYMAL["ANYmal D — ROS 1<br/>/legged_odometry/pose_in_odom<br/>/lidar/point_cloud"]
+  SERVER["gRPC server — ROS 1<br/>ros1-anymal-client container<br/>PointCloud2 → Scan2D · Pose → Odom2D"]
+  CLIENT["gRPC client — ROS 2<br/>ros2-anymal container<br/>publishes /scan and /odom"]
+  SLAM["slam_node — ROS 2<br/>CUDA particle filter<br/>occupancy grid · graph SLAM"]
+  APP["Operator app<br/>Tkinter on the Jetson screen"]
+
+  ANYMAL -->|"native ROS 1"| SERVER
+  SERVER -->|"gRPC stream · TCP :50055"| CLIENT
+  CLIENT --> SLAM
+  SLAM -->|"/slam_map /slam_particles /slam_graph /tf"| APP
+  CLIENT --> APP
+  APP -.->|"docker start / exec"| SERVER
+  APP -.->|"docker start / exec"| CLIENT
+```
+
+The gRPC bridge exists because the ANYmal's native software speaks **ROS 1** while all new team
+development is **ROS 2**. Instead of using `ros1_bridge`, the team streams only what SLAM needs
+— planar odometry and a 2D scan — over a gRPC stream, in two custom messages (`Odom2D` and
+`Scan2D`). See [communication](/en/docs/05-software/communication).
+
+All three components run in **Docker containers on a Jetson** mounted as the robot's payload.
+The Tkinter app is not just a UI: it is the orchestrator that starts the containers and watches
+that all three links stay alive.
+
+## The learning chain
+
+```mermaid
+graph LR
+  A["Isaac Sim 5.0<br/>PhysX"] --> B["Isaac Lab 5.0<br/>manager-based env"]
+  B --> C["RSL-RL / PPO<br/>4096 parallel envs"]
+  C --> D["policy.pt<br/>PyTorch policy"]
+  D --> E["ROS 2 node<br/>anymal_controller"]
+  E --> F["ANYmal D<br/>joint control"]
+  F -- "state and sensors" --> E
+```
+
+Details in [learned policies](/en/docs/05-software/learning).
+
+<Callout title="The two flows do not meet yet">
+SLAM produces a map and a pose; the learned policy consumes velocity commands. We have found no
+code connecting the SLAM output to the controller input. If that integration exists or is
+planned, it deserves documenting here.
+</Callout>
+
+## The three layers
+
+```mermaid
+graph TD
+  P["anySLAM project"]
+  P --> HW["Hardware"]
+  P --> SW["Software"]
+  P --> INF["Infrastructure"]
+
+  HW --> HW1["ANYmal D (anymal-d092)"]
+  HW --> HW2["LiDAR"]
+  HW --> HW3["10 cameras"]
+  HW --> HW4["Jetson (payload)"]
+
+  SW --> SW1["ROS 1 (robot) · ROS 2 (team)"]
+  SW --> SW2["CUDA SLAM and MCL"]
+  SW --> SW3["gRPC bridge"]
+  SW --> SW4["Learned policies"]
+
+  INF --> INF1["Docker everywhere"]
+  INF --> INF2["192.168.0.x network"]
+  INF --> INF3["Isaac Sim (training)"]
+```
+
+## A note on FLOWMAS
+
+The [work presented at ICRA 2025](/en/docs/09-research/papers) describes a *flow matching*
+architecture for navigation. Its planned deployment experiment uses an **EG6088K shuttle** with a
+Velodyne HDL-32 and a MultiSense S21 camera — **not the ANYmal**.
+
+`FLOWMAS` is the only project repository we have not been able to access, so this line is
+documented as *adjacent* navigation research, not as part of the robot stack. If they do in fact
+converge, that needs to be stated here explicitly.
+
+## Related documents
+
+- [Hardware architecture](/en/docs/02-architecture/hardware-architecture)
+- [Software architecture](/en/docs/02-architecture/software-architecture)
+- [Network architecture](/en/docs/02-architecture/network-architecture)
+- [Data flow](/en/docs/02-architecture/data-flow)

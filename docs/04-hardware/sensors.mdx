@@ -1,0 +1,41 @@
+---
+title: Otros sensores
+description: IMU, sensores de contacto y demás sensores del sistema.
+---
+
+## Sensores en simulación (confirmado)
+
+El entorno de entrenamiento configura estos sensores:
+
+| Sensor | Configuración | Estado |
+| --- | --- | --- |
+| Fuerzas de contacto | `ContactSensorCfg` sobre todos los cuerpos, historial de 3 pasos, con seguimiento de tiempo en el aire | **Activo** |
+| Height scanner | `RayCasterCfg` sobre la base, patrón de rejilla de 0.1 m sobre un área de 1.6 × 1.0 m | **Comentado** |
+
+El sensor de contacto se usa en dos recompensas (`feet_air_time`, `undesired_contacts`) y en la
+terminación por contacto del torso.
+
+<Callout title="El height scanner está desactivado">
+La configuración del `RayCasterCfg` existe pero está comentada en
+`anymaldtraining_env_cfg.py`. Eso significa que la política entrenada **no recibe información
+del terreno**: es una política ciega que se apoya solo en propiocepción.
+
+Puede ser deliberado (las políticas ciegas son más robustas a fallos de percepción y más fáciles
+de transferir) o trabajo en curso. Conviene confirmarlo con
+[@jesusMBhuy](https://github.com/jesusMBhuy) y anotar la razón aquí.
+</Callout>
+
+## Propiocepción usada por la política
+
+De las observaciones del entorno:
+
+- Velocidad lineal y angular de la base — típicamente de una IMU en el robot real.
+- Gravedad proyectada — orientación derivada de la IMU.
+- Posición y velocidad de las doce articulaciones — de los encoders.
+
+## Sensores en el robot real
+
+<Callout type="warn" title="Pendiente">
+Falta el inventario de los sensores físicos: modelo de IMU, encoders, sensores de fuerza en los
+pies, y cualquier sensor añadido por el equipo.
+</Callout>

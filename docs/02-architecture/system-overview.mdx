@@ -1,0 +1,98 @@
+---
+title: Visión general del sistema
+description: Cómo encajan el robot, el puente gRPC, el SLAM y los modelos aprendidos en anySLAM.
+---
+
+El sistema tiene dos flujos que hoy corren por separado: la **cadena de operación y SLAM**, que
+va del robot a la Jetson, y la **cadena de aprendizaje**, que va de la simulación al robot.
+
+## La cadena de operación y SLAM
+
+Es el camino principal del proyecto, y está completo de punta a punta.
+
+```mermaid
+graph TB
+  ANYMAL["ANYmal D — ROS 1<br/>/legged_odometry/pose_in_odom<br/>/lidar/point_cloud"]
+  SERVER["Servidor gRPC — ROS 1<br/>contenedor ros1-anymal-client<br/>PointCloud2 → Scan2D · Pose → Odom2D"]
+  CLIENT["Cliente gRPC — ROS 2<br/>contenedor ros2-anymal<br/>publica /scan y /odom"]
+  SLAM["slam_node — ROS 2<br/>filtro de partículas CUDA<br/>rejilla de ocupación · graph SLAM"]
+  APP["App de operación<br/>Tkinter en la pantalla de la Jetson"]
+
+  ANYMAL -->|"ROS 1 nativo"| SERVER
+  SERVER -->|"stream gRPC · TCP :50055"| CLIENT
+  CLIENT --> SLAM
+  SLAM -->|"/slam_map /slam_particles /slam_graph /tf"| APP
+  CLIENT --> APP
+  APP -.->|"docker start / exec"| SERVER
+  APP -.->|"docker start / exec"| CLIENT
+```
+
+El puente gRPC existe porque el software nativo del ANYmal habla **ROS 1** y todo el desarrollo
+nuevo del equipo es **ROS 2**. En lugar de usar `ros1_bridge`, el equipo transmite únicamente lo
+que el SLAM necesita —odometría planar y escaneo 2D— por un stream gRPC, en dos mensajes propios
+(`Odom2D` y `Scan2D`). Ver [comunicación](/es/docs/05-software/communication).
+
+Los tres componentes corren en **contenedores Docker sobre una Jetson** montada como payload del
+robot. La app de Tkinter no es solo una interfaz: es el orquestador que arranca los contenedores
+y vigila que los tres eslabones estén vivos.
+
+## La cadena de aprendizaje
+
+```mermaid
+graph LR
+  A["Isaac Sim 5.0<br/>PhysX"] --> B["Isaac Lab 5.0<br/>entorno manager-based"]
+  B --> C["RSL-RL / PPO<br/>4096 entornos paralelos"]
+  C --> D["policy.pt<br/>política PyTorch"]
+  D --> E["Nodo ROS 2<br/>anymal_controller"]
+  E --> F["ANYmal D<br/>control de articulaciones"]
+  F -- "estado y sensores" --> E
+```
+
+Detalles en [políticas aprendidas](/es/docs/05-software/learning).
+
+<Callout title="Los dos flujos aún no se tocan">
+El SLAM produce mapa y pose; la política aprendida consume comandos de velocidad. No hemos
+encontrado código que conecte la salida del SLAM con la entrada del controlador. Si la
+integración existe o está planeada, merece documentarse aquí.
+</Callout>
+
+## Las tres capas
+
+```mermaid
+graph TD
+  P["Proyecto anySLAM"]
+  P --> HW["Hardware"]
+  P --> SW["Software"]
+  P --> INF["Infraestructura"]
+
+  HW --> HW1["ANYmal D (anymal-d092)"]
+  HW --> HW2["LiDAR"]
+  HW --> HW3["10 cámaras"]
+  HW --> HW4["Jetson (payload)"]
+
+  SW --> SW1["ROS 1 (robot) · ROS 2 (equipo)"]
+  SW --> SW2["SLAM y MCL con CUDA"]
+  SW --> SW3["Puente gRPC"]
+  SW --> SW4["Políticas aprendidas"]
+
+  INF --> INF1["Docker en todo"]
+  INF --> INF2["Red 192.168.0.x"]
+  INF --> INF3["Isaac Sim (entrenamiento)"]
+```
+
+## Una nota sobre FLOWMAS
+
+El [trabajo presentado en ICRA 2025](/es/docs/09-research/papers) describe una arquitectura de
+*flow matching* para navegación. Su experimento de despliegue planeado usa un **shuttle
+EG6088K** con un Velodyne HDL-32 y una cámara MultiSense S21 — **no el ANYmal**.
+
+`FLOWMAS` es el único repositorio del proyecto al que no hemos podido acceder, así que esta
+línea se documenta como investigación de navegación *adyacente*, no como parte de la pila del
+robot. Si en realidad convergen, hay que decirlo aquí explícitamente.
+
+## Documentos relacionados
+
+- [Arquitectura de hardware](/es/docs/02-architecture/hardware-architecture)
+- [Arquitectura de software](/es/docs/02-architecture/software-architecture)
+- [Arquitectura de red](/es/docs/02-architecture/network-architecture)
+- [Flujo de datos](/es/docs/02-architecture/data-flow)
