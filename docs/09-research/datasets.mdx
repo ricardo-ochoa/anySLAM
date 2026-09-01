@@ -39,11 +39,28 @@ Lo que hace falta saber:
 | ¿Cómo se versionan? | Sin esto no se puede reproducir un resultado pasado |
 | ¿Hay datos personales o restricciones de uso? | Obligaciones legales y éticas |
 
+## Datasets de trayectorias — ARKit
+
+[`FLOWMAS-ANYmal`](https://github.com/carloAdr1/FLOWMAS-ANYmal) entrena por defecto sobre un
+dataset propio de capturas **ARKit**, almacenado en formato **Zarr**.
+
+| Aspecto | Valor |
+| --- | --- |
+| Formato | Zarr (`data/arkit_dataset_test.zarr`) |
+| Contenido | `rgb`, `depth`, `poses`, `actions` |
+| Normalización | Poses, acciones y profundidad ya vienen normalizadas en el archivo |
+| Conversión | `utils/arkit_to_zarr.py` |
+
+ARKit es el framework de realidad aumentada de Apple, lo que implica que las capturas se hacen
+con un dispositivo iOS con sensor de profundidad. **Falta confirmar** con qué dispositivo, quién
+las graba y dónde se archivan.
+
 ## Herramienta de preprocesamiento
 
-El [póster de ICRA 2025](/es/docs/09-research/papers) menciona una **herramienta propia de
-preprocesamiento** para entrenamiento de navegación, con visualización de la imagen de cámara
-junto a su representación Scan Context.
+El [póster de ICRA 2025](/es/docs/09-research/papers) menciona una herramienta propia de
+preprocesamiento, con visualización de la imagen de cámara junto a su representación Scan
+Context.
 
-No sabemos en qué repositorio vive ni si es pública. Es un candidato claro para su propio
-repositorio en el catálogo.
+El repositorio actual incluye `utils/arkit_to_zarr.py`, pero convierte capturas ARKit, no nubes
+de puntos a Scan Context. Puede que sea otra herramienta, o que esa parte se abandonara al pasar
+de nube dispersa a profundidad densa. Por confirmar.

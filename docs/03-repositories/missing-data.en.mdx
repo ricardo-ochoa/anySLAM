@@ -10,8 +10,8 @@ Last verified: **1 September 2026**, reading each repository directly.
 
 ## Repository access
 
-Four of the five repositories are private on GitHub. Of those, **three could be cloned** with the
-team's git credentials, and their contents are already documented in the portal.
+Five of the six repositories are private on GitHub, but **all of them could be cloned** with the
+team's git credentials. Their contents are documented in the portal.
 
 | Repository | Access | Status in the portal |
 | --- | --- | --- |
@@ -19,13 +19,18 @@ team's git credentials, and their contents are already documented in the portal.
 | [`ros2-anymal-slam`](https://github.com/Alponcho6594/ros2-anymal-slam) | Private, accessible | ✅ Documented |
 | [`ros1-anymal-client`](https://github.com/Alponcho6594/ros1-anymal-client) | Private, accessible | ✅ Documented |
 | [`ANYmal_data_management`](https://github.com/Dravid-hex/ANYmal_data_management) | Private, accessible | ✅ Documented |
-| [`FLOWMAS`](https://github.com/saucesaft/FLOWMAS) | **No access** | ⚠️ Only what the poster says |
+| [`FLOWMAS-ANYmal`](https://github.com/carloAdr1/FLOWMAS-ANYmal) | Private, accessible | ✅ Documented |
+| [`anymal-slam`](https://github.com/carloAdr1/anymal-slam) | Private, accessible | ✅ Mirror of `ros2-anymal-slam` |
 
-**Pending action:** [@saucesaft](https://github.com/saucesaft) — grant access to `FLOWMAS` or
-make it public.
+<Callout type="warn" title="The saucesaft/FLOWMAS repository no longer responds">
+The catalog used to point at `saucesaft/FLOWMAS`. That URL returns *repository not found* even
+with credentials: it was deleted, renamed or restricted. Its continuation is
+[`FLOWMAS-ANYmal`](https://github.com/carloAdr1/FLOWMAS-ANYmal), whose 18 commits are authored by
+the same person. If the original repository still exists somewhere, that needs saying here.
+</Callout>
 
 <Callout title="Note for anyone cloning the portal">
-Whether three private repositories can be cloned depends on each person's git credentials. If
+Whether the private repositories can be cloned depends on each person's git credentials. If
 `./scripts/bootstrap.sh` fails on one of them, request access from its maintainer.
 </Callout>
 
@@ -58,7 +63,13 @@ Whether three private repositories can be cloned depends on each person's git cr
 ### Software
 
 - [ ] Normal operating parameters for SLAM (particles, map resolution) → **@Alponcho6594**
-- [ ] Does FLOWMAS run on the ANYmal or only on the shuttle? → **@saucesaft**
+- [ ] Has FLOWMAS-ANYmal ever been run on the ANYmal? The code never mentions it →
+      **@saucesaft** and **carloAdr1**
+- [ ] What captures the ARKit data (iPhone, iPad), and who records it? → **carloAdr1**
+- [ ] `config/dataset/scand.yaml` targets `flowmatch.scand.SCANDDataset`, but that module is not
+      in the repository → **@saucesaft**
+- [ ] Why are there two locations of the same SLAM code (`ros2-anymal-slam` and `anymal-slam`)?
+      Which is canonical? → **@Alponcho6594** and **carloAdr1**
 - [ ] Licences of the private repositories → **their maintainers**
 
 ### Data and results

@@ -14,7 +14,8 @@ Esta página se genera automáticamente desde `data/repositories.yaml`. No la ed
 | [`Anymal-Research`](https://github.com/jesusMBhuy/Anymal-Research) | Aprendizaje / Locomoción | [Jesús M. B.](https://github.com/jesusMBhuy) | Activo | Público | Confirmado |
 | [`ros2-anymal-slam`](https://github.com/Alponcho6594/ros2-anymal-slam) | SLAM y localización | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) | Activo | Privado | Confirmado |
 | [`ros1-anymal-client`](https://github.com/Alponcho6594/ros1-anymal-client) | Comunicación / ROS 1 | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) | Activo | Privado | Confirmado |
-| [`FLOWMAS`](https://github.com/saucesaft/FLOWMAS) | Navegación / Modelos generativos | [Eduardo Hernández Valdez](https://github.com/saucesaft) | Investigación | Privado | Inferido |
+| [`FLOWMAS-ANYmal`](https://github.com/carloAdr1/FLOWMAS-ANYmal) | Navegación / Modelos generativos | [carloAdr1](https://github.com/carloAdr1) | Investigación | Privado | Confirmado |
+| [`anymal-slam`](https://github.com/carloAdr1/anymal-slam) | SLAM y localización (espejo) | [carloAdr1](https://github.com/carloAdr1) | Activo | Privado | Confirmado |
 | [`ANYmal_data_management`](https://github.com/Dravid-hex/ANYmal_data_management) | Interfaz de operación | [Dravid](https://github.com/Dravid-hex) | Activo | Privado | Confirmado |
 
 - **Confirmado** — leído directamente del repositorio o de una fuente pública.
@@ -73,21 +74,37 @@ Entorno Docker con un cliente ROS 1 para hablar con el máster ROS del ANYmal si
 | Acceso | Privado |
 | Confianza del dato | Confirmado |
 
-### FLOWMAS
+### FLOWMAS-ANYmal
 
-Arquitectura de flow matching para navegación, asociada al póster de ICRA 2025 del equipo. Sin acceso al repositorio: la relación entre este código y el póster está inferida por el nombre y el contexto, no confirmada. Es el único repositorio del proyecto al que no hemos podido acceder. El experimento del póster se despliega sobre un shuttle EG6088K, no sobre el ANYmal.
+Generación de trayectorias con flow matching, sucesor del trabajo del póster de ICRA 2025. Los 18 commits están firmados por [@saucesaft](https://github.com/saucesaft), Eduardo Hernández Valdez, que es quien presentó ese póster. El paquete se llama `trajectory`. Entrena sobre capturas RGB + profundidad almacenadas en Zarr, con dos codificadores ResNet-18 separados —uno para color y otro para profundidad— y predice trayectorias en SE(3): 3 de traslación más 6 de rotación. Incluye variantes UNet, transformer y UNet con memoria espacial, y flow matching restringido. El código no menciona al ANYmal en ninguna parte: es agnóstico a la plataforma, pensado para reutilizarse en otros robots.
 
 | | |
 | --- | --- |
-| Repositorio | [github.com/saucesaft/FLOWMAS](https://github.com/saucesaft/FLOWMAS) |
+| Repositorio | [github.com/carloAdr1/FLOWMAS-ANYmal](https://github.com/carloAdr1/FLOWMAS-ANYmal) |
 | Área | Navegación / Modelos generativos |
-| Responsable | [Eduardo Hernández Valdez](https://github.com/saucesaft) |
+| Responsable | [carloAdr1](https://github.com/carloAdr1) |
 | Estado | Investigación |
 | Lenguaje principal | Python |
 | Licencia | Por confirmar |
-| Último push | Por confirmar |
+| Último push | 2025-08-30 |
 | Acceso | Privado |
-| Confianza del dato | Inferido |
+| Confianza del dato | Confirmado |
+
+### anymal-slam
+
+Copia de `ros2-anymal-slam`: apunta exactamente al mismo commit (c666d203), con los mismos 55 archivos. No es una segunda pila de SLAM, sino otra ubicación del mismo código, usada para conectar el ANYmal (ROS 1) con la computadora del usuario (ROS 2) y correr SLAM sobre el robot físico. La documentación técnica está en [SLAM y localización](/es/docs/05-software/slam).
+
+| | |
+| --- | --- |
+| Repositorio | [github.com/carloAdr1/anymal-slam](https://github.com/carloAdr1/anymal-slam) |
+| Área | SLAM y localización (espejo) |
+| Responsable | [carloAdr1](https://github.com/carloAdr1) |
+| Estado | Activo |
+| Lenguaje principal | C++ / CUDA |
+| Licencia | Por confirmar |
+| Último push | 2026-08-20 |
+| Acceso | Privado |
+| Confianza del dato | Confirmado |
 
 ### ANYmal_data_management
 

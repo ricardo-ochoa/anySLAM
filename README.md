@@ -33,9 +33,10 @@ Todo lo relacionado con anySLAM, en un solo lugar.
 | [`ros2-anymal-slam`](https://github.com/Alponcho6594/ros2-anymal-slam) | SLAM y localización | [@Alponcho6594](https://github.com/Alponcho6594) |
 | [`ros1-anymal-client`](https://github.com/Alponcho6594/ros1-anymal-client) | Comunicación, puente ROS 1 | [@Alponcho6594](https://github.com/Alponcho6594) |
 | [`ANYmal_data_management`](https://github.com/Dravid-hex/ANYmal_data_management) | Interfaz de operación en la Jetson | [@Dravid-hex](https://github.com/Dravid-hex) |
-| [`FLOWMAS`](https://github.com/saucesaft/FLOWMAS) | Navegación, modelos generativos | [@saucesaft](https://github.com/saucesaft) |
+| [`FLOWMAS-ANYmal`](https://github.com/carloAdr1/FLOWMAS-ANYmal) | Generación de trayectorias, RGB + profundidad | [@carloAdr1](https://github.com/carloAdr1) |
+| [`anymal-slam`](https://github.com/carloAdr1/anymal-slam) | Espejo de `ros2-anymal-slam` | [@carloAdr1](https://github.com/carloAdr1) |
 
-Cuatro son privados. El catálogo completo, con estado, licencia y **nivel de verificación de cada
+Cinco son privados. El catálogo completo, con estado, licencia y **nivel de verificación de cada
 dato**, está en [`docs/03-repositories/repository-catalog.mdx`](docs/03-repositories/repository-catalog.mdx).
 
 ### Gestión e investigación

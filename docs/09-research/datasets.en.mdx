@@ -38,10 +38,27 @@ What we need to know:
 | How is it versioned? | Without this, past results cannot be reproduced |
 | Is there personal data or usage restriction? | Legal and ethical obligations |
 
+## Trajectory datasets — ARKit
+
+[`FLOWMAS-ANYmal`](https://github.com/carloAdr1/FLOWMAS-ANYmal) trains by default on a custom
+dataset of **ARKit** captures, stored in **Zarr** format.
+
+| Aspect | Value |
+| --- | --- |
+| Format | Zarr (`data/arkit_dataset_test.zarr`) |
+| Contents | `rgb`, `depth`, `poses`, `actions` |
+| Normalisation | Poses, actions and depth are already normalised in the file |
+| Conversion | `utils/arkit_to_zarr.py` |
+
+ARKit is Apple's augmented-reality framework, which implies captures are made with an iOS device
+carrying a depth sensor. **Still to confirm**: which device, who records them, and where they are
+archived.
+
 ## Preprocessing tool
 
-The [ICRA 2025 poster](/en/docs/09-research/papers) mentions a **custom preprocessing tool** for
-navigation training, visualising the camera image alongside its Scan Context representation.
+The [ICRA 2025 poster](/en/docs/09-research/papers) mentions a custom preprocessing tool,
+visualising the camera image alongside its Scan Context representation.
 
-We do not know which repository it lives in, or whether it is public. It is a clear candidate for
-its own repository in the catalog.
+The current repository ships `utils/arkit_to_zarr.py`, but that converts ARKit captures, not
+point clouds into Scan Context. It may be a different tool, or that part may have been dropped
+when moving from sparse cloud to dense depth. To be confirmed.

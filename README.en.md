@@ -33,9 +33,10 @@ Everything related to anySLAM, in one place.
 | [`ros2-anymal-slam`](https://github.com/Alponcho6594/ros2-anymal-slam) | SLAM and localisation | [@Alponcho6594](https://github.com/Alponcho6594) |
 | [`ros1-anymal-client`](https://github.com/Alponcho6594/ros1-anymal-client) | Communication, ROS 1 bridge | [@Alponcho6594](https://github.com/Alponcho6594) |
 | [`ANYmal_data_management`](https://github.com/Dravid-hex/ANYmal_data_management) | Operator interface on the Jetson | [@Dravid-hex](https://github.com/Dravid-hex) |
-| [`FLOWMAS`](https://github.com/saucesaft/FLOWMAS) | Navigation, generative models | [@saucesaft](https://github.com/saucesaft) |
+| [`FLOWMAS-ANYmal`](https://github.com/carloAdr1/FLOWMAS-ANYmal) | Trajectory generation, RGB + depth | [@carloAdr1](https://github.com/carloAdr1) |
+| [`anymal-slam`](https://github.com/carloAdr1/anymal-slam) | Mirror of `ros2-anymal-slam` | [@carloAdr1](https://github.com/carloAdr1) |
 
-Four are private. The full catalog — with status, licence and **confidence level for every fact**
+Five are private. The full catalog — with status, licence and **confidence level for every fact**
 — is in [`docs/03-repositories/repository-catalog.en.mdx`](docs/03-repositories/repository-catalog.en.mdx).
 
 ### Management and research

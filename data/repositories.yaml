@@ -98,32 +98,70 @@ repositories:
       rosbag recording and replay, and the gRPC server that streams odometry and
       scans to the ROS 2 side.
 
-  - id: flowmas
-    name: FLOWMAS
-    url: https://github.com/saucesaft/FLOWMAS
+  - id: flowmas-anymal
+    name: FLOWMAS-ANYmal
+    url: https://github.com/carloAdr1/FLOWMAS-ANYmal
     visibility: private
     area: Navegación / Modelos generativos
     area_en: Navigation / Generative models
-    owner: saucesaft
-    owner_name: Eduardo Hernández Valdez
+    owner: carloAdr1
+    owner_name: carloAdr1
     status: Research
     language: Python
     license: Unknown
-    last_push: Unknown
-    confidence: inferred
+    last_push: 2025-08-30
+    confidence: confirmed
     description: >-
-      Arquitectura de flow matching para navegación, asociada al póster de
-      ICRA 2025 del equipo. Sin acceso al repositorio: la relación entre este
-      código y el póster está inferida por el nombre y el contexto, no
-      confirmada. Es el único repositorio del proyecto al que no hemos podido
-      acceder. El experimento del póster se despliega sobre un shuttle EG6088K,
-      no sobre el ANYmal.
+      Generación de trayectorias con flow matching, sucesor del trabajo del
+      póster de ICRA 2025. Los 18 commits están firmados por
+      [@saucesaft](https://github.com/saucesaft), Eduardo Hernández Valdez, que es
+      quien presentó ese póster. El paquete se llama
+      `trajectory`. Entrena sobre capturas RGB + profundidad almacenadas en Zarr,
+      con dos codificadores ResNet-18 separados —uno para color y otro para
+      profundidad— y predice trayectorias en SE(3): 3 de traslación más 6 de
+      rotación. Incluye variantes UNet, transformer y UNet con memoria espacial,
+      y flow matching restringido. El código no menciona al ANYmal en ninguna
+      parte: es agnóstico a la plataforma, pensado para reutilizarse en otros
+      robots.
     description_en: >-
-      Flow-matching architecture for navigation, associated with the team's
-      ICRA 2025 poster. No repository access: the link between this code and the
-      poster is inferred from the name and context, not confirmed. It is the only
-      project repository we have not been able to access. The poster's experiment
-      deploys on an EG6088K shuttle, not on the ANYmal.
+      Trajectory generation with flow matching, successor to the ICRA 2025 poster
+      work. All 18 commits are authored by
+      [@saucesaft](https://github.com/saucesaft), Eduardo Hernández Valdez, who presented
+      that poster. The package is named `trajectory`.
+      It trains on RGB + depth captures stored in Zarr, with two separate
+      ResNet-18 encoders —one for colour and one for depth— and predicts SE(3)
+      trajectories: 3 translation plus 6 rotation dimensions. It ships UNet,
+      transformer and spatial-memory UNet variants, plus constrained flow
+      matching. The code never mentions the ANYmal: it is platform-agnostic, and
+      meant to be reused on other robots.
+
+  - id: anymal-slam-carlo
+    name: anymal-slam
+    url: https://github.com/carloAdr1/anymal-slam
+    visibility: private
+    area: SLAM y localización (espejo)
+    area_en: SLAM and localisation (mirror)
+    owner: carloAdr1
+    owner_name: carloAdr1
+    status: Active
+    language: C++ / CUDA
+    license: Unknown
+    last_push: 2026-08-20
+    confidence: confirmed
+    description: >-
+      Copia de `ros2-anymal-slam`: apunta exactamente al mismo commit
+      (c666d203), con los mismos 55 archivos. No es una segunda pila de SLAM,
+      sino otra ubicación del mismo código, usada para conectar el ANYmal
+      (ROS 1) con la computadora del usuario (ROS 2) y correr SLAM sobre el
+      robot físico. La documentación técnica está en
+      [SLAM y localización](/es/docs/05-software/slam).
+    description_en: >-
+      A copy of `ros2-anymal-slam`: it points at exactly the same commit
+      (c666d203), with the same 55 files. It is not a second SLAM stack but
+      another location of the same code, used to connect the ANYmal (ROS 1) to
+      the user's computer (ROS 2) and run SLAM on the physical robot. The
+      technical documentation is in
+      [SLAM and localisation](/en/docs/05-software/slam).
 
   - id: anymal-data-management
     name: ANYmal_data_management

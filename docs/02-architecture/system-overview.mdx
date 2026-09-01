@@ -80,15 +80,31 @@ graph TD
   INF --> INF3["Isaac Sim (entrenamiento)"]
 ```
 
-## Una nota sobre FLOWMAS
+## Una tercera línea: generación de trayectorias
 
-El [trabajo presentado en ICRA 2025](/es/docs/09-research/papers) describe una arquitectura de
-*flow matching* para navegación. Su experimento de despliegue planeado usa un **shuttle
-EG6088K** con un Velodyne HDL-32 y una cámara MultiSense S21 — **no el ANYmal**.
+[`FLOWMAS-ANYmal`](https://github.com/carloAdr1/FLOWMAS-ANYmal) continúa el
+[trabajo presentado en ICRA 2025](/es/docs/09-research/papers): genera trayectorias con *flow
+matching* a partir de capturas RGB + profundidad.
 
-`FLOWMAS` es el único repositorio del proyecto al que no hemos podido acceder, así que esta
-línea se documenta como investigación de navegación *adyacente*, no como parte de la pila del
-robot. Si en realidad convergen, hay que decirlo aquí explícitamente.
+```mermaid
+graph LR
+  CAP["Capturas ARKit<br/>RGB + profundidad"] --> ZARR["Dataset Zarr"]
+  ZARR --> ENC["Dos ResNet-18<br/>color · profundidad"]
+  ENC --> FM["UNet + flow matching<br/>restringido"]
+  FM --> TRAJ["Trayectoria SE(3)<br/>3 traslación + 6 rotación"]
+```
+
+<Callout title="No está conectada al robot">
+El código **no menciona al ANYmal en ninguna parte**: es agnóstico a la plataforma, y su objetivo
+declarado es que los entrenamientos sirvan para otros robots. Tampoco hay código que lo conecte
+con el SLAM ni con el controlador de locomoción.
+
+Por eso se documenta como una tercera línea de investigación, en paralelo a la cadena de
+operación y a la de aprendizaje, no como parte de la pila que corre hoy sobre el robot. Si ya se
+ha ejecutado sobre el ANYmal, hay que decirlo aquí.
+</Callout>
+
+El detalle está en [visión y percepción](/es/docs/05-software/vision).
 
 ## Documentos relacionados
 
