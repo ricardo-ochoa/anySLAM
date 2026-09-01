@@ -34,6 +34,7 @@ const L = {
     cols: ['Repositorio', 'Área', 'Responsable', 'Estado', 'Acceso', 'Confianza'],
     resCols: ['Recurso', 'Tipo', 'Responsable'],
     fields: {
+      repo: 'Repositorio',
       area: 'Área',
       owner: 'Responsable',
       status: 'Estado',
@@ -44,6 +45,7 @@ const L = {
       confidence: 'Confianza del dato',
     },
     visibility: { public: 'Público', private: 'Privado' },
+    status: { Active: 'Activo', Development: 'En desarrollo', Experimental: 'Experimental', Research: 'Investigación', Deprecated: 'Obsoleto' },
     confidence: {
       confirmed: 'Confirmado',
       inferred: 'Inferido',
@@ -70,6 +72,7 @@ const L = {
     cols: ['Repository', 'Area', 'Maintainer', 'Status', 'Access', 'Confidence'],
     resCols: ['Resource', 'Kind', 'Maintainer'],
     fields: {
+      repo: 'Repository',
       area: 'Area',
       owner: 'Maintainer',
       status: 'Status',
@@ -80,6 +83,7 @@ const L = {
       confidence: 'Data confidence',
     },
     visibility: { public: 'Public', private: 'Private' },
+    status: { Active: 'Active', Development: 'Development', Experimental: 'Experimental', Research: 'Research', Deprecated: 'Deprecated' },
     confidence: {
       confirmed: 'Confirmed',
       inferred: 'Inferred',
@@ -100,6 +104,9 @@ const L = {
 const cell = (v) => String(v ?? '').replaceAll('|', '\\|');
 
 const norm = (t, v) => (v === 'Unknown' || v == null ? t.unknown : v);
+
+/** Estado del repositorio, traducido cuando conocemos el término. */
+const status = (t, r) => t.status[r.status] ?? norm(t, r.status);
 
 /**
  * Enlace al responsable. Por defecto se asume un usuario de GitHub; una entrada
@@ -139,9 +146,9 @@ function render(lang) {
 
   for (const r of data.repositories) {
     lines.push(
-      `| [\`${cell(r.name)}\`](#${slugAnchor(r.name)}) | ${cell(area(r))} | ${ownerLink(
+      `| [\`${cell(r.name)}\`](${cell(r.url)}) | ${cell(area(r))} | ${ownerLink(
         r,
-      )} | ${cell(norm(t, r.status))} | ${cell(
+      )} | ${cell(status(t, r))} | ${cell(
         t.visibility[r.visibility] ?? r.visibility,
       )} | ${cell(t.confidence[r.confidence] ?? r.confidence)} |`,
     );
@@ -162,9 +169,13 @@ function render(lang) {
     lines.push('');
     lines.push(`| | |`);
     lines.push(`| --- | --- |`);
+    // Enlace explícito: MDX interpretaría un autolink <url> como JSX.
+    lines.push(
+      `| ${t.fields.repo} | [${cell(r.url.replace('https://', ''))}](${cell(r.url)}) |`,
+    );
     lines.push(`| ${t.fields.area} | ${cell(area(r))} |`);
     lines.push(`| ${t.fields.owner} | ${ownerLink(r)} |`);
-    lines.push(`| ${t.fields.status} | ${cell(norm(t, r.status))} |`);
+    lines.push(`| ${t.fields.status} | ${cell(status(t, r))} |`);
     lines.push(`| ${t.fields.language} | ${cell(norm(t, r.language))} |`);
     lines.push(`| ${t.fields.license} | ${cell(norm(t, r.license))} |`);
     lines.push(`| ${t.fields.last_push} | ${cell(norm(t, r.last_push))} |`);
@@ -172,9 +183,6 @@ function render(lang) {
     lines.push(
       `| ${t.fields.confidence} | ${cell(t.confidence[r.confidence] ?? r.confidence)} |`,
     );
-    lines.push('');
-    // Enlace explícito: MDX interpretaría un autolink <url> como JSX.
-    lines.push(`[${cell(r.url)}](${cell(r.url)})`);
     lines.push('');
   }
 

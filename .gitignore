@@ -30,6 +30,18 @@ yarn-error.log*
 .idea/
 *.swp
 
+# herramientas de IA
+# .claude/ guarda configuración local de Claude Code (launch.json, settings.local.json).
+# Es específica de cada persona, no del proyecto.
+.claude/
+.cursor/
+.aider*
+
+# documento original de la idea
+# Vive solo en local: su contenido ya está desarrollado y corregido en docs/.
+# Conservarlo versionado invitaba a leer una versión desactualizada del plan.
+idea/
+
 # macOS
 .DS_Store
 .AppleDouble

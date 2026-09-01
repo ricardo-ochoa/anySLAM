@@ -11,11 +11,11 @@ This page is generated from `data/repositories.yaml`. Do not edit it by hand: ed
 
 | Repository | Area | Maintainer | Status | Access | Confidence |
 | --- | --- | --- | --- | --- | --- |
-| [`Anymal-Research`](#anymal-research) | Learning / Locomotion | [Jesús M. B.](https://github.com/jesusMBhuy) | Active | Public | Confirmed |
-| [`ros2-anymal-slam`](#ros2-anymal-slam) | SLAM and localisation | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) | Active | Private | Confirmed |
-| [`ros1-anymal-client`](#ros1-anymal-client) | Communication / ROS 1 | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) | Active | Private | Confirmed |
-| [`FLOWMAS`](#flowmas) | Navigation / Generative models | [Eduardo Hernández Valdez](https://github.com/saucesaft) | Research | Private | Inferred |
-| [`ANYmal_data_management`](#anymal-data-management) | Operator interface | [Dravid](https://github.com/Dravid-hex) | Active | Private | Confirmed |
+| [`Anymal-Research`](https://github.com/jesusMBhuy/Anymal-Research) | Learning / Locomotion | [Jesús M. B.](https://github.com/jesusMBhuy) | Active | Public | Confirmed |
+| [`ros2-anymal-slam`](https://github.com/Alponcho6594/ros2-anymal-slam) | SLAM and localisation | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) | Active | Private | Confirmed |
+| [`ros1-anymal-client`](https://github.com/Alponcho6594/ros1-anymal-client) | Communication / ROS 1 | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) | Active | Private | Confirmed |
+| [`FLOWMAS`](https://github.com/saucesaft/FLOWMAS) | Navigation / Generative models | [Eduardo Hernández Valdez](https://github.com/saucesaft) | Research | Private | Inferred |
+| [`ANYmal_data_management`](https://github.com/Dravid-hex/ANYmal_data_management) | Operator interface | [Dravid](https://github.com/Dravid-hex) | Active | Private | Confirmed |
 
 - **Confirmed** — read directly from the repository or from a public source.
 - **Inferred** — deduced from context. Must be verified with the maintainer.
@@ -31,6 +31,7 @@ Reinforcement-learning training of locomotion policies for the ANYmal D on NVIDI
 
 | | |
 | --- | --- |
+| Repository | [github.com/jesusMBhuy/Anymal-Research](https://github.com/jesusMBhuy/Anymal-Research) |
 | Area | Learning / Locomotion |
 | Maintainer | [Jesús M. B.](https://github.com/jesusMBhuy) |
 | Status | Active |
@@ -40,14 +41,13 @@ Reinforcement-learning training of locomotion policies for the ANYmal D on NVIDI
 | Access | Public |
 | Data confidence | Confirmed |
 
-[https://github.com/jesusMBhuy/Anymal-Research](https://github.com/jesusMBhuy/Anymal-Research)
-
 ### ros2-anymal-slam
 
 CUDA-accelerated SLAM and Monte Carlo Localization framework on ROS 2. It implements a particle filter, log-odds occupancy-grid mapping, a likelihood field, and graph SLAM with keyframes and loop closure. It includes the gRPC bridge client that translates the ANYmal's ROS 1 data into the ROS 2 `/scan` and `/odom` topics. Everything runs in Docker, with automatic platform detection (Jetson JetPack 4/5/6 or desktop) and ROS 2 distribution selection.
 
 | | |
 | --- | --- |
+| Repository | [github.com/Alponcho6594/ros2-anymal-slam](https://github.com/Alponcho6594/ros2-anymal-slam) |
 | Area | SLAM and localisation |
 | Maintainer | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) |
 | Status | Active |
@@ -57,14 +57,13 @@ CUDA-accelerated SLAM and Monte Carlo Localization framework on ROS 2. It implem
 | Access | Private |
 | Data confidence | Confirmed |
 
-[https://github.com/Alponcho6594/ros2-anymal-slam](https://github.com/Alponcho6594/ros2-anymal-slam)
-
 ### ros1-anymal-client
 
 A Docker environment with a ROS 1 client for talking to the ANYmal's ROS master without installing the full ANYbotics stack on the development machine. It ships the robot's message, service and action definitions (`anymal_interfaces`), control-lease management, keyboard teleoperation, rosbag recording and replay, and the gRPC server that streams odometry and scans to the ROS 2 side.
 
 | | |
 | --- | --- |
+| Repository | [github.com/Alponcho6594/ros1-anymal-client](https://github.com/Alponcho6594/ros1-anymal-client) |
 | Area | Communication / ROS 1 |
 | Maintainer | [Alan Ulises Díaz Arenas](https://github.com/Alponcho6594) |
 | Status | Active |
@@ -74,14 +73,13 @@ A Docker environment with a ROS 1 client for talking to the ANYmal's ROS master 
 | Access | Private |
 | Data confidence | Confirmed |
 
-[https://github.com/Alponcho6594/ros1-anymal-client](https://github.com/Alponcho6594/ros1-anymal-client)
-
 ### FLOWMAS
 
 Flow-matching architecture for navigation, associated with the team's ICRA 2025 poster. No repository access: the link between this code and the poster is inferred from the name and context, not confirmed. It is the only project repository we have not been able to access. The poster's experiment deploys on an EG6088K shuttle, not on the ANYmal.
 
 | | |
 | --- | --- |
+| Repository | [github.com/saucesaft/FLOWMAS](https://github.com/saucesaft/FLOWMAS) |
 | Area | Navigation / Generative models |
 | Maintainer | [Eduardo Hernández Valdez](https://github.com/saucesaft) |
 | Status | Research |
@@ -91,14 +89,13 @@ Flow-matching architecture for navigation, associated with the team's ICRA 2025 
 | Access | Private |
 | Data confidence | Inferred |
 
-[https://github.com/saucesaft/FLOWMAS](https://github.com/saucesaft/FLOWMAS)
-
 ### ANYmal_data_management
 
 A Tkinter application for the touchscreen of the Jetson mounted as the ANYmal payload. It orchestrates the full data chain: starting and monitoring the `ros1-anymal-client` and `ros2-anymal-slam` containers, showing the status of all three links (robot, ROS 1 bridge, ROS 2 bridge), and exposing tabs for actions, ROS data, LiDAR and cameras. It ships a simulated-data node for testing the UI without a robot.
 
 | | |
 | --- | --- |
+| Repository | [github.com/Dravid-hex/ANYmal_data_management](https://github.com/Dravid-hex/ANYmal_data_management) |
 | Area | Operator interface |
 | Maintainer | [Dravid](https://github.com/Dravid-hex) |
 | Status | Active |
@@ -107,8 +104,6 @@ A Tkinter application for the touchscreen of the Jetson mounted as the ANYmal pa
 | Last push | 2026-08-31 |
 | Access | Private |
 | Data confidence | Confirmed |
-
-[https://github.com/Dravid-hex/ANYmal_data_management](https://github.com/Dravid-hex/ANYmal_data_management)
 
 ## Other project resources
 
