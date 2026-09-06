@@ -72,6 +72,25 @@ npm run gen:catalog
 # 3. commitea el YAML y las páginas generadas juntos
 ```
 
+## Los comandos de las guías salen de `data/commands/`
+
+Las guías de `docs/11-guides/` no llevan los comandos escritos en la página: el componente
+`<CommandSearch tech="..." />` los lee de `data/commands/<tecnologia>.yaml`. Los mismos datos
+alimentan el buscador y la versión en Markdown que exporta el botón «Copiar Markdown», así que no
+hay una tabla que se quede atrás respecto al buscador.
+
+Para agregar un comando, añade su entrada al YAML de esa tecnología. Cada una lleva `does` /
+`does_en`, un `example` y las `keywords` con las que alguien lo buscaría sin saber su nombre;
+`destructive: true` marca los que borran cosas.
+
+Para agregar una tecnología nueva:
+
+1. Crea `data/commands/<tecnologia>.yaml` con el formato de `docker.yaml`.
+2. Añade a `data/commands/synonyms.yaml` los sinónimos propios de esa herramienta.
+3. Crea `docs/11-guides/<tecnologia>.mdx` y su traducción, con el diagrama, el componente
+   `<CommandSearch tech="<tecnologia>" />` y los errores comunes.
+4. Agrega la página a `docs/11-guides/meta.json` y a `meta.en.json`.
+
 ## Antes de abrir un Pull Request
 
 ```bash

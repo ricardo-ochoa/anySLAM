@@ -1,0 +1,457 @@
+# Comandos de Git que alimentan <CommandSearch tech="git" />.
+# Mismo formato que docker.yaml. Ver ese archivo para la explicación de los campos.
+
+tech: git
+name: Git
+note: "Git 2.5x · La rama principal de este proyecto es `main`"
+note_en: "Git 2.5x · The main branch of this project is `main`"
+
+categories:
+  - id: setup
+    name: Configuración y arranque
+    name_en: Setup and start
+    commands:
+      - cmd: git config
+        does: Lee o escribe configuración. Con --global aplica a todos tus repositorios.
+        does_en: Reads or writes configuration. With --global it applies to every repository.
+        example: git config --global user.name "Tu Nombre"
+        keywords: configurar nombre correo editor identidad ajustes
+        keywords_en: configure name email editor identity settings
+      - cmd: git --version
+        does: Muestra la versión de Git instalada.
+        does_en: Shows the installed Git version.
+        example: git --version
+        keywords: version que version tengo instalado comprobar
+        keywords_en: version which version installed check
+      - cmd: git help
+        does: Abre el manual de un comando. `git <comando> -h` da la versión corta.
+        does_en: Opens a command's manual. `git <command> -h` gives the short version.
+        example: git help rebase
+        keywords: ayuda help manual opciones flags como se usa
+        keywords_en: help manual options flags usage
+      - cmd: git config --list
+        does: Muestra toda la configuración activa y de qué archivo sale cada valor.
+        does_en: Shows all active configuration and which file each value comes from.
+        example: git config --list --show-origin
+        keywords: ver configuracion listar ajustes origen
+        keywords_en: show configuration list settings origin
+      - cmd: git init
+        does: Convierte una carpeta en un repositorio de Git.
+        does_en: Turns a folder into a Git repository.
+        example: git init -b main
+        keywords: crear iniciar repositorio nuevo empezar
+        keywords_en: create init repository new start
+      - cmd: git clone
+        does: Copia un repositorio remoto a tu máquina.
+        does_en: Copies a remote repository to your machine.
+        example: git clone git@github.com:equipo/repo.git
+        keywords: clonar descargar copiar repositorio bajar
+        keywords_en: clone download copy repository
+      - cmd: git clone --recurse-submodules
+        does: Clona el repositorio y además todos sus submódulos.
+        does_en: Clones the repository along with all its submodules.
+        example: git clone --recurse-submodules git@github.com:equipo/repo.git
+        keywords: clonar submodulos dependencias workspace
+        keywords_en: clone submodules dependencies workspace
+      - cmd: git remote -v
+        does: Muestra los remotos configurados y sus URL.
+        does_en: Shows the configured remotes and their URLs.
+        example: git remote -v
+        keywords: ver remoto origin url listar
+        keywords_en: show remote origin url list
+      - cmd: git remote add
+        does: Añade un remoto nuevo, por ejemplo el repositorio de otra persona.
+        does_en: Adds a new remote, for example someone else's repository.
+        example: git remote add upstream git@github.com:otro/repo.git
+        keywords: agregar remoto upstream fork conectar
+        keywords_en: add remote upstream fork connect
+      - cmd: git remote set-url
+        does: Cambia la URL de un remoto, por ejemplo de HTTPS a SSH.
+        does_en: Changes a remote's URL, for example from HTTPS to SSH.
+        example: git remote set-url origin git@github.com:equipo/repo.git
+        keywords: cambiar url remoto ssh https
+        keywords_en: change url remote ssh https
+
+  - id: daily
+    name: Trabajo diario
+    name_en: Daily work
+    commands:
+      - cmd: git status
+        does: Qué archivos cambiaron, cuáles están preparados y en qué rama estás.
+        does_en: What changed, what is staged, and which branch you are on.
+        example: git status -sb
+        keywords: ver estado cambios rama pendientes que paso
+        keywords_en: show status changes branch pending
+      - cmd: git add
+        does: Prepara cambios para el próximo commit (los pasa al área de staging).
+        does_en: Stages changes for the next commit.
+        example: git add src/slam_node.cpp
+        keywords: agregar preparar staging incluir archivos
+        keywords_en: add stage include files
+      - cmd: git add -p
+        does: Prepara los cambios por trozos, decidiendo uno por uno cuáles entran.
+        does_en: Stages changes hunk by hunk, deciding one at a time.
+        example: git add -p
+        keywords: agregar parcial trozos interactivo revisar
+        keywords_en: add partial hunks interactive review
+      - cmd: git commit
+        does: Guarda los cambios preparados como un punto del historial.
+        does_en: Records the staged changes as a point in history.
+        example: git commit -m "Corrige la deriva del filtro de partículas"
+        keywords: guardar commit confirmar registrar cambios
+        keywords_en: save commit record changes
+      - cmd: git commit --amend
+        does: "Corrige el último commit: su mensaje o los archivos que incluye."
+        does_en: "Fixes the last commit: its message or the files it includes."
+        example: git commit --amend --no-edit
+        keywords: corregir ultimo commit mensaje rehacer olvide
+        keywords_en: fix last commit message redo forgot
+      - cmd: git diff
+        does: Muestra los cambios que todavía no has preparado.
+        does_en: Shows changes you have not staged yet.
+        example: git diff src/
+        keywords: ver diferencias cambios comparar
+        keywords_en: show diff changes compare
+      - cmd: git diff --staged
+        does: Muestra los cambios ya preparados, es decir lo que entrará al commit.
+        does_en: Shows staged changes, that is, what the commit will contain.
+        example: git diff --staged
+        keywords: ver diferencias staging preparado antes de commit
+        keywords_en: show diff staged before commit
+      - cmd: git mv
+        does: Mueve o renombra un archivo y registra el cambio.
+        does_en: Moves or renames a file and records the change.
+        example: git mv config.yaml config/params.yaml
+        keywords: mover renombrar archivo cambiar nombre
+        keywords_en: move rename file
+      - cmd: git rm
+        does: Elimina un archivo del repositorio y del disco.
+        does_en: Deletes a file from the repository and from disk.
+        example: git rm --cached secreto.env
+        keywords: eliminar borrar quitar archivo dejar de rastrear
+        keywords_en: delete remove file untrack
+        destructive: true
+
+  - id: branches
+    name: Ramas
+    name_en: Branches
+    commands:
+      - cmd: git branch
+        does: Lista las ramas locales; con -a también las remotas.
+        does_en: Lists local branches; with -a, remote ones too.
+        example: git branch -a
+        keywords: ver listar ramas branches
+        keywords_en: show list branches
+      - cmd: git switch -c
+        does: Crea una rama y se cambia a ella. Es la forma moderna de checkout -b.
+        does_en: Creates a branch and switches to it. The modern form of checkout -b.
+        example: git switch -c feat/slam-loop-closure
+        keywords: crear rama nueva cambiar branch empezar feature
+        keywords_en: create new branch switch feature
+      - cmd: git switch
+        does: Cambia a una rama que ya existe.
+        does_en: Switches to an existing branch.
+        example: git switch main
+        keywords: cambiar rama moverse ir a branch
+        keywords_en: switch branch move go
+      - cmd: git checkout
+        does: Forma antigua de switch y restore. Sigue funcionando y la verás en tutoriales.
+        does_en: The old form of switch and restore. Still works and appears in tutorials.
+        example: git checkout -b feat/nueva-rama
+        keywords: cambiar rama crear antiguo checkout
+        keywords_en: switch branch create legacy checkout
+      - cmd: git merge
+        does: Integra otra rama en la actual creando un commit de fusión.
+        does_en: Integrates another branch into the current one with a merge commit.
+        example: git merge --no-ff feat/slam-loop-closure
+        keywords: fusionar unir integrar merge combinar ramas conflicto
+        keywords_en: merge integrate combine branches
+      - cmd: git rebase
+        does: Reaplica tus commits encima de otra rama, dejando el historial lineal.
+        does_en: Replays your commits on top of another branch, keeping history linear.
+        example: git rebase main
+        keywords: rebase reordenar historial lineal actualizar rama
+        keywords_en: rebase replay linear history update branch
+      - cmd: git rebase -i
+        does: "Rebase interactivo: reordena, junta o reescribe tus commits antes del PR."
+        does_en: "Interactive rebase: reorder, squash or reword your commits before the PR."
+        example: git rebase -i origin/main
+        keywords: squash juntar commits limpiar historial reescribir
+        keywords_en: squash combine commits clean history rewrite
+      - cmd: git merge --abort
+        does: Cancela una fusión a medias y deja la rama como estaba antes.
+        does_en: Aborts a half-finished merge and leaves the branch as it was.
+        example: git merge --abort
+        keywords: cancelar abortar conflicto conflictos salir merge
+        keywords_en: cancel abort conflict conflicts exit merge
+      - cmd: git rebase --continue
+        does: Sigue con el rebase después de resolver un conflicto.
+        does_en: Continues the rebase after you resolve a conflict.
+        example: git add . && git rebase --continue
+        keywords: continuar seguir conflicto conflictos resolver rebase
+        keywords_en: continue resume conflict conflicts resolve rebase
+      - cmd: git rebase --abort
+        does: Cancela el rebase y devuelve la rama al punto de partida.
+        does_en: Cancels the rebase and returns the branch to where it started.
+        example: git rebase --abort
+        keywords: cancelar abortar conflicto salir rebase deshacer
+        keywords_en: cancel abort conflict exit rebase undo
+      - cmd: git cherry-pick
+        does: Copia un commit concreto de otra rama a la actual.
+        does_en: Copies a specific commit from another branch onto the current one.
+        example: git cherry-pick 4a18f4e
+        keywords: copiar commit especifico traer cambio suelto
+        keywords_en: copy specific commit bring single change
+      - cmd: git branch -d
+        does: Elimina una rama local ya fusionada; con -D la borra aunque no lo esté.
+        does_en: Deletes a merged local branch; -D deletes it even if it is not merged.
+        example: git branch -d feat/slam-loop-closure
+        keywords: eliminar borrar rama local limpiar
+        keywords_en: delete remove local branch clean
+        destructive: true
+      - cmd: git push origin --delete
+        does: Elimina una rama en el remoto.
+        does_en: Deletes a branch on the remote.
+        example: git push origin --delete feat/slam-loop-closure
+        keywords: eliminar borrar rama remota github
+        keywords_en: delete remove remote branch github
+        destructive: true
+
+  - id: sync
+    name: Sincronizar con el remoto
+    name_en: Syncing with the remote
+    commands:
+      - cmd: git fetch
+        does: Trae los cambios del remoto sin tocar tu copia de trabajo.
+        does_en: Downloads remote changes without touching your working copy.
+        example: git fetch --all --prune
+        keywords: traer descargar actualizar remoto sin mezclar
+        keywords_en: fetch download update remote without merging
+      - cmd: git pull
+        does: Trae los cambios del remoto y los integra en tu rama.
+        does_en: Downloads remote changes and integrates them into your branch.
+        example: git pull
+        keywords: bajar actualizar traer cambios sincronizar
+        keywords_en: pull update download changes sync
+      - cmd: git pull --rebase
+        does: Igual que pull, pero reaplica tus commits encima en vez de fusionar.
+        does_en: Like pull, but replays your commits on top instead of merging.
+        example: git pull --rebase origin main
+        keywords: actualizar rebase sin merge commit limpio
+        keywords_en: update rebase without merge commit clean
+      - cmd: git push
+        does: Sube tus commits al remoto.
+        does_en: Uploads your commits to the remote.
+        example: git push
+        keywords: subir enviar publicar commits remoto
+        keywords_en: push upload send publish commits
+      - cmd: git push -u origin
+        does: Sube una rama nueva y la deja enlazada con su rama remota.
+        does_en: Pushes a new branch and links it to its remote branch.
+        example: git push -u origin feat/slam-loop-closure
+        keywords: subir rama nueva primera vez upstream enlazar
+        keywords_en: push new branch first time upstream link
+      - cmd: git push --force-with-lease
+        does: Sobrescribe la rama remota solo si nadie más ha subido cambios.
+        does_en: Overwrites the remote branch only if nobody else has pushed.
+        example: git push --force-with-lease
+        keywords: forzar sobrescribir despues de rebase seguro
+        keywords_en: force overwrite after rebase safe
+        destructive: true
+
+  - id: history
+    name: Historial
+    name_en: History
+    commands:
+      - cmd: git log
+        does: Muestra el historial de commits.
+        does_en: Shows the commit history.
+        example: git log --oneline --graph --decorate -20
+        keywords: ver historial commits quien cuando log
+        keywords_en: show history commits who when log
+      - cmd: git log -p
+        does: Historial con el diff completo de cada commit.
+        does_en: History with the full diff of every commit.
+        example: git log -p src/slam_node.cpp
+        keywords: historial cambios archivo diff detalle
+        keywords_en: history changes file diff detail
+      - cmd: git show
+        does: Muestra un commit concreto con sus cambios.
+        does_en: Shows a specific commit with its changes.
+        example: git show 4a18f4e
+        keywords: ver commit detalle contenido
+        keywords_en: show commit detail content
+      - cmd: git blame
+        does: Indica qué commit y qué persona escribió cada línea de un archivo.
+        does_en: Tells which commit and person wrote each line of a file.
+        example: git blame -L 40,60 src/slam_node.cpp
+        keywords: quien escribio linea culpar autor responsable
+        keywords_en: who wrote line blame author
+      - cmd: git shortlog
+        does: Resume los commits agrupados por autor.
+        does_en: Summarises commits grouped by author.
+        example: git shortlog -sn
+        keywords: resumen autores contribuciones cuantos commits
+        keywords_en: summary authors contributions how many commits
+      - cmd: git reflog
+        does: Registra dónde estuvo HEAD. Es la red de seguridad para recuperar commits perdidos.
+        does_en: Records where HEAD has been. The safety net for recovering lost commits.
+        example: git reflog
+        keywords: recuperar perdido deshacer rescatar historial head
+        keywords_en: recover lost undo rescue history head
+      - cmd: git bisect
+        does: Busca por bisección el commit que introdujo un fallo.
+        does_en: Binary-searches for the commit that introduced a bug.
+        example: git bisect start && git bisect bad && git bisect good v1.0
+        keywords: encontrar bug regresion cuando se rompio buscar
+        keywords_en: find bug regression when it broke search
+
+  - id: undo
+    name: Deshacer
+    name_en: Undoing things
+    commands:
+      - cmd: git restore
+        does: Descarta los cambios sin guardar de un archivo.
+        does_en: Discards a file's unsaved changes.
+        example: git restore src/slam_node.cpp
+        keywords: descartar deshacer cambios archivo volver
+        keywords_en: discard undo changes file revert
+        destructive: true
+      - cmd: git restore --staged
+        does: Saca un archivo del área de staging sin perder sus cambios.
+        does_en: Unstages a file without losing its changes.
+        example: git restore --staged src/slam_node.cpp
+        keywords: quitar staging deshacer add unstage
+        keywords_en: unstage undo add remove staging
+      - cmd: git reset --soft
+        does: Deshace commits pero conserva los cambios preparados.
+        does_en: Undoes commits but keeps the changes staged.
+        example: git reset --soft HEAD~1
+        keywords: deshacer commit conservar cambios rehacer mensaje
+        keywords_en: undo commit keep changes redo message
+      - cmd: git reset --hard
+        does: Devuelve el repositorio a un commit y borra todo lo que no esté guardado.
+        does_en: Resets the repository to a commit and destroys everything unsaved.
+        example: git reset --hard origin/main
+        keywords: deshacer todo borrar cambios volver empezar de cero
+        keywords_en: undo everything discard changes start over
+        destructive: true
+      - cmd: git revert
+        does: Crea un commit nuevo que deshace otro. Es lo seguro en ramas compartidas.
+        does_en: Creates a new commit that undoes another. The safe option on shared branches.
+        example: git revert 4a18f4e
+        keywords: deshacer commit publicado revertir seguro
+        keywords_en: undo published commit revert safe
+      - cmd: git clean -n
+        does: Lista los archivos sin rastrear que se borrarían, sin borrar nada.
+        does_en: Lists the untracked files that would be deleted, without deleting them.
+        example: git clean -nd
+        keywords: ver limpiar archivos sin rastrear simulacion
+        keywords_en: preview clean untracked files dry run
+      - cmd: git clean -fd
+        does: Borra archivos y carpetas sin rastrear. No hay forma de recuperarlos.
+        does_en: Deletes untracked files and folders. There is no way to get them back.
+        example: git clean -fd
+        keywords: limpiar borrar basura archivos generados build
+        keywords_en: clean delete junk generated files build
+        destructive: true
+      - cmd: git stash
+        does: Guarda tus cambios a un lado y deja el árbol limpio.
+        does_en: Puts your changes aside and leaves the tree clean.
+        example: git stash push -m "prueba del filtro"
+        keywords: guardar temporal apartar pausar cambiar de rama
+        keywords_en: stash save temporary set aside switch branch
+      - cmd: git stash pop
+        does: Recupera los cambios guardados y los quita de la pila.
+        does_en: Restores the stashed changes and drops them from the stack.
+        example: git stash pop
+        keywords: recuperar stash volver aplicar guardado
+        keywords_en: restore stash reapply saved
+      - cmd: git stash list
+        does: Lista todo lo que tienes guardado en el stash.
+        does_en: Lists everything you have in the stash.
+        example: git stash list
+        keywords: ver listar stash guardados
+        keywords_en: show list stash saved
+
+  - id: teamwork
+    name: Colaboración y revisión
+    name_en: Collaboration and review
+    commands:
+      - cmd: git fetch origin pull/ID/head
+        does: Trae la rama de un Pull Request para probarlo en tu máquina.
+        does_en: Fetches a Pull Request's branch so you can test it locally.
+        example: git fetch origin pull/42/head:pr-42 && git switch pr-42
+        keywords: probar pull request revisar pr local
+        keywords_en: test pull request review pr local
+      - cmd: gh pr create
+        does: Abre un Pull Request desde la terminal (GitHub CLI).
+        does_en: Opens a Pull Request from the terminal (GitHub CLI).
+        example: gh pr create --fill --base main
+        keywords: crear pull request pr abrir github
+        keywords_en: create pull request pr open github
+      - cmd: gh pr checkout
+        does: Descarga y cambia a la rama de un Pull Request (GitHub CLI).
+        does_en: Fetches and switches to a Pull Request's branch (GitHub CLI).
+        example: gh pr checkout 42
+        keywords: revisar pr descargar rama github probar
+        keywords_en: review pr checkout branch github test
+      - cmd: gh pr status
+        does: Estado de tus Pull Requests y de los que te toca revisar.
+        does_en: Status of your Pull Requests and those awaiting your review.
+        example: gh pr status
+        keywords: ver estado pull requests pendientes revisar
+        keywords_en: show status pull requests pending review
+      - cmd: git tag -a
+        does: Marca un commit con una etiqueta anotada, por ejemplo una versión.
+        does_en: Marks a commit with an annotated tag, for example a release.
+        example: git tag -a v1.0 -m "Primera integración en el robot"
+        keywords: etiquetar version release marcar entrega
+        keywords_en: tag version release mark delivery
+      - cmd: git push --tags
+        does: Sube las etiquetas al remoto.
+        does_en: Pushes tags to the remote.
+        example: git push --tags
+        keywords: subir etiquetas tags version
+        keywords_en: push tags version
+
+  - id: robotics
+    name: Archivos pesados y submódulos
+    name_en: Large files and submodules
+    commands:
+      - cmd: git lfs track
+        does: Marca un patrón de archivos para que Git LFS los gestione, como los rosbags.
+        does_en: Marks a file pattern for Git LFS to handle, such as rosbags.
+        example: git lfs track "*.bag"
+        keywords: archivos grandes pesados lfs rosbag dataset modelo
+        keywords_en: large files heavy lfs rosbag dataset model
+      - cmd: git lfs ls-files
+        does: Lista los archivos que están gestionados por LFS.
+        does_en: Lists the files managed by LFS.
+        example: git lfs ls-files
+        keywords: ver listar archivos lfs grandes
+        keywords_en: show list lfs files large
+      - cmd: git submodule add
+        does: Añade otro repositorio dentro de este, anclado a un commit concreto.
+        does_en: Adds another repository inside this one, pinned to a specific commit.
+        example: git submodule add git@github.com:equipo/ros1-anymal-client.git
+        keywords: agregar submodulo dependencia repositorio anidado
+        keywords_en: add submodule dependency nested repository
+      - cmd: git submodule update
+        does: Descarga o actualiza los submódulos al commit que el repositorio fija.
+        does_en: Downloads or updates submodules to the commit the repository pins.
+        example: git submodule update --init --recursive
+        keywords: actualizar submodulos inicializar clonar dependencias
+        keywords_en: update submodules init clone dependencies
+      - cmd: git check-ignore -v
+        does: Explica qué regla de .gitignore está ignorando un archivo.
+        does_en: Explains which .gitignore rule is ignoring a file.
+        example: git check-ignore -v build/output.bin
+        keywords: por que ignorado gitignore no aparece archivo
+        keywords_en: why ignored gitignore file missing
+      - cmd: git count-objects -vH
+        does: Cuánto pesa el repositorio y cuántos objetos guarda.
+        does_en: How much the repository weighs and how many objects it stores.
+        example: git count-objects -vH
+        keywords: tamano peso repositorio espacio disco
+        keywords_en: size weight repository space disk

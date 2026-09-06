@@ -1,0 +1,73 @@
+# Sinónimos del buscador de comandos.
+#
+# Cada lista es un grupo de equivalencias: escribir cualquiera de sus palabras
+# encuentra los comandos que mencionan cualquier otra. Así "eliminar volumen"
+# encuentra `docker volume rm` y `docker volume prune` aunque ninguno de los dos
+# contenga la palabra "eliminar".
+#
+# Los términos que empiezan con espacio (" ls", " rm") se buscan con el espacio
+# incluido: evitan que "rm" haga match dentro de "format" o de "permisos".
+# La búsqueda ignora acentos y mayúsculas, así que aquí se escriben sin acento.
+
+es:
+  - [ver, mostrar, muestra, listar, lista, consultar, revisar, estado, " ls"]
+  - [eliminar, elimina, borrar, borra, quitar, remover, destruir, prune, " rm"]
+  - [limpiar, liberar, espacio, basura, huerfano, prune]
+  - [crear, crea, nuevo, nueva, generar, genera, create, init]
+  - [iniciar, inicia, arrancar, arranca, levantar, encender, start, " up"]
+  - [detener, detiene, parar, apagar, bajar, stop, down]
+  - [reiniciar, reinicia, restart]
+  - [entrar, acceder, dentro, shell, terminal, bash, exec]
+  - [copiar, copia, mover, " cp"]
+  - [construir, construye, compilar, build]
+  - [subir, sube, publicar, publica, push]
+  - [descargar, descarga, bajar, traer, pull, clonar, clone]
+  - [log, logs, bitacora]
+  - [depurar, debug, diagnostico, falla, error]
+  - [registro, registry, ghcr, hub, docker hub]
+  - [red, redes, network]
+  - [volumen, volumenes, volume, datos, persistencia]
+  - [imagen, imagenes, image]
+  - [contenedor, contenedores, container]
+  - [servicio, servicios, compose, stack]
+  - [seguridad, vulnerabilidad, vulnerabilidades, cve, escanear, scout]
+  - [rama, ramas, branch, branches]
+  - [guardar, guarda, commit, confirmar, registrar]
+  - [deshacer, deshace, revertir, revert, reset, restore, cancelar]
+  - [fusionar, unir, integrar, merge, combinar]
+  - [historial, historia, log, commits, pasado]
+  - [remoto, remota, origin, github, servidor]
+  - [pendiente, pendientes, sin guardar, cambios]
+  - [archivo, archivos, fichero, ficheros]
+  - [pesado, pesados, grande, grandes, lfs, rosbag, dataset]
+
+en:
+  - [show, see, view, list, display, status, " ls"]
+  - [delete, remove, destroy, drop, prune, " rm"]
+  - [clean, free, space, garbage, orphan, prune]
+  - [create, new, generate, init]
+  - [start, launch, boot, " up", run]
+  - [stop, halt, shut, down]
+  - [restart, reboot]
+  - [enter, access, inside, shell, terminal, bash, exec]
+  - [copy, move, " cp"]
+  - [build, compile]
+  - [push, upload, publish]
+  - [pull, download, fetch, clone]
+  - [log, logs, output]
+  - [debug, troubleshoot, diagnose, failure, error]
+  - [registry, ghcr, hub]
+  - [network, networks]
+  - [volume, volumes, data, persistence]
+  - [image, images]
+  - [container, containers]
+  - [service, services, compose, stack]
+  - [security, vulnerability, vulnerabilities, cve, scan, scout]
+  - [branch, branches]
+  - [commit, save, record]
+  - [undo, revert, reset, restore, discard]
+  - [merge, integrate, combine]
+  - [history, log, commits, past]
+  - [remote, origin, github, server]
+  - [file, files]
+  - [large, big, heavy, lfs, rosbag, dataset]

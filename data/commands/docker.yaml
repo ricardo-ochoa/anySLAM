@@ -1,0 +1,635 @@
+# Comandos de Docker que alimentan <CommandSearch tech="docker" />.
+#
+# Cada entrada es bilingue: `does` / `does_en` y `keywords` / `keywords_en`.
+# Las `keywords` son palabras que alguien escribiria en el buscador sin conocer
+# el nombre del comando ("eliminar volumen", "entrar al contenedor"). Los
+# sinonimos generales (eliminar = borrar = prune) viven en synonyms.yaml.
+#
+# `destructive: true` pinta la fila con una marca roja: borra datos o recursos.
+
+tech: docker
+name: Docker
+note: "Docker Engine 29.x · Docker Compose v5.x · Revisado en septiembre de 2026"
+note_en: "Docker Engine 29.x · Docker Compose v5.x · Reviewed September 2026"
+
+categories:
+  - id: lifecycle
+    name: Ciclo de vida
+    name_en: Lifecycle
+    commands:
+      - cmd: docker run
+        does: Crea y ejecuta un contenedor a partir de una imagen.
+        does_en: Creates and runs a container from an image.
+        example: docker run -d --name web -p 8080:80 nginx:alpine
+        keywords: crear ejecutar correr levantar arrancar nuevo contenedor gpu cuda dispositivo puerto
+        keywords_en: create run launch start new container gpu cuda device port
+      - cmd: docker create
+        does: Crea el contenedor pero no lo inicia.
+        does_en: Creates the container without starting it.
+        example: docker create --name web -p 8080:80 nginx
+        keywords: crear preparar sin iniciar
+        keywords_en: create prepare without starting
+      - cmd: docker start
+        does: Inicia uno o más contenedores detenidos.
+        does_en: Starts one or more stopped containers.
+        example: docker start -ai web
+        keywords: iniciar arrancar encender levantar
+        keywords_en: start boot up launch
+      - cmd: docker stop
+        does: Detiene contenedores enviando SIGTERM y después SIGKILL.
+        does_en: Stops containers with SIGTERM, then SIGKILL.
+        example: docker stop -t 30 web
+        keywords: detener parar apagar bajar
+        keywords_en: stop halt shut down
+      - cmd: docker restart
+        does: Reinicia uno o más contenedores.
+        does_en: Restarts one or more containers.
+        example: docker restart web api
+        keywords: reiniciar reset volver a arrancar
+        keywords_en: restart reboot reset
+      - cmd: docker kill
+        does: Mata el contenedor de inmediato (SIGKILL por defecto).
+        does_en: Kills the container immediately (SIGKILL by default).
+        example: docker kill -s SIGINT web
+        keywords: matar forzar terminar senal
+        keywords_en: kill force terminate signal
+      - cmd: docker pause
+        does: Congela todos los procesos del contenedor.
+        does_en: Freezes every process in the container.
+        example: docker pause web
+        keywords: pausar congelar suspender
+        keywords_en: pause freeze suspend
+      - cmd: docker unpause
+        does: Reanuda un contenedor pausado.
+        does_en: Resumes a paused container.
+        example: docker unpause web
+        keywords: reanudar continuar despausar
+        keywords_en: resume unpause continue
+      - cmd: docker rm
+        does: Elimina uno o más contenedores.
+        does_en: Removes one or more containers.
+        example: docker rm -f web
+        keywords: eliminar borrar quitar remover destruir contenedor
+        keywords_en: delete remove destroy container
+        destructive: true
+      - cmd: docker rename
+        does: Cambia el nombre de un contenedor.
+        does_en: Renames a container.
+        example: docker rename web frontend
+        keywords: renombrar cambiar nombre
+        keywords_en: rename change name
+      - cmd: docker update
+        does: Cambia límites de recursos o política de reinicio en caliente.
+        does_en: Changes resource limits or the restart policy on the fly.
+        example: docker update --memory 512m --restart unless-stopped web
+        keywords: actualizar modificar limites memoria cpu
+        keywords_en: update modify limits memory cpu
+      - cmd: docker wait
+        does: Bloquea hasta que el contenedor termina e imprime su código de salida.
+        does_en: Blocks until the container exits and prints its exit code.
+        example: docker wait job-migracion
+        keywords: esperar bloquear codigo de salida
+        keywords_en: wait block exit code
+      - cmd: docker exec
+        does: Ejecuta un comando dentro de un contenedor en marcha.
+        does_en: Runs a command inside a running container.
+        example: docker exec -it web bash
+        keywords: entrar shell terminal bash ejecutar dentro acceder
+        keywords_en: enter shell terminal bash run inside access
+      - cmd: docker attach
+        does: Conecta tu terminal al proceso principal del contenedor. Ctrl+C lo mata.
+        does_en: Attaches your terminal to the container's main process. Ctrl+C kills it.
+        example: docker attach web
+        keywords: conectar adjuntar consola pid 1
+        keywords_en: attach connect console pid 1
+
+  - id: inspect
+    name: Inspección y diagnóstico
+    name_en: Inspection and debugging
+    commands:
+      - cmd: docker ps
+        does: Lista los contenedores en ejecución.
+        does_en: Lists running containers.
+        example: docker ps -a
+        keywords: listar ver mostrar contenedores estado
+        keywords_en: list show containers status
+      - cmd: docker container ls
+        does: Lista contenedores; es la sintaxis moderna de docker ps.
+        does_en: Lists containers; the modern syntax for docker ps.
+        example: docker container ls -a --filter status=exited
+        keywords: listar ver contenedores filtrar
+        keywords_en: list show containers filter
+      - cmd: docker logs
+        does: Muestra la salida y los registros de un contenedor.
+        does_en: Shows a container's output and logs.
+        example: docker logs -f --tail 100 web
+        keywords: logs registros salida errores seguir depurar
+        keywords_en: logs output errors follow debug
+      - cmd: docker inspect
+        does: Devuelve el JSON completo de cualquier objeto de Docker.
+        does_en: Returns the full JSON of any Docker object.
+        example: "docker inspect -f '{{.State.Status}}' web"
+        keywords: inspeccionar detalle informacion json metadatos
+        keywords_en: inspect detail information json metadata
+      - cmd: docker stats
+        does: Uso de CPU, memoria, red y disco en vivo.
+        does_en: Live CPU, memory, network and disk usage.
+        example: docker stats --no-stream
+        keywords: recursos cpu memoria consumo monitorear rendimiento
+        keywords_en: resources cpu memory usage monitor performance
+      - cmd: docker top
+        does: Muestra los procesos que corren dentro del contenedor.
+        does_en: Shows the processes running inside the container.
+        example: docker top web
+        keywords: procesos ps interno
+        keywords_en: processes ps internal
+      - cmd: docker port
+        does: Muestra el mapeo de puertos del contenedor.
+        does_en: Shows the container's port mapping.
+        example: docker port web 80
+        keywords: puertos mapeo publicar ver
+        keywords_en: ports mapping publish show
+      - cmd: docker diff
+        does: Archivos añadidos, modificados o borrados respecto a la imagen.
+        does_en: Files added, changed or deleted relative to the image.
+        example: docker diff web
+        keywords: cambios archivos diferencias modificados
+        keywords_en: changes files differences modified
+      - cmd: docker events
+        does: Flujo de eventos del daemon en tiempo real.
+        does_en: Real-time stream of daemon events.
+        example: "docker events --filter 'event=die'"
+        keywords: eventos auditoria tiempo real daemon
+        keywords_en: events audit real time daemon
+      - cmd: docker info
+        does: "Estado global del sistema: versión, driver, recursos, contenedores."
+        does_en: "Global system state: version, driver, resources, containers."
+        example: docker info
+        keywords: informacion sistema estado global
+        keywords_en: info system state global
+      - cmd: docker version
+        does: Muestra la versión del cliente y la del engine. Necesita el daemon corriendo.
+        does_en: Shows client and engine versions. Needs the daemon running.
+        example: docker version
+        keywords: version cliente servidor engine
+        keywords_en: version client server engine
+      - cmd: docker --version
+        does: Solo la versión del CLI, en una línea. No habla con el daemon, así que responde aunque Docker esté apagado.
+        does_en: Just the CLI version, in one line. It does not talk to the daemon, so it answers even when Docker is off.
+        example: docker --version
+        keywords: version que version tengo instalado comprobar rapido
+        keywords_en: version which version installed check quick
+      - cmd: docker --help
+        does: Lista los comandos disponibles. Con un comando delante, muestra sus flags.
+        does_en: Lists the available commands. With a command in front, shows its flags.
+        example: docker run --help
+        keywords: ayuda help opciones flags manual como se usa
+        keywords_en: help options flags manual usage
+      - cmd: docker debug
+        does: Abre una shell con herramientas incluso en imágenes distroless.
+        does_en: Opens a shell with tooling even on distroless images.
+        example: docker debug web
+        keywords: depurar shell distroless herramientas
+        keywords_en: debug shell distroless tooling
+
+  - id: images
+    name: Imágenes
+    name_en: Images
+    commands:
+      - cmd: docker build
+        does: Construye una imagen a partir de un Dockerfile.
+        does_en: Builds an image from a Dockerfile.
+        example: docker build -t miapp:1.0 .
+        keywords: construir compilar crear imagen dockerfile
+        keywords_en: build compile create image dockerfile
+      - cmd: docker images
+        does: Lista las imágenes almacenadas localmente.
+        does_en: Lists locally stored images.
+        example: docker images --filter dangling=true
+        keywords: listar ver imagenes locales
+        keywords_en: list show images local
+      - cmd: docker image ls
+        does: Lista imágenes; es la sintaxis moderna de docker images.
+        does_en: Lists images; the modern syntax for docker images.
+        example: docker image ls -q
+        keywords: listar ver imagenes
+        keywords_en: list show images
+      - cmd: docker tag
+        does: Crea un alias de nombre y etiqueta para una imagen local.
+        does_en: Creates a name and tag alias for a local image.
+        example: docker tag miapp:1.0 ghcr.io/equipo/miapp:1.0
+        keywords: etiquetar tag renombrar imagen version
+        keywords_en: tag label rename image version
+      - cmd: docker rmi
+        does: Elimina una o más imágenes.
+        does_en: Removes one or more images.
+        example: docker rmi -f miapp:1.0
+        keywords: eliminar borrar quitar imagen
+        keywords_en: delete remove image
+        destructive: true
+      - cmd: docker image rm
+        does: Elimina imágenes; es la sintaxis moderna de docker rmi.
+        does_en: Removes images; the modern syntax for docker rmi.
+        example: docker image rm miapp:1.0
+        keywords: eliminar borrar imagen
+        keywords_en: delete remove image
+        destructive: true
+      - cmd: docker history
+        does: Muestra las capas de una imagen y su tamaño.
+        does_en: Shows an image's layers and their size.
+        example: docker history --no-trunc miapp:1.0
+        keywords: historial capas tamano layers
+        keywords_en: history layers size
+      - cmd: docker commit
+        does: Crea una imagen a partir del estado actual de un contenedor.
+        does_en: Creates an image from a container's current state.
+        example: 'docker commit -m "parche" web miapp:debug'
+        keywords: crear imagen desde contenedor guardar cambios
+        keywords_en: create image from container save changes
+      - cmd: docker save
+        does: Guarda imágenes en un archivo tar conservando las capas.
+        does_en: Saves images to a tar archive, keeping the layers.
+        example: docker save -o miapp.tar miapp:1.0
+        keywords: guardar exportar tar respaldo imagen
+        keywords_en: save export tar backup image
+      - cmd: docker load
+        does: Carga imágenes desde un tar generado con save.
+        does_en: Loads images from a tar produced by save.
+        example: docker load -i miapp.tar
+        keywords: cargar importar tar restaurar imagen
+        keywords_en: load import tar restore image
+      - cmd: docker export
+        does: Exporta el sistema de archivos de un contenedor a un tar, sin capas.
+        does_en: Exports a container's filesystem to tar, flattened.
+        example: docker export -o web.tar web
+        keywords: exportar tar contenedor sistema de archivos
+        keywords_en: export tar container filesystem
+      - cmd: docker import
+        does: Crea una imagen desde un tar de sistema de archivos.
+        does_en: Creates an image from a filesystem tar.
+        example: docker import web.tar miapp:importada
+        keywords: importar tar crear imagen
+        keywords_en: import tar create image
+      - cmd: docker search
+        does: Busca imágenes en Docker Hub.
+        does_en: Searches for images on Docker Hub.
+        example: docker search --filter is-official=true postgres
+        keywords: buscar imagen hub registro
+        keywords_en: search image hub registry
+
+  - id: registry
+    name: Registros
+    name_en: Registries
+    commands:
+      - cmd: docker login
+        does: Inicia sesión en un registro de imágenes.
+        does_en: Signs in to an image registry.
+        example: docker login ghcr.io -u USUARIO
+        keywords: login sesion autenticar registro ghcr hub credenciales
+        keywords_en: login session authenticate registry ghcr hub credentials
+      - cmd: docker logout
+        does: Cierra la sesión en un registro.
+        does_en: Signs out of a registry.
+        example: docker logout ghcr.io
+        keywords: logout cerrar sesion salir registro
+        keywords_en: logout sign out registry
+      - cmd: docker pull
+        does: Descarga una imagen desde un registro.
+        does_en: Downloads an image from a registry.
+        example: docker pull --platform linux/arm64 nginx:1.27-alpine
+        keywords: descargar bajar traer imagen registro
+        keywords_en: download pull fetch image registry
+      - cmd: docker push
+        does: Sube una imagen a un registro.
+        does_en: Uploads an image to a registry.
+        example: docker push ghcr.io/equipo/miapp:1.0
+        keywords: subir publicar enviar imagen registro
+        keywords_en: upload publish push image registry
+
+  - id: network
+    name: Redes
+    name_en: Networks
+    commands:
+      - cmd: docker network ls
+        does: Lista las redes de Docker.
+        does_en: Lists Docker networks.
+        example: docker network ls
+        keywords: listar ver redes network
+        keywords_en: list show networks
+      - cmd: docker network create
+        does: Crea una red.
+        does_en: Creates a network.
+        example: docker network create --driver bridge backend
+        keywords: crear red network bridge
+        keywords_en: create network bridge
+      - cmd: docker network inspect
+        does: Detalle de la red y de los contenedores conectados.
+        does_en: Details of the network and the containers attached to it.
+        example: docker network inspect backend
+        keywords: inspeccionar red detalle ip subred
+        keywords_en: inspect network detail ip subnet
+      - cmd: docker network connect
+        does: Conecta un contenedor a una red.
+        does_en: Attaches a container to a network.
+        example: docker network connect backend web
+        keywords: conectar red contenedor
+        keywords_en: connect network container
+      - cmd: docker network disconnect
+        does: Desconecta un contenedor de una red.
+        does_en: Detaches a container from a network.
+        example: docker network disconnect backend web
+        keywords: desconectar red contenedor separar
+        keywords_en: disconnect network container detach
+      - cmd: docker network rm
+        does: Elimina una o más redes.
+        does_en: Removes one or more networks.
+        example: docker network rm backend
+        keywords: eliminar borrar red network
+        keywords_en: delete remove network
+        destructive: true
+      - cmd: docker network prune
+        does: Elimina todas las redes que no se usan.
+        does_en: Removes every unused network.
+        example: docker network prune -f
+        keywords: eliminar limpiar redes sin uso huerfanas
+        keywords_en: delete clean unused networks orphan
+        destructive: true
+
+  - id: volumes
+    name: Volúmenes y archivos
+    name_en: Volumes and files
+    commands:
+      - cmd: docker volume ls
+        does: Lista los volúmenes.
+        does_en: Lists volumes.
+        example: docker volume ls
+        keywords: listar ver volumenes datos
+        keywords_en: list show volumes data
+      - cmd: docker volume create
+        does: Crea un volumen con nombre.
+        does_en: Creates a named volume.
+        example: docker volume create pgdata
+        keywords: crear volumen persistencia datos
+        keywords_en: create volume persistence data
+      - cmd: docker volume inspect
+        does: Detalle del volumen, incluida su ruta en el host.
+        does_en: Volume details, including its path on the host.
+        example: docker volume inspect pgdata
+        keywords: inspeccionar volumen ruta detalle
+        keywords_en: inspect volume path detail
+      - cmd: docker volume rm
+        does: Elimina uno o más volúmenes y los datos que contienen.
+        does_en: Removes one or more volumes and the data inside them.
+        example: docker volume rm pgdata
+        keywords: eliminar borrar quitar volumen datos
+        keywords_en: delete remove volume data
+        destructive: true
+      - cmd: docker volume prune
+        does: Elimina los volúmenes que ningún contenedor usa.
+        does_en: Removes volumes no container is using.
+        example: docker volume prune -a
+        keywords: eliminar limpiar volumenes sin uso huerfanos
+        keywords_en: delete clean unused volumes orphan
+        destructive: true
+      - cmd: docker cp
+        does: Copia archivos entre el host y un contenedor, en ambos sentidos.
+        does_en: Copies files between host and container, in both directions.
+        example: docker cp web:/app/logs ./logs
+        keywords: copiar archivos mover sacar meter rosbag
+        keywords_en: copy files move extract rosbag
+
+  - id: cleanup
+    name: Limpieza y espacio
+    name_en: Cleanup and disk space
+    commands:
+      - cmd: docker system df
+        does: Cuánto ocupan imágenes, contenedores, volúmenes y caché.
+        does_en: How much space images, containers, volumes and cache take.
+        example: docker system df -v
+        keywords: espacio disco tamano ocupa uso lleno
+        keywords_en: space disk size usage full
+      - cmd: docker system prune
+        does: Borra contenedores parados, redes sin uso, imágenes colgantes y caché.
+        does_en: Deletes stopped containers, unused networks, dangling images and cache.
+        example: docker system prune -a --volumes
+        keywords: limpiar eliminar liberar espacio basura todo
+        keywords_en: clean delete free space garbage everything
+        destructive: true
+      - cmd: docker container prune
+        does: Borra todos los contenedores detenidos.
+        does_en: Deletes every stopped container.
+        example: docker container prune
+        keywords: limpiar eliminar contenedores parados
+        keywords_en: clean delete stopped containers
+        destructive: true
+      - cmd: docker image prune
+        does: Borra imágenes colgantes; con -a, todas las que no se usan.
+        does_en: Deletes dangling images; with -a, every unused image.
+        example: docker image prune -a
+        keywords: limpiar eliminar imagenes dangling sin uso
+        keywords_en: clean delete dangling unused images
+        destructive: true
+      - cmd: docker builder prune
+        does: Vacia la caché de compilación de BuildKit.
+        does_en: Empties the BuildKit build cache.
+        example: docker builder prune --keep-storage 10GB
+        keywords: limpiar cache build espacio buildkit
+        keywords_en: clean cache build space buildkit
+        destructive: true
+
+  - id: compose
+    name: Docker Compose
+    name_en: Docker Compose
+    commands:
+      - cmd: docker compose up
+        does: Crea y arranca todos los servicios del proyecto.
+        does_en: Creates and starts every service in the project.
+        example: docker compose up -d --build
+        keywords: levantar arrancar iniciar servicios stack crear
+        keywords_en: up start launch services stack create
+      - cmd: docker compose down
+        does: Para y elimina contenedores, redes y, si lo pides, volúmenes.
+        does_en: Stops and removes containers, networks and, if asked, volumes.
+        example: docker compose down -v --remove-orphans
+        keywords: bajar detener eliminar borrar stack servicios
+        keywords_en: down stop remove delete stack services
+        destructive: true
+      - cmd: docker compose ps
+        does: Muestra el estado de los servicios.
+        does_en: Shows the state of the services.
+        example: docker compose ps -a
+        keywords: listar ver servicios estado
+        keywords_en: list show services status
+      - cmd: docker compose logs
+        does: Logs agregados de los servicios.
+        does_en: Aggregated logs from the services.
+        example: docker compose logs -f --tail 50 web
+        keywords: logs registros seguir servicios depurar
+        keywords_en: logs follow services debug
+      - cmd: docker compose exec
+        does: Ejecuta un comando en un servicio en marcha.
+        does_en: Runs a command in a running service.
+        example: docker compose exec db psql -U postgres
+        keywords: entrar shell ejecutar servicio bash
+        keywords_en: enter shell run service bash
+      - cmd: docker compose run
+        does: Lanza un contenedor de un solo uso a partir de un servicio.
+        does_en: Launches a one-off container from a service.
+        example: docker compose run --rm web npm test
+        keywords: ejecutar puntual tarea test comando
+        keywords_en: run one-off task test command
+      - cmd: docker compose build
+        does: Construye las imágenes de los servicios mediante Docker Bake.
+        does_en: Builds the service images through Docker Bake.
+        example: docker compose build --no-cache web
+        keywords: construir compilar imagenes servicios
+        keywords_en: build compile images services
+      - cmd: docker compose pull
+        does: Descarga las imágenes declaradas en el archivo.
+        does_en: Downloads the images declared in the file.
+        example: docker compose pull
+        keywords: descargar bajar imagenes servicios
+        keywords_en: download pull images services
+      - cmd: docker compose push
+        does: Sube las imágenes de los servicios al registro.
+        does_en: Uploads the service images to the registry.
+        example: docker compose push
+        keywords: subir publicar imagenes servicios
+        keywords_en: upload publish images services
+      - cmd: docker compose start
+        does: Arranca servicios que ya estaban creados.
+        does_en: Starts services that already exist.
+        example: docker compose start web
+        keywords: iniciar arrancar servicios
+        keywords_en: start launch services
+      - cmd: docker compose stop
+        does: Detiene los servicios pero los conserva.
+        does_en: Stops the services but keeps them.
+        example: docker compose stop
+        keywords: detener parar servicios
+        keywords_en: stop halt services
+      - cmd: docker compose restart
+        does: Reinicia los servicios.
+        does_en: Restarts the services.
+        example: docker compose restart web
+        keywords: reiniciar servicios
+        keywords_en: restart services
+      - cmd: docker compose watch
+        does: Recompila o sincroniza archivos al vuelo mientras desarrollas.
+        does_en: Rebuilds or syncs files on the fly while you develop.
+        example: docker compose watch
+        keywords: hot reload desarrollo sincronizar vigilar
+        keywords_en: hot reload development sync watch
+      - cmd: docker compose config
+        does: Valida el archivo e imprime la configuración final resuelta.
+        does_en: Validates the file and prints the fully resolved configuration.
+        example: docker compose config --services
+        keywords: validar revisar configuracion yaml variables
+        keywords_en: validate check configuration yaml variables
+      - cmd: docker compose cp
+        does: Copia archivos entre el host y un servicio.
+        does_en: Copies files between the host and a service.
+        example: docker compose cp web:/app/report.csv ./
+        keywords: copiar archivos servicio
+        keywords_en: copy files service
+      - cmd: docker compose images
+        does: Muestra las imágenes que usa cada servicio.
+        does_en: Shows the image each service uses.
+        example: docker compose images
+        keywords: listar ver imagenes servicios
+        keywords_en: list show images services
+      - cmd: docker compose top
+        does: Procesos que corren en cada servicio.
+        does_en: Processes running in each service.
+        example: docker compose top
+        keywords: procesos servicios
+        keywords_en: processes services
+      - cmd: docker compose kill
+        does: Mata los contenedores de los servicios.
+        does_en: Kills the services' containers.
+        example: docker compose kill -s SIGINT
+        keywords: matar forzar senal servicios
+        keywords_en: kill force signal services
+      - cmd: docker compose events
+        does: Eventos del proyecto en tiempo real.
+        does_en: Real-time project events.
+        example: docker compose events --json
+        keywords: eventos tiempo real proyecto
+        keywords_en: events real time project
+      - cmd: docker compose publish
+        does: Publica el proyecto Compose como artefacto OCI.
+        does_en: Publishes the Compose project as an OCI artifact.
+        example: docker compose publish ghcr.io/equipo/stack:1.0
+        keywords: publicar subir proyecto oci artefacto
+        keywords_en: publish upload project oci artifact
+      - cmd: docker compose version
+        does: Muestra la versión del plugin Compose.
+        does_en: Shows the Compose plugin version.
+        example: docker compose version
+        keywords: version compose
+        keywords_en: version compose
+
+  - id: build
+    name: Build avanzado y seguridad
+    name_en: Advanced build and security
+    commands:
+      - cmd: docker init
+        does: Genera Dockerfile, compose.yaml y .dockerignore detectando tu stack.
+        does_en: Generates Dockerfile, compose.yaml and .dockerignore for your stack.
+        example: docker init
+        keywords: iniciar plantilla generar scaffold nuevo proyecto
+        keywords_en: init template generate scaffold new project
+      - cmd: docker buildx build
+        does: "Build avanzado: multiplataforma, caché remota y push directo."
+        does_en: "Advanced build: multi-platform, remote cache and direct push."
+        example: docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/equipo/app:1.0 --push .
+        keywords: multiarquitectura arm64 amd64 jetson construir cruzado gpu
+        keywords_en: multiarch arm64 amd64 jetson cross build
+      - cmd: docker buildx create
+        does: Crea un builder capaz de compilar para varias arquitecturas.
+        does_en: Creates a builder able to compile for several architectures.
+        example: docker buildx create --name multi --use --bootstrap
+        keywords: builder multiarquitectura crear qemu
+        keywords_en: builder multiarch create qemu
+      - cmd: docker buildx imagetools inspect
+        does: Inspecciona el manifiesto multiarquitectura de una imagen.
+        does_en: Inspects an image's multi-architecture manifest.
+        example: docker buildx imagetools inspect ghcr.io/equipo/app:1.0
+        keywords: manifiesto plataformas inspeccionar digest
+        keywords_en: manifest platforms inspect digest
+      - cmd: docker bake
+        does: Ejecuta los builds declarados en docker-bake.hcl o en compose.yaml.
+        does_en: Runs the builds declared in docker-bake.hcl or compose.yaml.
+        example: docker bake --push
+        keywords: bake build declarativo paralelo
+        keywords_en: bake declarative parallel build
+      - cmd: docker context ls
+        does: Lista los contextos, es decir los daemons disponibles.
+        does_en: Lists contexts, that is, the daemons available.
+        example: docker context ls
+        keywords: contexto remoto daemon listar
+        keywords_en: context remote daemon list
+      - cmd: docker context use
+        does: Cambia el daemon al que apunta el CLI.
+        does_en: Switches the daemon the CLI points at.
+        example: docker context use produccion
+        keywords: contexto cambiar remoto conectar
+        keywords_en: context switch remote connect
+      - cmd: docker scout quickview
+        does: Resumen rápido de vulnerabilidades de una imagen.
+        does_en: Quick vulnerability summary for an image.
+        example: docker scout quickview miapp:1.0
+        keywords: seguridad vulnerabilidades escanear resumen cve
+        keywords_en: security vulnerabilities scan summary cve
+      - cmd: docker scout cves
+        does: Lista los CVE detectados, con filtros por severidad.
+        does_en: Lists detected CVEs, filterable by severity.
+        example: docker scout cves --only-severity critical,high miapp:1.0
+        keywords: seguridad cve vulnerabilidades escanear critico
+        keywords_en: security cve vulnerabilities scan critical
+      - cmd: docker scout sbom
+        does: Genera el inventario de dependencias de la imagen (SBOM).
+        does_en: Generates the image's dependency inventory (SBOM).
+        example: docker scout sbom --format spdx miapp:1.0
+        keywords: sbom dependencias inventario spdx cumplimiento
+        keywords_en: sbom dependencies inventory spdx compliance

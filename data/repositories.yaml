@@ -47,7 +47,8 @@ repositories:
     area: SLAM y localización
     area_en: SLAM and localisation
     owner: Alponcho6594
-    owner_name: Alan Ulises Díaz Arenas
+    owner_name: Genaro R
+    owner_url: none
     status: Active
     language: C++ / CUDA
     license: Unknown
@@ -77,7 +78,8 @@ repositories:
     area: Comunicación / ROS 1
     area_en: Communication / ROS 1
     owner: Alponcho6594
-    owner_name: Alan Ulises Díaz Arenas
+    owner_name: Genaro R
+    owner_url: none
     status: Active
     language: Python / Docker
     license: Unknown

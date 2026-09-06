@@ -97,6 +97,7 @@ The detail, with the real topics and gRPC contract, is in
 | [`08-onboarding/`](docs/08-onboarding/) | [Getting started](docs/08-onboarding/getting-started.en.mdx) · [Development setup](docs/08-onboarding/development-setup.en.mdx) · [Project map](docs/08-onboarding/project-map.en.mdx) |
 | [`09-research/`](docs/09-research/) | [Publications](docs/09-research/papers.en.mdx) · [Experiments](docs/09-research/experiments.en.mdx) · [Datasets](docs/09-research/datasets.en.mdx) |
 | [`10-roadmap/`](docs/10-roadmap/) | [Roadmap](docs/10-roadmap/roadmap.en.mdx) |
+| [`11-guides/`](docs/11-guides/) | [What is here](docs/11-guides/overview.en.mdx) · [Docker](docs/11-guides/docker.en.mdx) · [Git](docs/11-guides/git.en.mdx) |
 
 Every page exists in two languages: `page.mdx` in Spanish and `page.en.mdx` in English.
 

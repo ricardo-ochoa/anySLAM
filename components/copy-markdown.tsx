@@ -29,7 +29,7 @@ type State = 'idle' | 'copying' | 'done' | 'error';
  * navegadores deniegan el permiso. En esos casos se recurre a `execCommand`,
  * que está obsoleto pero sigue funcionando en todos ellos.
  */
-async function copyToClipboard(text: string): Promise<void> {
+export async function copyToClipboard(text: string): Promise<void> {
   if (navigator.clipboard?.writeText) {
     try {
       await navigator.clipboard.writeText(text);

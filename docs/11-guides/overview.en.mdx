@@ -1,0 +1,36 @@
+---
+title: What is here
+description: Guides to the tools the team uses, with a command search.
+---
+
+The rest of the portal explains **this project**. This section explains **the tools it is built
+with**: what each one does, where it lives on your computer, and which command to type when you
+cannot remember it.
+
+Every guide has the same shape:
+
+| Part | What it is for |
+| --- | --- |
+| Diagram | Understanding what the tool does and where it lives, before memorising commands. |
+| How it is used in the project | The same concepts applied to the ANYmal and our repositories. |
+| Command search | Search by name (`docker volume rm`) or by intent (`delete volume`). |
+| Common situations and errors | What actually breaks your day, and how to get out. |
+| To learn more | Official documentation and team material. |
+
+## Available guides
+
+- [Docker](/en/docs/11-guides/docker) — containers, images, volumes and Compose.
+- [Git](/en/docs/11-guides/git) — version control, branches and Pull Requests.
+
+## How the search works
+
+The search understands synonyms, so you do not need to know the command's name:
+
+| If you type… | You get |
+| --- | --- |
+| `delete` | Everything that removes something: `rm`, `rmi`, `prune`, `down`. |
+| `delete volume` | Only what removes volumes: `docker volume rm`, `docker volume prune`. |
+| `enter` | `docker exec -it`, `docker attach`, `docker compose exec`. |
+| `undo commit` | `git reset --soft`, `git commit --amend`, `git revert`. |
+
+Words stack: every one of them has to match. Commands with a red mark on the left delete things.

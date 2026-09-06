@@ -1,0 +1,37 @@
+---
+title: Qué hay aquí
+description: Guías de las tecnologías que usa el equipo, con buscador de comandos.
+---
+
+Las demás secciones del portal explican **este proyecto**. Esta explica **las herramientas con
+las que se construye**: qué hace cada una, cómo vive en tu computadora y qué comando escribir
+cuando no te acuerdas.
+
+Cada guía tiene la misma forma:
+
+| Parte | Para qué |
+| --- | --- |
+| Diagrama | Entender qué hace la herramienta y dónde vive antes de memorizar comandos. |
+| Cómo se usa en el proyecto | El mismo concepto, pero aplicado al ANYmal y a nuestros repositorios. |
+| Buscador de comandos | Buscar por nombre (`docker volume rm`) o por lo que quieres hacer (`eliminar volumen`). |
+| Situaciones y errores comunes | Lo que de verdad rompe el día y cómo salir. |
+| Para aprender | Documentación oficial y material del equipo. |
+
+## Guías disponibles
+
+- [Docker](/es/docs/11-guides/docker) — contenedores, imágenes, volúmenes y Compose.
+- [Git](/es/docs/11-guides/git) — control de versiones, ramas y Pull Requests.
+
+## Cómo usar el buscador
+
+El buscador entiende sinónimos. No necesitas saber el nombre del comando:
+
+| Si escribes… | Encuentras |
+| --- | --- |
+| `eliminar` | Todo lo que borra algo: `rm`, `rmi`, `prune`, `down`. |
+| `eliminar volumen` | Solo lo que borra volúmenes: `docker volume rm`, `docker volume prune`. |
+| `entrar` | `docker exec -it`, `docker attach`, `docker compose exec`. |
+| `deshacer commit` | `git reset --soft`, `git commit --amend`, `git revert`. |
+
+Las palabras se acumulan: cada una debe coincidir. Los comandos con una marca roja a la
+izquierda borran cosas.

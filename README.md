@@ -98,6 +98,7 @@ El detalle, con los tópicos y el contrato gRPC reales, está en
 | [`08-onboarding/`](docs/08-onboarding/) | [Primeros pasos](docs/08-onboarding/getting-started.mdx) · [Preparar el entorno](docs/08-onboarding/development-setup.mdx) · [Mapa del proyecto](docs/08-onboarding/project-map.mdx) |
 | [`09-research/`](docs/09-research/) | [Publicaciones](docs/09-research/papers.mdx) · [Experimentos](docs/09-research/experiments.mdx) · [Datasets](docs/09-research/datasets.mdx) |
 | [`10-roadmap/`](docs/10-roadmap/) | [Roadmap](docs/10-roadmap/roadmap.mdx) |
+| [`11-guides/`](docs/11-guides/) | [Qué hay aquí](docs/11-guides/overview.mdx) · [Docker](docs/11-guides/docker.mdx) · [Git](docs/11-guides/git.mdx) |
 
 Cada página existe en dos idiomas: `pagina.mdx` en español y `pagina.en.mdx` en inglés.
 
