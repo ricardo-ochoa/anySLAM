@@ -505,3 +505,37 @@
 #nd-toc a[data-active='true'] {
   color: var(--anyslam-blue);
 }
+
+/* --- Robot de la barra lateral — components/hover-bot.tsx ----------------- */
+
+/* Va en el slot `footer` de Fumadocs, que se pinta debajo del selector de
+   idioma y del cambio de tema. `order: -1` lo devuelve arriba del todo dentro
+   de ese contenedor flex, que es donde queremos verlo.
+
+   Esta caja recorta: la altura es la que ocupa el robot, no la del lienzo. */
+.anyslam-bot {
+  order: -1;
+  position: relative;
+  height: 80px;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* La composición de Lottie es un cuadrado de 512x512 y el robot ocupa solo su
+   franja central, así que casi todo lo que trae es lienzo vacío. El lienzo se
+   sube para que ese sobrante caiga fuera de la caja por abajo y el robot quede
+   pegado al selector de idioma. */
+.anyslam-bot-stage {
+  position: absolute;
+  top: -76px;
+  margin-left: -47px;
+}
+
+/* Solo escritorio: por debajo de este ancho el componente ni siquiera carga la
+   animación (mismo umbral que en hover-bot.tsx). */
+@media (max-width: 767px) {
+  .anyslam-bot {
+    display: none;
+  }
+}

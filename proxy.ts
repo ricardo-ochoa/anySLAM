@@ -4,5 +4,7 @@ import { i18n } from '@/lib/i18n';
 export default createI18nMiddleware(i18n);
 
 export const config = {
-  matcher: ['/((?!api|llms.mdx|_next/static|_next/image|favicon.ico|images).*)'],
+  // `lottie` queda fuera igual que `images`: son archivos de public/, y el
+  // middleware de idioma los redirigiría a /es/... convirtiéndolos en 404.
+  matcher: ['/((?!api|llms.mdx|_next/static|_next/image|favicon.ico|images|lottie).*)'],
 };
