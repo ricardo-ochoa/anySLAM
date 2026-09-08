@@ -73,12 +73,12 @@ export const translations = i18n
 
 const strings = {
   es: {
-    docs: 'Documentación',
+    docs: 'Bienvenida',
     catalog: 'Repositorios',
     onboarding: 'Onboarding',
   },
   en: {
-    docs: 'Documentation',
+    docs: 'Welcome',
     catalog: 'Repositories',
     onboarding: 'Onboarding',
   },

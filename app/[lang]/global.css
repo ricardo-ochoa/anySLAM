@@ -1,5 +1,69 @@
 :root {
-  --anyslam-accent: #1f6feb;
+  /* --- Color --------------------------------------------------------------
+     Secundario del portal: #0037FF. Se usa para iconos, enlaces y estados
+     activos; el fondo y el texto siguen siendo los tokens de Fumadocs.
+     En modo oscuro el tono se aclara (bloque .dark) manteniendo el mismo
+     matiz: #0037FF sobre negro se queda en 2.8:1 y no se lee. */
+  --anyslam-blue: #0037ff;
+  /* Superficies rellenas (botón, chip en hover) llevan siempre el azul de
+     marca sin aclarar: el texto va en blanco encima, y ahí sí contrasta. */
+  --anyslam-blue-solid: #0037ff;
+  --anyslam-blue-tint: color-mix(in srgb, var(--anyslam-blue) 12%, transparent);
+  --anyslam-blue-line: color-mix(in srgb, var(--anyslam-blue) 38%, transparent);
+
+  /* --- Tipografía ---------------------------------------------------------
+     Las tres familias se cargan en app/[lang]/layout.tsx. El reparto:
+
+       cuerpo   Inter     — todo el texto que se lee de corrido.
+       display  Mulish    — titulares y chrome de navegación.
+       pixel    Doto 800  — resaltados cortos, nunca un párrafo.
+
+     Doto es una matriz de puntos y se deshace por debajo de ~0.85rem: solo
+     para textos cortos. Mulish sí es legible en párrafo, pero el cuerpo se
+     queda en Inter para que titular y texto no se confundan. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --anyslam-font-display: var(--font-mulish), var(--font-sans);
+  --anyslam-font-pixel: var(--font-doto), var(--font-mulish), ui-monospace, monospace;
+}
+
+/* --- Display: Mulish ----------------------------------------------------- */
+
+/* Titulares del contenido. h4-h6 se quedan en Inter: a ese tamaño el cambio de
+   familia ya no se lee como jerarquía, solo como ruido. */
+#nd-page h1,
+#nd-page h2,
+#nd-page h3,
+.anyslam-hero h1,
+.anyslam-card h3,
+.anyslam-btn,
+.anyslam-cmd-group h3 {
+  font-family: var(--anyslam-font-display);
+}
+
+/* Chrome de navegación: barra superior, pestañas, barra lateral y tabla de
+   contenidos. */
+#nd-nav a,
+#nd-subnav a,
+#nd-sidebar a,
+#nd-sidebar button,
+#nd-toc > div > p,
+#nd-toc h3 {
+  font-family: var(--anyslam-font-display);
+}
+
+/* Mulish es más estrecha que Inter; los titulares grandes aguantan bien un
+   tracking negativo y ganan densidad. */
+#nd-page h1,
+.anyslam-hero h1 {
+  letter-spacing: -0.02em;
+}
+
+/* --- Resaltado: Doto ExtraBold ------------------------------------------ */
+
+.anyslam-pixel {
+  font-family: var(--anyslam-font-pixel);
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .anyslam-hero {
@@ -10,6 +74,11 @@
   max-width: 56rem;
   margin: 0 auto;
   width: 100%;
+}
+
+.anyslam-hero > * {
+  position: relative;
+  z-index: 1;
 }
 
 .anyslam-hero h1 {
@@ -29,8 +98,9 @@
 }
 
 .anyslam-eyebrow {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-family: var(--anyslam-font-pixel);
+  font-size: 0.9375rem;
+  font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-fd-muted-foreground);
@@ -56,9 +126,13 @@
 }
 
 .anyslam-btn-primary {
-  background: var(--color-fd-primary);
-  color: var(--color-fd-primary-foreground);
+  background: var(--anyslam-blue-solid);
+  color: #fff;
   border-color: transparent;
+}
+
+.anyslam-btn-primary:hover {
+  background: color-mix(in srgb, var(--anyslam-blue-solid) 84%, #000);
 }
 
 .anyslam-btn-secondary {
@@ -92,13 +166,15 @@
 }
 
 .anyslam-card:hover {
-  border-color: var(--color-fd-primary);
+  border-color: var(--anyslam-blue);
+  transform: translateY(-2px);
 }
 
 .anyslam-card h3 {
-  margin: 0 0 0.4rem;
+  margin: 0;
   font-size: 1rem;
   font-weight: 600;
+  line-height: 1.25;
 }
 
 .anyslam-card p {
@@ -106,17 +182,6 @@
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--color-fd-muted-foreground);
-}
-
-.anyslam-note {
-  max-width: 56rem;
-  margin: 0 auto 4rem;
-  padding: 1rem 1.25rem;
-  border-left: 3px solid var(--anyslam-accent);
-  background: var(--color-fd-muted);
-  border-radius: 0 0.5rem 0.5rem 0;
-  font-size: 0.875rem;
-  line-height: 1.6;
 }
 
 /* --- Acciones de página (copiar Markdown) --- */
@@ -367,4 +432,76 @@
   .anyslam-cmd-row[data-destructive] {
     border-left-color: #f87171;
   }
+}
+
+/* Mismo matiz que #0037FF, subido de luminosidad hasta 4.9:1 sobre el fondo
+   oscuro. Solo afecta a trazos y texto; las superficies rellenas siguen
+   usando --anyslam-blue-solid. */
+.dark {
+  --anyslam-blue: #4d73ff;
+  --anyslam-blue-tint: color-mix(in srgb, var(--anyslam-blue) 16%, transparent);
+  --anyslam-blue-line: color-mix(in srgb, var(--anyslam-blue) 42%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .anyslam-card {
+    transition:
+      border-color 0.15s ease,
+      transform 0.15s ease;
+  }
+}
+
+/* --- Icono de tarjeta ---------------------------------------------------- */
+
+/* El icono va en la misma línea que el título, no encima. */
+.anyslam-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.anyslam-card-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--anyslam-blue-line);
+  background: var(--anyslam-blue-tint);
+  color: var(--anyslam-blue);
+}
+
+.anyslam-card-icon svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.anyslam-card:hover .anyslam-card-icon {
+  background: var(--anyslam-blue-solid);
+  border-color: var(--anyslam-blue-solid);
+  color: #fff;
+}
+
+/* --- Azul de marca dentro de /docs --------------------------------------- */
+
+/* Enlaces del contenido. Fumadocs los pinta con el color del texto, así que
+   dentro de un párrafo solo se distinguen por el subrayado. */
+#nd-page .prose {
+  --tw-prose-links: var(--anyslam-blue);
+}
+
+/* Página actual en la barra lateral, sección abierta y pestaña activa. Ya
+   llevan un fondo gris; el color del texto es lo que las hace saltar. */
+#nd-sidebar a[data-active='true'],
+#nd-sidebar button[data-state='open'],
+#nd-subnav a[data-active='true'] {
+  color: var(--anyslam-blue);
+}
+
+/* Encabezado actual en la tabla de contenidos. */
+#nd-toc a[data-active='true'] {
+  color: var(--anyslam-blue);
 }

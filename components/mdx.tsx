@@ -3,6 +3,7 @@ import type { MDXComponents } from 'mdx/types';
 import { Mermaid } from '@/components/mdx/mermaid';
 import { Callout } from '@/components/mdx/callout';
 import { CommandSearch } from '@/components/mdx/command-search';
+import { Pixel } from '@/components/mdx/pixel';
 
 export function getMDXComponents(components?: MDXComponents) {
   return {
@@ -10,6 +11,7 @@ export function getMDXComponents(components?: MDXComponents) {
     Mermaid,
     Callout,
     CommandSearch,
+    Pixel,
     ...components,
   } satisfies MDXComponents;
 }

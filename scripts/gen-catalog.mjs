@@ -57,8 +57,8 @@ const L = {
       '**Inferido** — deducido del contexto. Debe verificarse con el responsable.',
       '**Sin datos** — no tenemos acceso al repositorio. Pendiente de su responsable.',
     ],
-    missingLink:
-      'Lo que falta por documentar y de quién depende está en [datos pendientes](/es/docs/03-repositories/missing-data).',
+    sectionLinks:
+      'Por qué el proyecto son varios repositorios y no uno está en [cómo se organizan los repositorios](/es/docs/03-repositories/overview). Lo que falta por documentar y de quién depende, en [datos pendientes](/es/docs/03-repositories/missing-data).',
   },
   en: {
     title: 'Repository catalog',
@@ -95,8 +95,8 @@ const L = {
       '**Inferred** — deduced from context. Must be verified with the maintainer.',
       '**No data** — we have no access to the repository. Pending on its owner.',
     ],
-    missingLink:
-      'What is still undocumented, and who it depends on, is tracked in [missing data](/en/docs/03-repositories/missing-data).',
+    sectionLinks:
+      'Why the project is several repositories instead of one is covered in [how the repositories are organised](/en/docs/03-repositories/overview). What is still undocumented, and who it depends on, is tracked in [missing data](/en/docs/03-repositories/missing-data).',
   },
 };
 
@@ -157,7 +157,7 @@ function render(lang) {
   lines.push('');
   for (const item of t.legend) lines.push(`- ${item}`);
   lines.push('');
-  lines.push(t.missingLink);
+  lines.push(t.sectionLinks);
   lines.push('');
   lines.push(`## ${t.detailHeading}`);
   lines.push('');
