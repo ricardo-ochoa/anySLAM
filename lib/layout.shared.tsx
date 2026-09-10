@@ -1,6 +1,7 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { uiTranslations } from 'fumadocs-ui/i18n';
 import { i18n } from '@/lib/i18n';
+import { SlamLogo } from '@/components/slam-logo';
 
 /**
  * Fumadocs no publica un language pack para español (@fumadocs/language solo
@@ -89,11 +90,10 @@ export function baseOptions(locale: string): BaseLayoutProps {
 
   return {
     nav: {
-      title: (
-        <span style={{ fontWeight: 700, letterSpacing: '-0.02em' }}>
-          any<span style={{ opacity: 0.6 }}>SLAM</span>
-        </span>
-      ),
+      // El logo trae el lidar dentro (components/slam-logo.tsx). En móvil no
+      // hay cursor que seguir, así que el propio componente se queda en el SVG
+      // estático y no monta ni el canvas ni los listeners.
+      title: <SlamLogo className="anyslam-logo-nav" />,
       url: `/${locale}`,
     },
     links: [

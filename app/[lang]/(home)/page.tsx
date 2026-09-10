@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { HomeIcon } from '@/components/home-icons';
+import { SlamLogo } from '@/components/slam-logo';
 
 const content = {
   es: {
@@ -49,7 +50,7 @@ const content = {
   },
   en: {
     eyebrow: 'Tecnológico de Monterrey · Campus Monterrey',
-    title: 'anySLAM project hub',
+    title: 'Project hub',
     lead: 'The single entry point to the SLAM, navigation and learned-locomotion research running on the ANYmal D quadruped. This portal does not replace the team repositories: it explains what exists, who maintains it, and how the pieces fit together.',
     primary: 'Start here',
     secondary: 'Browse repositories',
@@ -102,6 +103,7 @@ export default async function HomePage({ params }: PageProps<'/[lang]'>) {
   return (
     <main style={{ flex: 1 }}>
       <div className="anyslam-hero">
+        <SlamLogo className="anyslam-logo-hero" />
         <span className="anyslam-eyebrow">{t.eyebrow}</span>
         <h1>{t.title}</h1>
         <p className="lead">{t.lead}</p>

@@ -539,3 +539,62 @@
     display: none;
   }
 }
+
+/* --- Logo animado — components/slam-logo.tsx ------------------------------ */
+
+/* El canvas del lidar va por debajo del SVG: las letras se quedan vectoriales y
+   además recortan el haz al pintarse encima, sin necesidad de máscaras.
+   El ancho lo pone quien lo usa (.anyslam-logo-nav, el hero del 404, etc.). */
+.anyslam-logo {
+  position: relative;
+  display: block;
+  width: 100%;
+  line-height: 0;
+}
+
+.anyslam-logo svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* `color` es de donde el canvas saca el azul de marca, y por eso el barrido
+   cambia de tono solo al pasar a modo oscuro. */
+.anyslam-logo-scan {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--anyslam-blue);
+  pointer-events: none;
+}
+
+/* Medida para la barra superior. El logo es más del doble de ancho que alto,
+   así que 4.5rem de ancho deja ~34px y respira dentro de la barra de 56px. */
+.anyslam-logo-nav {
+  width: 4.5rem;
+  flex: none;
+}
+
+/* Medida para el hero del inicio y para la 404. */
+.anyslam-logo-hero {
+  width: min(24rem, 100%);
+}
+
+/* --- Página 404 — app/[lang]/not-found.tsx -------------------------------- */
+
+/* Centrada y con aire: aquí el logo escaneando es el contenido, no un adorno
+   de cabecera. */
+.anyslam-404 {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-bottom: 5rem;
+}
+
+.anyslam-404 .anyslam-logo-hero {
+  width: min(30rem, 100%);
+  margin-bottom: 0.75rem;
+}
