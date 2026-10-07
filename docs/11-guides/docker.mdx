@@ -10,6 +10,9 @@ variables de entorno— en una **imagen**. Cuando esa imagen se ejecuta se convi
 Para nosotros eso resuelve un problema concreto: ROS 1 y ROS 2 exigen versiones de Ubuntu
 distintas y no conviven bien en la misma máquina. En contenedores sí conviven.
 
+Si prefieres que te lo cuenten, al final de la página está [la clase grabada](#la-clase-grabada)
+con sus diapositivas: cincuenta minutos que cubren todo lo que sigue.
+
 ## Cómo vive en tu computadora
 
 ```mermaid
@@ -177,8 +180,32 @@ docker system df -v
 | [Referencia de Compose](https://docs.docker.com/reference/compose-file/) | Todo lo que puede llevar `compose.yaml`. |
 | [Play with Docker](https://labs.play-with-docker.com/) | Una terminal con Docker en el navegador, para probar sin instalar nada. |
 
-<Callout title="Faltan los videos">
-  Esta tabla todavía no tiene material en video ni las notas de quienes ya pelearon con Docker en
-  la Jetson. Si encontraste un video que te sirvió, pásaselo a quien mantiene el portal con una
-  línea de por qué vale la pena y se agrega aquí.
+<Callout title="Faltan las notas de la Jetson">
+  Lo que esta página todavía no tiene son las notas de quienes ya pelearon con Docker en la
+  Jetson del robot: lo que falló, qué lo arregló. Si pasaste por ahí, pásaselas a quien mantiene
+  el portal y se agregan.
 </Callout>
+
+## La clase grabada
+
+<Video name="docker" />
+
+## Las diapositivas
+
+La presentación que se usó en la clase. Se avanza con <kbd>↓</kbd> <kbd>↑</kbd>, la barra
+espaciadora o la rueda del ratón, y las teclas <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> cambian el
+color de acento. Hay que hacer clic dentro del marco para que el teclado responda; a pantalla
+completa se ve bastante mejor.
+
+<Embed src="/slides/docker-bases.html" title="Docker en robótica · qué es Docker" height={620} />
+
+El segundo material son los cinco niveles de madurez de un flujo de trabajo, animados paso a
+paso: desde «cada quien en su máquina» hasta una imagen firmada que se despliega a una flota de
+robots. Es el recorrido que empieza en el minuto 22:20 del video, y cada nivel se puede reproducir
+por su cuenta.
+
+<Embed
+  src="/slides/docker-niveles.html"
+  title="Pipelines en robótica · flujos animados por nivel"
+  height={780}
+/>

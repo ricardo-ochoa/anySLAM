@@ -10,6 +10,9 @@ process isolated from the rest of your system.
 For us it solves a concrete problem: ROS 1 and ROS 2 require different Ubuntu versions and do not
 coexist well on the same machine. In containers they do.
 
+If you would rather be walked through it, [the recorded class](#the-recorded-class) and its slides
+are at the end of this page: fifty minutes covering everything below.
+
 ## Where it lives on your computer
 
 ```mermaid
@@ -176,8 +179,36 @@ docker system df -v
 | [Compose file reference](https://docs.docker.com/reference/compose-file/) | Everything `compose.yaml` can contain. |
 | [Play with Docker](https://labs.play-with-docker.com/) | A Docker terminal in the browser, to try things without installing anything. |
 
-<Callout title="Videos are missing">
-  This table has no video material yet, and none of the notes from the people who have already
-  fought Docker on the Jetson. If a video helped you, send it to whoever maintains the portal with
-  one line on why it is worth the time.
+<Callout title="The Jetson notes are missing">
+  What this page still lacks are the notes from the people who have already fought Docker on the
+  robot's Jetson: what broke, what fixed it. If you have been there, send them to whoever
+  maintains the portal and they go in.
 </Callout>
+
+## The recorded class
+
+<Video name="docker" lang="en" />
+
+## The slides
+
+The deck used in the class. Move through it with <kbd>↓</kbd> <kbd>↑</kbd>, the space bar or the
+mouse wheel; the <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> keys change the accent colour. Click
+inside the frame first so the keyboard reaches it — and it reads much better full screen.
+
+<Embed
+  src="/slides/docker-bases.html"
+  title="Docker en robótica · qué es Docker"
+  height={620}
+  lang="en"
+/>
+
+The second piece walks through the five maturity levels of a workflow, animated step by step:
+from "everyone on their own machine" to a signed image rolled out to a fleet of robots. It is the
+same tour that starts at 22:20 in the video, and each level plays on its own.
+
+<Embed
+  src="/slides/docker-niveles.html"
+  title="Pipelines en robótica · flujos animados por nivel"
+  height={780}
+  lang="en"
+/>

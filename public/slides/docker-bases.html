@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docker en robótica · Clase 1 — Qué es Docker</title>
+
+<!-- ==========================================================================
+     TEMPLATE DE PRESENTACIÓN · v2
+     ==========================================================================
+     IDENTIDAD
+       · Base blanco / negro, minimalista, con degradados sutiles.
+       · UN color de acento a la vez, intercambiable EN VIVO:
+           verde fosforescente · naranja · azul
+         (3 puntos en el HUD, o teclas 1 / 2 / 3).
+       · Tipografía: Michroma (texto/títulos) + Doto 800 (números y datos).
+
+     CÓMO USARLO
+       1. Duplica y renombra el archivo por presentación.
+       2. Cambia <title>, la marca (.brand) y, si aplica, el acento por defecto:
+          <body data-accent="blue">  →  "green" | "orange" | "blue".
+       3. Cada <section class="s"> es una diapositiva. Agrega, quita o reordena:
+          el contador y la barra de progreso se recalculan solos.
+       4. Slide oscura: <section class="s dark">. Slide de cierre: "s dark end".
+
+     NAVEGACIÓN (ya lista, no toques el <script>)
+       · Teclado : ↓ / ↑ / Espacio / PageUp / PageDown / Home / End
+       · Acento  : teclas 1 (verde) · 2 (naranja) · 3 (azul)
+       · Botones : flechas del HUD (esquina inferior derecha)
+
+     BLOQUES (ver ejemplos abajo)
+       .kicker · h1/h2/h3 · p / p.big · .cols .box (.two/.three)
+       .stat (número Doto) · .gauge (medidor) · .bars (mini-gráfica)
+       .flow .step · table (usa .num en celdas numéricas) · .pills (.on = acento)
+       .quote · .note · .num-list · .cover-meta · .btn / .btn.ghost · .glow (halo)
+     ========================================================================== -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Michroma (texto, 1 solo peso) + Doto variable (usamos 400/600/800) -->
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;600;800&family=Michroma&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     1) TOKENS BASE  (blanco / negro / grises + tipografías)
+     ============================================================ */
+  :root{
+    --ink:#0C0D0F;          /* negro de marca */
+    --ink-2:#14161A;        /* superficie oscura ligeramente elevada */
+    --paper:#FFFFFF;        /* blanco */
+    --bg:#ECEDEA;           /* gris neutro de fondo (slides claras) */
+    --g1:#5F6369;           /* texto secundario */
+    --g2:#9A9DA3;           /* texto terciario / etiquetas */
+    --g3:#DBDDD8;           /* bordes */
+    --g4:#E7E8E4;           /* rellenos / pista de medidores */
+
+    --tech:'Michroma','Segoe UI',system-ui,sans-serif; /* texto general */
+    --doto:'Doto','JetBrains Mono',Consolas,monospace;  /* números / datos */
+
+    --radius:22px;          /* radio tarjetas grandes */
+    --radius-s:13px;        /* radio elementos chicos */
+    --shadow:0 1px 2px rgba(12,13,15,.04), 0 18px 40px -28px rgba(12,13,15,.22);
+  }
+
+  /* ============================================================
+     2) ACENTO INTERCAMBIABLE  (cambia todo con data-accent)
+        --on-accent = color del texto SOBRE el acento.
+     ============================================================ */
+  body[data-accent="green"]{
+    --accent:#C9F23A; --on-accent:#0C0D0F;
+    --accent-weak:rgba(201,242,58,.16); --accent-line:rgba(201,242,58,.55);
+    --glow:rgba(201,242,58,.40);
+  }
+  body[data-accent="orange"]{
+    --accent:#F0531C; --on-accent:#FFFFFF;
+    --accent-weak:rgba(240,83,28,.11); --accent-line:rgba(240,83,28,.45);
+    --glow:rgba(240,83,28,.34);
+  }
+  body[data-accent="blue"]{
+    --accent:#2F6BFF; --on-accent:#FFFFFF;
+    --accent-weak:rgba(47,107,255,.11); --accent-line:rgba(47,107,255,.42);
+    --glow:rgba(47,107,255,.34);
+  }
+
+  /* ============================================================
+     3) RESET / BASE
+     ============================================================ */
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--ink);color:var(--ink);
+    font-family:var(--tech);line-height:1.7;-webkit-font-smoothing:antialiased;
+    letter-spacing:-.005em;
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  .doto{font-family:var(--doto);font-weight:800;letter-spacing:.01em}
+
+  /* ============================================================
+     4) BARRA DE PROGRESO + HUD (contador, acento, navegación)
+     ============================================================ */
+  .topbar{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,0,0,.10);z-index:100}
+  .topbar .fill{height:100%;width:0;background:var(--accent);transition:width .18s ease}
+
+  .hud{
+    position:fixed;bottom:18px;right:20px;z-index:100;display:flex;align-items:center;gap:12px;
+    background:rgba(12,13,15,.92);border:1px solid rgba(255,255,255,.14);border-radius:999px;
+    padding:7px 9px 7px 12px;backdrop-filter:blur(10px);
+  }
+  /* Selector de acento: 3 puntos de color */
+  .accsw{display:flex;gap:7px;padding-right:11px;border-right:1px solid rgba(255,255,255,.16)}
+  .accsw .dot{
+    width:16px;height:16px;border-radius:50%;border:0;cursor:pointer;padding:0;
+    box-shadow:0 0 0 0 transparent;transition:box-shadow .15s,transform .15s;
+  }
+  .accsw .dot:hover{transform:scale(1.12)}
+  .accsw .d-green{background:#C9F23A}
+  .accsw .d-orange{background:#F0531C}
+  .accsw .d-blue{background:#2F6BFF}
+  .accsw .dot.active{box-shadow:0 0 0 2px var(--ink),0 0 0 3.5px currentColor}
+  .accsw .d-green.active{color:#C9F23A}
+  .accsw .d-orange.active{color:#F0531C}
+  .accsw .d-blue.active{color:#2F6BFF}
+
+  .hud .cnt{font-family:var(--doto);font-weight:600;font-size:13px;color:#EDEFF0;letter-spacing:.06em}
+  .hud .cnt #cur{color:var(--accent)}
+  .hud .nav{
+    width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.26);
+    background:transparent;color:#fff;cursor:pointer;font-size:14px;line-height:1;
+    display:flex;align-items:center;justify-content:center;font-family:var(--tech);
+  }
+  .hud .nav:hover{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+
+  /* ============================================================
+     5) DIAPOSITIVA  (degradado sutil: claro y oscuro)
+     ============================================================ */
+  .deck{scroll-snap-type:y mandatory;overflow-y:scroll;height:100vh}
+  .s{
+    scroll-snap-align:start;min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+    padding:64px 68px;position:relative;overflow:hidden;
+    background:radial-gradient(130% 90% at 100% 0%,#FFFFFF 0%,var(--bg) 78%);
+    color:var(--ink);
+  }
+  .s-in{max-width:1160px;margin:0 auto;width:100%;position:relative;z-index:2}
+  .s.dark{
+    color:#EEF0F1;
+    background:radial-gradient(120% 90% at 0% 0%,var(--ink-2) 0%,var(--ink) 70%);
+  }
+  .s.dark h1,.s.dark h2,.s.dark h3{color:#fff}
+  .s.dark p{color:#AEB2B8}
+
+  /* Halo de acento decorativo (opcional): <div class="glow"></div> */
+  .glow{
+    position:absolute;width:520px;height:520px;border-radius:50%;z-index:1;pointer-events:none;
+    background:radial-gradient(circle,var(--glow) 0%,transparent 66%);
+    filter:blur(8px);top:-120px;right:-90px;opacity:.9;
+  }
+
+  /* ============================================================
+     6) TIPOGRAFÍA
+     ============================================================ */
+  .kicker{
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--g1);
+    margin-bottom:22px;display:inline-flex;align-items:center;gap:10px;
+  }
+  .s.dark .kicker{color:#8A8F96}
+  .kicker::before{content:"";width:22px;height:2px;background:var(--accent);border-radius:2px}
+  h1{font-size:clamp(32px,5vw,58px);line-height:1.04;margin:0 0 22px;font-weight:400;letter-spacing:-.02em}
+  h2{font-size:clamp(24px,3.3vw,38px);line-height:1.12;margin:0 0 18px;font-weight:400;letter-spacing:-.015em}
+  h3{font-size:16px;font-weight:400;margin:0 0 10px;letter-spacing:-.01em}
+  p{margin:0 0 14px;font-size:15px;color:var(--g1);max-width:70ch}
+  p.big{font-size:19px;line-height:1.55;color:var(--ink);letter-spacing:-.01em}
+  .s.dark p.big{color:#D4D7DB}
+  em{font-style:normal;color:var(--accent);text-shadow:0 0 24px var(--glow)}
+  strong{font-weight:400;color:var(--ink)}
+  .s.dark strong{color:#fff}
+  code{font-family:var(--doto);font-weight:600;font-size:.88em;background:var(--g4);
+    padding:1px 7px;border-radius:6px;color:var(--ink)}
+  .s.dark code{background:rgba(255,255,255,.09);color:#EAECEE}
+
+  /* ============================================================
+     7) PORTADA / MARCA
+     ============================================================ */
+  .brand{display:flex;align-items:center;gap:13px;margin-bottom:56px}
+  .brand-logo{
+    width:44px;height:44px;border-radius:12px;background:var(--accent);color:var(--on-accent);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;
+    box-shadow:0 0 34px var(--glow);
+  }
+  .brand-logo.docker{width:58px;height:46px;border-radius:0;background:none;box-shadow:none}
+  .brand-logo.docker svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 18px rgba(37,96,255,.45))}
+  .brand-txt{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--g2)}
+  .s.dark .brand-txt{color:#8A8F96}
+  .brand-txt b{color:var(--ink);font-weight:400}
+  .s.dark .brand-txt b{color:#fff}
+
+  .cover-meta{display:flex;gap:52px;flex-wrap:wrap;margin-top:48px;padding-top:26px;
+    border-top:1px solid rgba(255,255,255,.14)}
+  .s:not(.dark) .cover-meta{border-top-color:var(--g3)}
+  .cover-meta dt{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--g2);margin-bottom:6px}
+  .cover-meta dd{margin:0;font-size:15px;color:#fff}
+  .s:not(.dark) .cover-meta dd{color:var(--ink)}
+  .cover-meta .doto{font-size:19px}
+
+  /* ============================================================
+     8) TARJETAS
+     ============================================================ */
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin:28px 0 0}
+  .cols.two{grid-template-columns:1fr 1fr}
+  .cols.three{grid-template-columns:repeat(3,1fr)}
+  .box{
+    background:var(--paper);border:1px solid var(--g3);border-radius:var(--radius);
+    padding:26px 26px;box-shadow:var(--shadow);
+  }
+  .s.dark .box{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);box-shadow:none}
+  .box h3{color:var(--ink)}
+  .s.dark .box h3{color:#fff}
+  .box p{font-size:14px;margin:0}
+  .box p+p{margin-top:10px}
+  .box ul{margin:0;padding-left:18px;font-size:14px;color:var(--g1)}
+  .s.dark .box ul{color:#AEB2B8}
+  .box li{margin-bottom:8px}
+  .box li:last-child{margin-bottom:0}
+
+  /* ============================================================
+     9) STAT  (número grande en Doto)
+     ============================================================ */
+  .stat .n{font-family:var(--doto);font-weight:800;font-size:56px;line-height:.95;
+    color:var(--ink);display:block;margin-bottom:10px;letter-spacing:.01em}
+  .stat .n em{color:var(--accent)}          /* pinta el número en acento con <em> */
+  .s.dark .stat .n{color:#fff}
+  .stat .n small{font-size:24px;color:var(--g2);font-weight:400}
+  .stat .t{font-size:13.5px;color:var(--g1);line-height:1.5}
+  .s.dark .stat .t{color:#9CA1A7}
+
+  /* ============================================================
+     10) GAUGE  (medidor semicircular)
+         Cambia el valor: ajusta style="--pct:NN" (0–100) en .g-fill,
+         y el número dentro de .gauge-val.
+     ============================================================ */
+  .gauge{position:relative;padding:6px 0 4px}
+  .gauge-svg{width:100%;max-width:280px;display:block;margin:0 auto;overflow:visible}
+  .g-track,.g-fill{fill:none;stroke-linecap:round;stroke-width:15}
+  .g-track{stroke:var(--g4)}
+  .s.dark .g-track{stroke:rgba(255,255,255,.12)}
+  /* long. del semicírculo r=92 → π·92 ≈ 289.03 */
+  .g-fill{stroke:var(--accent);stroke-dasharray:289.03;
+    stroke-dashoffset:calc(289.03 - (289.03 * var(--pct,70) / 100));
+    filter:drop-shadow(0 0 10px var(--glow))}
+  .gauge-val{position:absolute;left:0;right:0;top:52%;text-align:center}
+  .gauge-val .doto{font-size:44px;color:var(--ink)}
+  .s.dark .gauge-val .doto{color:#fff}
+  .gauge-val small{font-size:18px;color:var(--g2)}
+  .gauge-lbl{text-align:center;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--g2);margin-top:10px}
+
+  /* ============================================================
+     11) BARS  (mini-gráfica de barras) — cada barra: style="--h:NN%"
+     ============================================================ */
+  .bars{display:flex;align-items:flex-end;gap:9px;height:150px;padding-bottom:26px;position:relative}
+  .bar{flex:1;height:var(--h,50%);min-height:6px;border-radius:7px 7px 3px 3px;
+    background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 55%,transparent));position:relative}
+  .bar.mute{background:var(--g4)}
+  .s.dark .bar.mute{background:rgba(255,255,255,.10)}
+  .bar span{position:absolute;bottom:-24px;left:0;right:0;text-align:center;font-size:11px;color:var(--g2);font-family:var(--doto);font-weight:600}
+
+  /* ============================================================
+     12) FLOW  (pasos de un proceso)
+     ============================================================ */
+  .flow{display:flex;gap:12px;margin:28px 0 0;flex-wrap:wrap}
+  .flow .step{flex:1;min-width:180px;background:var(--paper);border:1px solid var(--g3);
+    border-radius:var(--radius-s);padding:22px 22px;box-shadow:var(--shadow)}
+  .s.dark .flow .step{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);box-shadow:none}
+  .flow .step .lbl{font-family:var(--doto);font-weight:800;font-size:22px;color:var(--accent);margin-bottom:12px}
+  .flow .step .ttl{font-size:15px;color:var(--ink);margin-bottom:7px}
+  .s.dark .flow .step .ttl{color:#fff}
+  .flow .step .d{font-size:13px;color:var(--g1);line-height:1.5}
+  .s.dark .flow .step .d{color:#9CA1A7}
+
+  /* ============================================================
+     13) TABLA  (usa class="num" en celdas numéricas → Doto)
+     ============================================================ */
+  table{width:100%;border-collapse:collapse;font-size:14.5px;margin:26px 0 0;
+    background:var(--paper);border:1px solid var(--g3);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .s.dark table{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.12);box-shadow:none}
+  th{background:var(--ink);color:#fff;text-align:left;font-weight:400;padding:13px 18px;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  td{padding:14px 18px;border-top:1px solid var(--g4);vertical-align:top;color:var(--g1)}
+  .s.dark td{border-top-color:rgba(255,255,255,.09);color:#AEB2B8}
+  td:first-child{color:var(--ink)}
+  .s.dark td:first-child{color:#EAECEE}
+  td.num{font-family:var(--doto);font-weight:600;color:var(--ink)}
+  .s.dark td.num{color:#fff}
+  tbody tr:nth-child(even) td{background:rgba(12,13,15,.02)}
+  .s.dark tbody tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+
+  /* ============================================================
+     14) PILLS  (.on = acento) — sirven también como tabs
+     ============================================================ */
+  .pills{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 0}
+  .pill{background:var(--paper);border:1px solid var(--g3);border-radius:999px;padding:8px 17px;font-size:13px;color:var(--g1)}
+  .s.dark .pill{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);color:#B8BCC1}
+  .pill.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+
+  /* ============================================================
+     15) QUOTE
+     ============================================================ */
+  .quote{border-left:3px solid var(--accent);padding:4px 0 4px 24px;margin:28px 0 0;
+    font-size:20px;line-height:1.5;color:var(--ink);letter-spacing:-.01em}
+  .s.dark .quote{color:#EAECEE}
+
+  /* ============================================================
+     16) NOTE  (fondo tenue del acento)
+     ============================================================ */
+  .note{background:var(--accent-weak);border:1px solid var(--accent-line);border-radius:16px;
+    padding:20px 24px;margin:26px 0 0;font-size:15px;color:var(--ink)}
+  .note b{color:var(--ink);font-weight:400;border-bottom:2px solid var(--accent)}
+  .s.dark .note{color:#E7E9EB}
+  .s.dark .note b{color:#fff}
+
+  /* ============================================================
+     17) NUM-LIST  (lista numerada — número en Doto)
+     ============================================================ */
+  .num-list{counter-reset:n;list-style:none;padding:0;margin:28px 0 0}
+  .num-list li{counter-increment:n;position:relative;padding-left:56px;margin-bottom:19px;
+    font-size:16px;color:var(--g1)}
+  .s.dark .num-list li{color:#B0B4BA}
+  .num-list li::before{content:counter(n);position:absolute;left:0;top:-2px;
+    font-family:var(--doto);font-weight:800;font-size:18px;color:var(--accent);
+    width:38px;height:32px;border:1px solid var(--accent-line);border-radius:9px;
+    display:flex;align-items:center;justify-content:center}
+  .num-list li b{color:var(--ink);font-weight:400}
+  .s.dark .num-list li b{color:#fff}
+
+  /* ============================================================
+     18) BOTONES / CTA
+     ============================================================ */
+  .btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--tech);font-size:14px;
+    background:var(--accent);color:var(--on-accent);border:0;border-radius:999px;
+    padding:13px 26px;cursor:pointer;text-decoration:none;box-shadow:0 0 30px var(--glow)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--g3);box-shadow:none}
+  .s.dark .btn.ghost{color:#fff;border-color:rgba(255,255,255,.24)}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+
+  .end{color:#EEF0F1}
+
+  /* ============================================================
+     19) RESPONSIVO / IMPRESIÓN / MOVIMIENTO REDUCIDO
+     ============================================================ */
+  @media (max-width:900px){
+    .s{padding:44px 24px;min-height:auto;padding-top:60px;padding-bottom:60px}
+    .deck{scroll-snap-type:none}
+    .cols.two,.cols.three{grid-template-columns:1fr}
+    .cover-meta{gap:28px}
+    .hud{gap:9px;padding:6px 8px}
+    .glow{width:320px;height:320px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important}
+  }
+  @media print{
+    body{background:#fff}
+    .deck{height:auto;overflow:visible}
+    .topbar,.hud{display:none}
+    .s{min-height:auto;break-after:page;padding:16mm;background:#fff!important;color:var(--ink)!important}
+    .s.dark h1,.s.dark h2,.s.dark h3,.s.dark .quote,.s.dark td:first-child{color:var(--ink)!important}
+    .s.dark p,.s.dark .stat .t,.s.dark .num-list li,.s.dark td{color:var(--g1)!important}
+    .s.dark .box,.s.dark .flow .step,.s.dark table{background:#fff!important;border-color:var(--g3)!important}
+    .glow{display:none}
+    .brand-txt b,.cover-meta dd{color:var(--ink)!important}
+    .s:last-child{break-after:auto}
+  }
+
+  /* ============================================================
+     19) EXTENSIÓN · CLASE TÉCNICA  (bloques de código)
+         Añadido para esta presentación. No altera el resto del
+         sistema: solo suma la tipografía mono y el bloque <pre>.
+
+         <pre class="code">   bloque de código
+           <span class="k">   instrucción / comando
+           <span class="f">   flag o argumento
+           <span class="st">  valor, cadena o ruta
+           <span class="c">   comentario
+         <div class="code-ttl">  etiqueta chica encima del bloque
+     ============================================================ */
+  :root{
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,'Courier New',monospace;
+  }
+  /* el código inline pasa a mono: Doto no es legible en comandos largos */
+  code{font-family:var(--mono);font-weight:500;letter-spacing:0;font-size:.85em}
+
+  pre.code{
+    font-family:var(--mono);font-size:13px;line-height:1.62;letter-spacing:0;
+    background:var(--ink);color:#DDE2E7;border:1px solid rgba(255,255,255,.10);
+    border-radius:16px;padding:20px 22px;margin:24px 0 0;overflow:auto;
+    box-shadow:var(--shadow);tab-size:2;white-space:pre;
+  }
+  .s.dark pre.code{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);box-shadow:none}
+  pre.code .k{color:var(--accent)}
+  pre.code .f{color:#8FB4FF}
+  pre.code .st{color:#A6D8A8}
+  pre.code .c{color:#7C858E}
+  /* código inline dentro de un título: más discreto */
+  h1 code,h2 code{font-size:.66em;padding:2px 10px;border-radius:9px;vertical-align:.08em}
+  /* el acento azul/naranja se aclara dentro del bloque oscuro para que se lea */
+  body[data-accent="blue"]   pre.code .k{color:#7FA2FF}
+  body[data-accent="orange"] pre.code .k{color:#FF7A45}
+
+  .box pre.code{margin-top:14px;font-size:12px;padding:16px 18px;line-height:1.6}
+  .code-ttl{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--g2);margin:26px 0 -16px;
+  }
+  .s.dark .code-ttl{color:#8A8F96}
+  .box .code-ttl{margin:0 0 -6px}
+  .cols.two.eq{align-items:stretch}
+  .cols.two.eq .box{display:flex;flex-direction:column}
+  .cols.two.eq .box pre.code{flex:1}
+
+  /* slides densas (tablas largas / código largo) */
+  .s.tight{padding:46px 68px}
+  .s.tight h2{margin-bottom:12px}
+  .s.tight table{margin-top:18px}
+  .s.tight table td,.s.tight table th{padding-top:10px;padding-bottom:10px}
+  .s.tight pre.code{margin-top:16px}
+
+  /* seguridad: pantallas bajas o angostas (proyector 720p, laptop 13") */
+  @media (max-height:780px){
+    .s{padding:40px 56px}
+    .s.tight{padding:32px 56px}
+    pre.code{font-size:12px;padding:16px 18px}
+    .num-list li{margin-bottom:13px;font-size:15px}
+  }
+  @media (max-width:880px){
+    .s{padding:40px 24px}
+    .cols.two,.cols.three{grid-template-columns:1fr}
+    pre.code{font-size:11.5px}
+  }
+
+  /* ============================================================
+     20) EXTENSIÓN · DIAGRAMA DE CAPAS (VM vs contenedor)
+         <div class="stack"> con filas .ly; .row agrupa en horizontal;
+         .acc resalta la capa clave en el color de acento.
+     ============================================================ */
+  .stack{display:flex;flex-direction:column;gap:6px;margin-top:16px}
+  .stack .row{display:flex;gap:6px}
+  .stack .ly{flex:1;border:1px solid var(--g3);border-radius:10px;padding:10px 12px;
+    font-size:12.5px;text-align:center;background:var(--paper);color:var(--ink)}
+  .stack .ly.acc{background:var(--accent-weak);border-color:var(--accent-line)}
+  .stack .ly.mute{background:var(--g4);color:var(--g1)}
+  .s.dark .stack .ly{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:#EAECEE}
+  .s.dark .stack .ly.mute{background:rgba(255,255,255,.02);color:#9CA1A7}
+  .s.dark .stack .ly.acc{background:var(--accent-weak);border-color:var(--accent-line)}
+  .stack .ly code{font-size:13px;background:none;padding:0}
+  .box .stack-cap{font-size:13px;color:var(--g1);margin-top:14px}
+
+  /* ============================================================
+     21) EXTENSIÓN · LOGO + NOMBRE EN CELDA DE TABLA
+         <td><div class="piece"><img class="logo" …><span>Nombre</span></div></td>
+     ============================================================ */
+  td .piece{display:flex;align-items:center;gap:12px}
+  td .piece .logo{height:34px;width:72px;object-fit:contain;object-position:center;flex:none}
+
+  /* ============================================================
+     22) EXTENSIÓN · DIAGRAMAS SVG  (<svg class="diagram">)
+         Toman colores de los tokens: cambian con el acento.
+     ============================================================ */
+  .diagram{display:block;width:100%;height:auto;margin-top:22px;overflow:visible}
+  .diagram text{font-family:var(--tech);fill:var(--ink)}
+  .diagram .mono{font-family:var(--mono)}
+  .diagram .d-sub{fill:var(--g1)}
+  .diagram .d-on{fill:var(--on-accent)}
+  .diagram .d-acc-t{fill:var(--accent)}
+  .diagram .d-acc{fill:var(--accent)}
+  .diagram .d-weak{fill:var(--accent-weak);stroke:var(--accent-line);stroke-width:1.5}
+  .diagram .d-weak-line{fill:none;stroke:var(--accent-line);stroke-width:1.5}
+  .diagram .d-core{fill:var(--paper);stroke:var(--accent);stroke-width:2}
+  .diagram .d-card{fill:var(--paper);stroke:var(--g3);stroke-width:1.5}
+  .diagram .d-dark{fill:var(--ink)}
+  .diagram .d-plate{fill:var(--paper)}
+  .diagram .d-rib{stroke:rgba(255,255,255,.35);stroke-width:2}
+  .diagram .d-arrow{stroke:var(--accent);stroke-width:3}
+  .diagram .d-link{fill:none;stroke:var(--g3);stroke-width:1.5}
+  .diagram .d-link-on{fill:none;stroke:var(--accent);stroke-width:2.5}
+  .diagram .d-icon{fill:none;stroke:var(--accent);stroke-width:2}
+  .diagram .d-fillp{fill:var(--paper)}
+  .diagram .d-inkfill{fill:var(--ink)}
+  body[data-accent="green"] .diagram .d-acc-t{fill:#6E8A12}
+  .diagram .d-white{fill:#fff}
+  .diagram .d-cli{fill:var(--accent)}
+  body[data-accent="blue"]   .diagram .d-cli{fill:#7FA2FF}
+  body[data-accent="orange"] .diagram .d-cli{fill:#FF7A45}
+</style>
+</head>
+<!-- Acento por defecto: "green" | "orange" | "blue" -->
+<body data-accent="blue">
+
+<!-- ====== BARRA DE PROGRESO (no editar) ====== -->
+<div class="topbar"><div class="fill" id="fill"></div></div>
+
+<!-- ====== HUD: acento + contador + navegación (no editar) ====== -->
+<div class="hud">
+  <div class="accsw" role="group" aria-label="Color de acento">
+    <button class="dot d-green"  data-accent="green"  aria-label="Verde fosforescente"></button>
+    <button class="dot d-orange" data-accent="orange" aria-label="Naranja"></button>
+    <button class="dot d-blue"   data-accent="blue"   aria-label="Azul"></button>
+  </div>
+  <span class="cnt"><span id="cur">1</span> / <span id="tot">0</span></span>
+  <button class="nav" onclick="go(-1)" aria-label="Anterior">&#8593;</button>
+  <button class="nav" onclick="go(1)"  aria-label="Siguiente">&#8595;</button>
+</div>
+
+<!-- ==========================================================================
+     CONTENIDO. Cada <section class="s"> es una slide.
+     Clase 1 · Qué es Docker. Se irán agregando slides clase a clase.
+     ========================================================================== -->
+<div class="deck" id="deck">
+
+<!-- ====== C1 · 01 · PORTADA ====== -->
+<section class="s dark">
+  <div class="glow"></div>
+  <div class="s-in">
+    <div class="brand">
+      <div class="brand-logo docker"><svg viewBox="0 0 1000 789.31" role="img" aria-label="Logo de Docker"><path fill="#2560FF" d="M983.7431641,324.2830811c-24.5324707-16.4924622-88.9415283-23.5606689-135.7683105-10.926239 c-2.5327759-46.6501465-26.5941162-85.9669952-70.593689-120.247757l-16.2862549-10.9262543l-10.8673706,16.4041138 c-21.3518066,32.3959045-30.3343506,75.5413818-27.1536255,114.7993469 c2.5032959,24.1791382,10.9262085,51.3622131,27.1536255,71.0648193 c-60.9631958,35.3704834-117.1553955,27.3304138-365.9854431,27.3304138H0.0855028 c-1.1191314,56.1921387,7.9222765,164.2767029,76.6310272,252.2463074 c7.5983124,9.718811,15.9034576,19.1136475,24.9448547,28.1844482 c55.8976822,55.956543,140.303772,96.9816284,266.5594482,97.0994263 c192.6083984,0.1766968,357.62146-103.9320068,458.0192871-355.6776733 c33.0438232,0.5300903,120.2183228,5.9195862,162.8925171-76.5427246C990.1634521,355.7071228,1000,335.2388,1000,335.2388 l-16.2568359-10.9262695V324.2830811z M250.8003998,272.9208374h-108.02565v108.0256653h108.02565V272.9208374z M390.3678894,272.9208374H282.3422241v108.0256653h108.0256653V272.9208374z M529.9353638,272.9208374H421.9096985v108.0256653 h108.0256653V272.9208374z M669.5028076,272.9208374H561.4771729v108.0256653h108.0256348V272.9208374z M111.2329102,272.9208374 H3.2072937v108.0256653h108.0256195V272.9208374z M250.8003998,136.445694h-108.02565v108.02565h108.02565V136.445694z M390.3678894,136.445694H282.3422241v108.02565h108.0256653V136.445694z M529.9353638,136.445694H421.9096985v108.02565 h108.0256653V136.445694z M529.9353638,0H421.9096985v108.0256424h108.0256653V0z"/></svg></div>
+      <div class="brand-txt"><b>DOCKER</b>&nbsp;&nbsp;en robótica</div>
+    </div>
+    <div class="kicker">Clase 1</div>
+    <h1>Qué es Docker<br>y por qué lo usamos</h1>
+    <dl class="cover-meta">
+      <div><dt>Curso</dt><dd>Docker en robótica</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ====== C1 · 02 · AGENDA ====== -->
+<section class="s">
+  <div class="s-in">
+    <div class="kicker">En esta clase</div>
+    <h2>Preguntas</h2>
+    <ol class="num-list">
+      <li><b>¿Qué es Docker y por qué se usa?</b></li>
+      <li><b>¿En qué se diferencia de una máquina virtual?</b></li>
+      <li><b>¿Por qué importa la arquitectura?</b> Imágenes multi-arquitectura.</li>
+      <li><b>Engine, Desktop, Compose, Docker Hub y GHCR:</b> qué es cada uno y cuándo usarlo.</li>
+      <li><b>Flujos de trabajo.</b></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ====== C1 · 03 · EL PROBLEMA ====== -->
+<section class="s dark">
+  <div class="glow" style="top:auto;bottom:-160px;right:-120px"></div>
+  <div class="s-in">
+    <div class="kicker">El problema</div>
+    <h2>“En mi máquina sí funciona”<br>no es una respuesta.</h2>
+    <div class="cols two">
+      <div class="box">
+        <h3>Lo que se rompe</h3>
+        <ul>
+          <li>Ubuntu 22 + Humble en una laptop, Ubuntu 24 + Jazzy en otra</li>
+          <li>Dependencias de apt instaladas a mano y sin registrar</li>
+          <li>Laptop amd64, robot arm64</li>
+          <li>Un “paso extra” que solo recuerda una persona</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Lo que Docker fija</h3>
+        <ul>
+          <li>Sistema base y todas las dependencias</li>
+          <li>Variables de entorno y rutas</li>
+          <li>El comando exacto con el que arranca</li>
+          <li>El mismo artefacto en laptop, CI y robot</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 04 · QUÉ ES DOCKER ====== -->
+<section class="s">
+  <div class="s-in">
+    <div class="kicker">1 · Qué es Docker</div>
+    <h2>Tu entorno, empaquetado</h2>
+    <p class="big" style="max-width:60ch">
+      Docker empaqueta una aplicación con todo lo que necesita y la ejecuta aislada del resto del sistema.
+    </p>
+    <svg class="diagram" viewBox="0 0 1100 345" role="img" aria-label="Dockerfile, docker build, imagen en capas, docker run, contenedores">
+  <path d="M50 30 H225 L265 70 V265 H50 Z" class="d-weak"/>
+  <path d="M225 30 V70 H265" class="d-weak-line"/>
+  <text x="70" y="104" class="mono d-ink" font-size="13"><tspan class="d-acc-t">FROM</tspan> ros:jazzy</text>
+  <text x="70" y="132" class="mono d-ink" font-size="13"><tspan class="d-acc-t">COPY</tspan> src/ src/</text>
+  <text x="70" y="160" class="mono d-ink" font-size="13"><tspan class="d-acc-t">RUN</tspan> colcon build</text>
+  <text x="70" y="188" class="mono d-ink" font-size="13"><tspan class="d-acc-t">CMD</tspan> ros2 launch …</text>
+  <line x1="285" y1="150" x2="416" y2="150" class="d-arrow"/><polygon points="414,141 430,150 414,159" class="d-acc"/><text x="357.5" y="134" text-anchor="middle" class="mono d-acc-t" font-size="14">docker build</text>
+  <rect x="455" y="58"  width="200" height="58" rx="10" class="d-acc"/>
+  <text x="555" y="93"  text-anchor="middle" class="d-on" font-size="13">tu código</text>
+  <rect x="455" y="124" width="200" height="58" rx="10" class="d-weak"/>
+  <text x="555" y="159" text-anchor="middle" class="d-ink" font-size="13">dependencias</text>
+  <rect x="455" y="190" width="200" height="58" rx="10" class="d-weak"/>
+  <text x="555" y="225" text-anchor="middle" class="mono d-ink" font-size="13">ros:jazzy</text>
+  <line x1="675" y1="150" x2="816" y2="150" class="d-arrow"/><polygon points="814,141 830,150 814,159" class="d-acc"/><text x="752.5" y="134" text-anchor="middle" class="mono d-acc-t" font-size="14">docker run</text>
+  <rect x="850" y="62" width="200" height="78" rx="6" class="d-acc"/><line x1="864" y1="70" x2="864" y2="132" class="d-rib"/><line x1="878" y1="70" x2="878" y2="132" class="d-rib"/><line x1="892" y1="70" x2="892" y2="132" class="d-rib"/><line x1="906" y1="70" x2="906" y2="132" class="d-rib"/><line x1="920" y1="70" x2="920" y2="132" class="d-rib"/><line x1="934" y1="70" x2="934" y2="132" class="d-rib"/><line x1="948" y1="70" x2="948" y2="132" class="d-rib"/><line x1="962" y1="70" x2="962" y2="132" class="d-rib"/><line x1="976" y1="70" x2="976" y2="132" class="d-rib"/><line x1="990" y1="70" x2="990" y2="132" class="d-rib"/><line x1="1004" y1="70" x2="1004" y2="132" class="d-rib"/><line x1="1018" y1="70" x2="1018" y2="132" class="d-rib"/><line x1="1032" y1="70" x2="1032" y2="132" class="d-rib"/><rect x="895" y="88" width="110" height="26" rx="5" class="d-plate"/><text x="950" y="106" text-anchor="middle" class="mono d-ink" font-size="13">talker</text>
+  <rect x="850" y="168" width="200" height="78" rx="6" class="d-acc"/><line x1="864" y1="176" x2="864" y2="238" class="d-rib"/><line x1="878" y1="176" x2="878" y2="238" class="d-rib"/><line x1="892" y1="176" x2="892" y2="238" class="d-rib"/><line x1="906" y1="176" x2="906" y2="238" class="d-rib"/><line x1="920" y1="176" x2="920" y2="238" class="d-rib"/><line x1="934" y1="176" x2="934" y2="238" class="d-rib"/><line x1="948" y1="176" x2="948" y2="238" class="d-rib"/><line x1="962" y1="176" x2="962" y2="238" class="d-rib"/><line x1="976" y1="176" x2="976" y2="238" class="d-rib"/><line x1="990" y1="176" x2="990" y2="238" class="d-rib"/><line x1="1004" y1="176" x2="1004" y2="238" class="d-rib"/><line x1="1018" y1="176" x2="1018" y2="238" class="d-rib"/><line x1="1032" y1="176" x2="1032" y2="238" class="d-rib"/><rect x="895" y="194" width="110" height="26" rx="5" class="d-plate"/><text x="950" y="212" text-anchor="middle" class="mono d-ink" font-size="13">listener</text>
+  <text x="157" y="305" text-anchor="middle" class="d-ink" font-size="18">Dockerfile</text>
+  <text x="157" y="330" text-anchor="middle" class="d-sub" font-size="13">la receta</text>
+  <text x="555" y="305" text-anchor="middle" class="d-ink" font-size="18">Imagen</text>
+  <text x="555" y="330" text-anchor="middle" class="d-sub" font-size="13">inmutable, en capas</text>
+  <text x="950" y="305" text-anchor="middle" class="d-ink" font-size="18">Contenedores</text>
+  <text x="950" y="330" text-anchor="middle" class="d-sub" font-size="13">procesos vivos</text>
+</svg>
+<pre class="code"><span class="k">docker build</span> <span class="f">-t</span> ros2-docker-template:1.0 .     <span class="c"># Dockerfile → imagen</span>
+<span class="k">docker run</span> <span class="f">--rm -it</span> ros2-docker-template:1.0    <span class="c"># imagen → contenedor</span></pre>
+  </div>
+</section>
+
+<!-- ====== C1 · 05 · CÓMO FUNCIONA ====== -->
+<section class="s tight">
+  <div class="s-in">
+    <div class="kicker">1 · Qué es Docker</div>
+    <h2>Cómo funciona por dentro</h2>
+    <p class="big" style="max-width:64ch">El comando <code>docker</code> solo da órdenes. Quien hace el trabajo es el daemon, que administra cuatro tipos de objetos.</p>
+    <svg class="diagram" viewBox="0 0 1100 390" role="img" aria-label="Docker CLI habla por REST API con el daemon dockerd, que administra imágenes, contenedores, redes y volúmenes">
+  <text x="150" y="104" text-anchor="middle" class="d-sub" font-size="12">tú, Compose, VS Code</text>
+  <rect x="30" y="118" width="240" height="144" rx="16" class="d-dark"/>
+  <text x="150" y="160" text-anchor="middle" class="d-white" font-size="18">Docker CLI</text>
+  <text x="150" y="196" text-anchor="middle" class="mono d-cli" font-size="13">docker build</text>
+  <text x="150" y="218" text-anchor="middle" class="mono d-cli" font-size="13">docker run</text>
+  <text x="150" y="240" text-anchor="middle" class="mono d-cli" font-size="13">docker ps</text>
+  <line x1="282" y1="190" x2="412" y2="190" class="d-arrow"/>
+  <polygon points="410,181 426,190 410,199" class="d-acc"/>
+  <text x="352" y="174" text-anchor="middle" class="d-ink" font-size="14">REST API</text>
+  <text x="352" y="214" text-anchor="middle" class="mono d-sub" font-size="11">docker.sock</text>
+  <circle cx="562" cy="190" r="130" class="d-weak"/>
+  <circle cx="562" cy="190" r="94" class="d-core"/>
+  <image href="data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSLQodC70L7QuV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwMCA3ODkuMzExOTUwNyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwMCA3ODkuMzExOTUwNzsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiMyNTYwRkY7fQo8L3N0eWxlPgo8Zz4KCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik05ODMuNzQzMTY0MSwzMjQuMjgzMDgxMWMtMjQuNTMyNDcwNy0xNi40OTI0NjIyLTg4Ljk0MTUyODMtMjMuNTYwNjY4OS0xMzUuNzY4MzEwNS0xMC45MjYyMzkKCQljLTIuNTMyNzc1OS00Ni42NTAxNDY1LTI2LjU5NDExNjItODUuOTY2OTk1Mi03MC41OTM2ODktMTIwLjI0Nzc1N2wtMTYuMjg2MjU0OS0xMC45MjYyNTQzbC0xMC44NjczNzA2LDE2LjQwNDExMzgKCQljLTIxLjM1MTgwNjYsMzIuMzk1OTA0NS0zMC4zMzQzNTA2LDc1LjU0MTM4MTgtMjcuMTUzNjI1NSwxMTQuNzk5MzQ2OQoJCWMyLjUwMzI5NTksMjQuMTc5MTM4MiwxMC45MjYyMDg1LDUxLjM2MjIxMzEsMjcuMTUzNjI1NSw3MS4wNjQ4MTkzCgkJYy02MC45NjMxOTU4LDM1LjM3MDQ4MzQtMTE3LjE1NTM5NTUsMjcuMzMwNDEzOC0zNjUuOTg1NDQzMSwyNy4zMzA0MTM4SDAuMDg1NTAyOAoJCWMtMS4xMTkxMzE0LDU2LjE5MjEzODcsNy45MjIyNzY1LDE2NC4yNzY3MDI5LDc2LjYzMTAyNzIsMjUyLjI0NjMwNzQKCQljNy41OTgzMTI0LDkuNzE4ODExLDE1LjkwMzQ1NzYsMTkuMTEzNjQ3NSwyNC45NDQ4NTQ3LDI4LjE4NDQ0ODIKCQljNTUuODk3NjgyMiw1NS45NTY1NDMsMTQwLjMwMzc3Miw5Ni45ODE2Mjg0LDI2Ni41NTk0NDgyLDk3LjA5OTQyNjMKCQljMTkyLjYwODM5ODQsMC4xNzY2OTY4LDM1Ny42MjE0Ni0xMDMuOTMyMDA2OCw0NTguMDE5Mjg3MS0zNTUuNjc3NjczMwoJCWMzMy4wNDM4MjMyLDAuNTMwMDkwMywxMjAuMjE4MzIyOCw1LjkxOTU4NjIsMTYyLjg5MjUxNzEtNzYuNTQyNzI0NkM5OTAuMTYzNDUyMSwzNTUuNzA3MTIyOCwxMDAwLDMzNS4yMzg4LDEwMDAsMzM1LjIzODgKCQlsLTE2LjI1NjgzNTktMTAuOTI2MjY5NVYzMjQuMjgzMDgxMXogTTI1MC44MDAzOTk4LDI3Mi45MjA4Mzc0aC0xMDguMDI1NjV2MTA4LjAyNTY2NTNoMTA4LjAyNTY1VjI3Mi45MjA4Mzc0egoJCSBNMzkwLjM2Nzg4OTQsMjcyLjkyMDgzNzRIMjgyLjM0MjIyNDF2MTA4LjAyNTY2NTNoMTA4LjAyNTY2NTNWMjcyLjkyMDgzNzR6IE01MjkuOTM1MzYzOCwyNzIuOTIwODM3NEg0MjEuOTA5Njk4NXYxMDguMDI1NjY1MwoJCWgxMDguMDI1NjY1M1YyNzIuOTIwODM3NHogTTY2OS41MDI4MDc2LDI3Mi45MjA4Mzc0SDU2MS40NzcxNzI5djEwOC4wMjU2NjUzaDEwOC4wMjU2MzQ4VjI3Mi45MjA4Mzc0eiBNMTExLjIzMjkxMDIsMjcyLjkyMDgzNzQKCQlIMy4yMDcyOTM3djEwOC4wMjU2NjUzaDEwOC4wMjU2MTk1VjI3Mi45MjA4Mzc0eiBNMjUwLjgwMDM5OTgsMTM2LjQ0NTY5NGgtMTA4LjAyNTY1djEwOC4wMjU2NWgxMDguMDI1NjVWMTM2LjQ0NTY5NHoKCQkgTTM5MC4zNjc4ODk0LDEzNi40NDU2OTRIMjgyLjM0MjIyNDF2MTA4LjAyNTY1aDEwOC4wMjU2NjUzVjEzNi40NDU2OTR6IE01MjkuOTM1MzYzOCwxMzYuNDQ1Njk0SDQyMS45MDk2OTg1djEwOC4wMjU2NQoJCWgxMDguMDI1NjY1M1YxMzYuNDQ1Njk0eiBNNTI5LjkzNTM2MzgsMEg0MjEuOTA5Njk4NXYxMDguMDI1NjQyNGgxMDguMDI1NjY1M1YweiIvPgo8L2c+Cjwvc3ZnPgo=" x="517" y="118" width="90" height="72"/>
+  <text x="562" y="222" text-anchor="middle" class="d-ink" font-size="18">Daemon</text>
+  <text x="562" y="246" text-anchor="middle" class="mono d-sub" font-size="13">dockerd</text>
+  <path d="M692 190 C745 190 745 48 800 48" class="d-link"/><rect x="800" y="18" width="270" height="60" rx="14" class="d-card"/><rect x="820" y="34" width="28" height="8" rx="2" class="d-icon"/><rect x="820" y="44" width="28" height="8" rx="2" class="d-icon"/><rect x="820" y="54" width="28" height="8" rx="2" class="d-icon"/><text x="866" y="44" class="d-ink" font-size="15">Imágenes</text><text x="866" y="65" class="mono d-sub" font-size="12">docker image ls</text><path d="M692 190 C745 190 745 136 800 136" class="d-link"/><rect x="800" y="106" width="270" height="60" rx="14" class="d-card"/><rect x="820" y="124" width="30" height="24" rx="3" class="d-icon"/><line x1="828" y1="129" x2="828" y2="143" class="d-icon"/><line x1="835" y1="129" x2="835" y2="143" class="d-icon"/><line x1="842" y1="129" x2="842" y2="143" class="d-icon"/><text x="866" y="132" class="d-ink" font-size="15">Contenedores</text><text x="866" y="153" class="mono d-sub" font-size="12">docker ps</text><path d="M692 190 C745 190 745 224 800 224" class="d-link"/><rect x="800" y="194" width="270" height="60" rx="14" class="d-card"/><line x1="835" y1="224" x2="823" y2="213" class="d-icon"/><line x1="835" y1="224" x2="847" y2="213" class="d-icon"/><line x1="835" y1="224" x2="823" y2="235" class="d-icon"/><line x1="835" y1="224" x2="847" y2="235" class="d-icon"/><circle cx="835" cy="224" r="3.5" class="d-icon d-fillp"/><circle cx="823" cy="213" r="3.5" class="d-icon d-fillp"/><circle cx="847" cy="213" r="3.5" class="d-icon d-fillp"/><circle cx="823" cy="235" r="3.5" class="d-icon d-fillp"/><circle cx="847" cy="235" r="3.5" class="d-icon d-fillp"/><text x="866" y="220" class="d-ink" font-size="15">Redes</text><text x="866" y="241" class="mono d-sub" font-size="12">docker network ls</text><path d="M692 190 C745 190 745 312 800 312" class="d-link"/><rect x="800" y="282" width="270" height="60" rx="14" class="d-card"/><ellipse cx="835" cy="303" rx="13" ry="4.5" class="d-icon"/><path d="M822 303 V321 A13 4.5 0 0 0 848 321 V303" class="d-icon"/><path d="M822 312 A13 4.5 0 0 0 848 312" class="d-icon"/><text x="866" y="308" class="d-ink" font-size="15">Volúmenes</text><text x="866" y="329" class="mono d-sub" font-size="12">docker volume ls</text>
+</svg>
+    <div class="note">
+      <b>Ojo con el grupo docker</b> — quien puede hablar con <code>docker.sock</code> tiene, en la práctica, permisos de root en esa máquina.
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 06 · POR QUÉ EN ROBÓTICA ====== -->
+<section class="s dark">
+  <div class="glow"></div>
+  <div class="s-in">
+    <div class="kicker">1 · Por qué se usa</div>
+    <h2>Por qué en robótica</h2>
+    <div class="cols two">
+      <div class="box">
+        <h3>Reproducible</h3>
+        <p>El mismo entorno en tu laptop, en CI y en el robot.</p>
+      </div>
+      <div class="box">
+        <h3>Sin conflictos</h3>
+        <p>Humble y Jazzy conviven en la misma máquina, cada uno en su contenedor.</p>
+      </div>
+      <div class="box">
+        <h3>Onboarding rápido</h3>
+        <p>Clonar y levantar en minutos, no instalar durante un día.</p>
+      </div>
+      <div class="box">
+        <h3>Multiplataforma</h3>
+        <p>Una imagen para amd64 (laptop) y arm64 (Jetson, Raspberry Pi).</p>
+      </div>
+    </div>
+    <div class="note">
+      <b>Lo que no resuelve</b> — el kernel es el del host: drivers, tiempo real y permisos de hardware se configuran en el robot, no en la imagen.
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 07 · CONTENEDOR VS VM · CAPAS ====== -->
+<section class="s">
+  <div class="s-in">
+    <div class="kicker">2 · Diferencia con máquinas virtuales</div>
+    <h2>Un contenedor no es una VM</h2>
+    <div class="cols two">
+      <div class="box">
+        <h3>Máquina virtual</h3>
+        <div class="stack">
+          <div class="row"><div class="ly">App A</div><div class="ly">App B</div></div>
+          <div class="row"><div class="ly acc">SO invitado</div><div class="ly acc">SO invitado</div></div>
+          <div class="ly mute">Hipervisor</div>
+          <div class="ly mute">SO host</div>
+          <div class="ly mute">Hardware</div>
+        </div>
+        <p class="stack-cap">Cada VM carga un sistema operativo completo.</p>
+      </div>
+      <div class="box">
+        <h3>Contenedor</h3>
+        <div class="stack">
+          <div class="row"><div class="ly">App A</div><div class="ly">App B</div></div>
+          <div class="ly mute">Docker Engine</div>
+          <div class="ly acc">SO host · kernel compartido</div>
+          <div class="ly mute">Hardware</div>
+        </div>
+        <p class="stack-cap">Cada contenedor es un proceso aislado del host.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 08 · CONTENEDOR VS VM · COMPARACIÓN ====== -->
+<section class="s tight">
+  <div class="s-in">
+    <div class="kicker">2 · Diferencia con máquinas virtuales</div>
+    <h2>En la práctica</h2>
+    <table>
+      <thead><tr><th style="width:26%">Criterio</th><th>Máquina virtual</th><th>Contenedor</th></tr></thead>
+      <tbody>
+        <tr><td>Arranque</td><td class="num">30–60 s</td><td class="num">&lt; 1 s</td></tr>
+        <tr><td>Kernel</td><td>Uno propio por VM</td><td>Comparte el del host</td></tr>
+        <tr><td>Peso típico</td><td class="num">2–20 GB</td><td class="num">50–900 MB</td></tr>
+        <tr><td>Hardware</td><td>A través del hipervisor</td><td>Directo: <code>--device</code>, <code>--gpus</code></td></tr>
+      </tbody>
+    </table>
+    <div class="note">
+      <b>Consecuencia</b> — como se comparte el kernel, la arquitectura importa: una imagen amd64 no corre en la Jetson (arm64) salvo que se construya para ambas. Lo vemos a continuación.
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 09 · ARQUITECTURA · EL PROBLEMA ====== -->
+<section class="s tight">
+  <div class="s-in">
+    <div class="kicker">3 · Multi-arquitectura</div>
+    <h2>El sistema operativo no es la arquitectura</h2>
+    <p class="big" style="max-width:62ch">Para Docker no importa si trabajas en Windows, Mac o Ubuntu, sino el procesador: <code>linux/amd64</code> o <code>linux/arm64</code>.</p>
+    <div class="cols two">
+      <div class="box">
+        <h3>AMD64 · x86_64</h3>
+        <ul>
+          <li>PC con Windows o Ubuntu</li>
+          <li>Mac con Intel</li>
+          <li>Servidores de CI</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>ARM64</h3>
+        <ul>
+          <li>Mac con Apple Silicon</li>
+          <li>Raspberry Pi con SO de 64 bits</li>
+          <li>NVIDIA Jetson</li>
+        </ul>
+      </div>
+    </div>
+<pre class="code"><span class="k">docker image inspect</span> ros2-docker-template:1.0 <span class="f">--format</span> <span class="st">'{{.Os}}/{{.Architecture}}'</span>
+<span class="c"># linux/amd64  → sirve en la PC, no en la Jetson ("exec format error")</span></pre>
+  </div>
+</section>
+
+<!-- ====== C1 · 10 · ARQUITECTURA · LA SOLUCIÓN ====== -->
+<section class="s dark">
+  <div class="glow"></div>
+  <div class="s-in">
+    <div class="kicker">3 · Multi-arquitectura</div>
+    <h2>Un tag, varias arquitecturas</h2>
+    <p class="big" style="max-width:62ch">Una imagen multi-arquitectura guarda bajo el mismo nombre una variante por procesador.</p>
+    <div class="box" style="margin-top:24px">
+      <div class="stack" style="margin-top:0">
+        <div class="ly acc"><code>ghcr.io/ricardo-ochoa/ros2-docker-template:1.0-multiarch</code></div>
+        <div class="row"><div class="ly">linux/amd64</div><div class="ly">linux/arm64</div></div>
+        <div class="row"><div class="ly mute">PC Ubuntu · Windows · Mac Intel</div><div class="ly mute">Jetson · Raspberry Pi · Mac Apple Silicon</div></div>
+      </div>
+    </div>
+    <div class="quote">El mismo <code>docker pull</code> en cualquier máquina: Docker detecta la arquitectura y descarga la variante correcta.</div>
+  </div>
+</section>
+
+<!-- ====== C1 · 11 · ARQUITECTURA · BUILDX ====== -->
+<section class="s tight">
+  <div class="s-in">
+    <div class="kicker">3 · Multi-arquitectura</div>
+    <h2>Cómo se construye: Buildx</h2>
+<pre class="code"><span class="c"># 1. Una sola vez en Ubuntu: emulación para construir otras arquitecturas</span>
+<span class="k">docker run</span> <span class="f">--privileged --rm</span> tonistiigi/binfmt <span class="f">--install</span> all
+
+<span class="c"># 2. Una sola vez: builder multiplataforma</span>
+<span class="k">docker buildx create</span> <span class="f">--name</span> multiarch-builder <span class="f">--driver</span> docker-container <span class="f">--use --bootstrap</span>
+
+<span class="c"># 3. Construir ambas y publicarlas bajo el mismo tag</span>
+<span class="k">docker buildx build</span> <span class="f">--platform</span> <span class="st">linux/amd64,linux/arm64</span> \
+  <span class="f">-t</span> <span class="st">ghcr.io/ricardo-ochoa/ros2-docker-template:1.0-multiarch</span> <span class="f">--push</span> .
+
+<span class="c"># 4. Verificar qué variantes contiene</span>
+<span class="k">docker buildx imagetools inspect</span> <span class="st">ghcr.io/ricardo-ochoa/ros2-docker-template:1.0-multiarch</span></pre>
+    <div class="note">
+      <b>Dos detalles</b> — sin <code>--push</code> el resultado se queda en el caché del builder, y construir ARM64 emulado es lento. En la clase 8 esto lo hace CI automáticamente.
+    </div>
+  </div>
+</section>
+
+
+<!-- ====== C1 · 13 · ENGINE VS DESKTOP ====== -->
+<section class="s dark">
+  <div class="glow" style="top:auto;bottom:-160px;right:-120px"></div>
+  <div class="s-in">
+    <div class="kicker">4 · Las piezas</div>
+    <h2>En Ubuntu usamos Docker Engine</h2>
+    <div class="cols two">
+      <div class="box">
+        <h3>Docker Engine</h3>
+        <ul>
+          <li>Corre nativo sobre el kernel del host</li>
+          <li><code>--network host</code> y <code>--device</code> funcionan directo</li>
+          <li>Es lo mismo que corre en el robot</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Docker Desktop en Linux</h3>
+        <ul>
+          <li>Corre dentro de una VM, también en Ubuntu</li>
+          <li>Red host, USB y GPU no se comportan igual</li>
+          <li>Licencia de pago en empresas grandes</li>
+        </ul>
+      </div>
+    </div>
+<pre class="code"><span class="c"># ¿tienes ambos? revisa cuál está activo</span>
+<span class="k">docker context ls</span>
+<span class="k">docker context use</span> <span class="st">default</span>    <span class="c"># Engine nativo</span></pre>
+  </div>
+</section>
+
+<!-- ====== C1 · 14 · GHCR ====== -->
+<section class="s tight">
+  <div class="s-in">
+    <div class="kicker">4 · Las piezas</div>
+    <h2>GHCR es parte de GitHub Packages</h2>
+    <p class="big" style="max-width:62ch">GitHub tiene un registro por tipo de paquete. El de imágenes Docker vive en <code>ghcr.io</code>.</p>
+    <svg class="diagram" viewBox="0 0 1100 400" role="img" aria-label="GitHub Packages agrupa varios registros; el Container registry es ghcr.io">
+  <rect x="30" y="118" width="425" height="164" rx="18" class="d-card"/>
+  <g transform="translate(62 164) scale(4.5)"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.28-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" class="d-inkfill"/></g>
+  <text x="162" y="196" class="d-ink" font-size="22">GitHub Packages</text>
+  <text x="162" y="224" class="d-sub" font-size="13">junto a su código</text>
+  <path d="M455 200 C548 200 548 40 640 40" class="d-link-on"/><rect x="640" y="16" width="420" height="48" rx="12" class="d-acc"/><text x="664" y="45" class="d-on" font-size="15">Container registry</text><text x="1040" y="45" text-anchor="end" class="mono d-on" font-size="14">ghcr.io</text><path d="M455 200 C548 200 548 104 640 104" class="d-link"/><rect x="640" y="80" width="420" height="48" rx="12" class="d-card"/><text x="664" y="109" class="d-sub" font-size="15">npm registry</text><path d="M455 200 C548 200 548 168 640 168" class="d-link"/><rect x="640" y="144" width="420" height="48" rx="12" class="d-card"/><text x="664" y="173" class="d-sub" font-size="15">Apache Maven registry</text><path d="M455 200 C548 200 548 232 640 232" class="d-link"/><rect x="640" y="208" width="420" height="48" rx="12" class="d-card"/><text x="664" y="237" class="d-sub" font-size="15">Gradle registry</text><path d="M455 200 C548 200 548 296 640 296" class="d-link"/><rect x="640" y="272" width="420" height="48" rx="12" class="d-card"/><text x="664" y="301" class="d-sub" font-size="15">NuGet registry</text><path d="M455 200 C548 200 548 360 640 360" class="d-link"/><rect x="640" y="336" width="420" height="48" rx="12" class="d-card"/><text x="664" y="365" class="d-sub" font-size="15">RubyGems registry</text>
+</svg>
+    <div class="note">
+      <b>Por qué lo usamos</b> — mismos usuarios, permisos y Actions que el repo. Las imágenes públicas son gratis; las privadas usan la cuota del plan.
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 15 · DOCKER HUB VS GHCR ====== -->
+<section class="s">
+  <div class="s-in">
+    <div class="kicker">4 · Las piezas</div>
+    <h2>Docker Hub y GHCR en el mismo flujo</h2>
+    <div class="flow">
+      <div class="step">
+        <div class="lbl">1</div><div class="ttl">Docker Hub</div>
+        <div class="d">Jalamos la imagen base oficial.</div>
+      </div>
+      <div class="step">
+        <div class="lbl">2</div><div class="ttl">Nuestro Dockerfile</div>
+        <div class="d">Le agregamos nuestro código y dependencias.</div>
+      </div>
+      <div class="step">
+        <div class="lbl">3</div><div class="ttl">GHCR</div>
+        <div class="d">Publicamos nuestra imagen versionada.</div>
+      </div>
+      <div class="step">
+        <div class="lbl">4</div><div class="ttl">Robot</div>
+        <div class="d">Descarga esa versión exacta y la ejecuta.</div>
+      </div>
+    </div>
+<pre class="code"><span class="k">FROM</span> <span class="st">ros:jazzy</span>   <span class="c"># viene de Docker Hub</span>
+<span class="k">docker pull</span> <span class="st">ghcr.io/ricardo-ochoa/ros2-docker-template:1.0-multiarch</span>   <span class="c"># viene de GHCR</span></pre>
+  </div>
+</section>
+
+
+<!-- ====== C1 · 12 · EL ECOSISTEMA ====== -->
+<section class="s tight">
+  <div class="s-in">
+    <div class="kicker">4 · Las piezas</div>
+    <h2>Qué es cada uno y cuándo usarlo</h2>
+    <table>
+      <thead><tr><th style="width:24%">Pieza</th><th>Qué es</th><th style="width:33%">Cuándo usarlo</th></tr></thead>
+      <tbody>
+        <tr><td><div class="piece"><img class="logo" src="data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSLQodC70L7QuV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMTAwMCA3ODkuMzExOTUwNyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTAwMCA3ODkuMzExOTUwNzsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiMyNTYwRkY7fQo8L3N0eWxlPgo8Zz4KCTxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik05ODMuNzQzMTY0MSwzMjQuMjgzMDgxMWMtMjQuNTMyNDcwNy0xNi40OTI0NjIyLTg4Ljk0MTUyODMtMjMuNTYwNjY4OS0xMzUuNzY4MzEwNS0xMC45MjYyMzkKCQljLTIuNTMyNzc1OS00Ni42NTAxNDY1LTI2LjU5NDExNjItODUuOTY2OTk1Mi03MC41OTM2ODktMTIwLjI0Nzc1N2wtMTYuMjg2MjU0OS0xMC45MjYyNTQzbC0xMC44NjczNzA2LDE2LjQwNDExMzgKCQljLTIxLjM1MTgwNjYsMzIuMzk1OTA0NS0zMC4zMzQzNTA2LDc1LjU0MTM4MTgtMjcuMTUzNjI1NSwxMTQuNzk5MzQ2OQoJCWMyLjUwMzI5NTksMjQuMTc5MTM4MiwxMC45MjYyMDg1LDUxLjM2MjIxMzEsMjcuMTUzNjI1NSw3MS4wNjQ4MTkzCgkJYy02MC45NjMxOTU4LDM1LjM3MDQ4MzQtMTE3LjE1NTM5NTUsMjcuMzMwNDEzOC0zNjUuOTg1NDQzMSwyNy4zMzA0MTM4SDAuMDg1NTAyOAoJCWMtMS4xMTkxMzE0LDU2LjE5MjEzODcsNy45MjIyNzY1LDE2NC4yNzY3MDI5LDc2LjYzMTAyNzIsMjUyLjI0NjMwNzQKCQljNy41OTgzMTI0LDkuNzE4ODExLDE1LjkwMzQ1NzYsMTkuMTEzNjQ3NSwyNC45NDQ4NTQ3LDI4LjE4NDQ0ODIKCQljNTUuODk3NjgyMiw1NS45NTY1NDMsMTQwLjMwMzc3Miw5Ni45ODE2Mjg0LDI2Ni41NTk0NDgyLDk3LjA5OTQyNjMKCQljMTkyLjYwODM5ODQsMC4xNzY2OTY4LDM1Ny42MjE0Ni0xMDMuOTMyMDA2OCw0NTguMDE5Mjg3MS0zNTUuNjc3NjczMwoJCWMzMy4wNDM4MjMyLDAuNTMwMDkwMywxMjAuMjE4MzIyOCw1LjkxOTU4NjIsMTYyLjg5MjUxNzEtNzYuNTQyNzI0NkM5OTAuMTYzNDUyMSwzNTUuNzA3MTIyOCwxMDAwLDMzNS4yMzg4LDEwMDAsMzM1LjIzODgKCQlsLTE2LjI1NjgzNTktMTAuOTI2MjY5NVYzMjQuMjgzMDgxMXogTTI1MC44MDAzOTk4LDI3Mi45MjA4Mzc0aC0xMDguMDI1NjV2MTA4LjAyNTY2NTNoMTA4LjAyNTY1VjI3Mi45MjA4Mzc0egoJCSBNMzkwLjM2Nzg4OTQsMjcyLjkyMDgzNzRIMjgyLjM0MjIyNDF2MTA4LjAyNTY2NTNoMTA4LjAyNTY2NTNWMjcyLjkyMDgzNzR6IE01MjkuOTM1MzYzOCwyNzIuOTIwODM3NEg0MjEuOTA5Njk4NXYxMDguMDI1NjY1MwoJCWgxMDguMDI1NjY1M1YyNzIuOTIwODM3NHogTTY2OS41MDI4MDc2LDI3Mi45MjA4Mzc0SDU2MS40NzcxNzI5djEwOC4wMjU2NjUzaDEwOC4wMjU2MzQ4VjI3Mi45MjA4Mzc0eiBNMTExLjIzMjkxMDIsMjcyLjkyMDgzNzQKCQlIMy4yMDcyOTM3djEwOC4wMjU2NjUzaDEwOC4wMjU2MTk1VjI3Mi45MjA4Mzc0eiBNMjUwLjgwMDM5OTgsMTM2LjQ0NTY5NGgtMTA4LjAyNTY1djEwOC4wMjU2NWgxMDguMDI1NjVWMTM2LjQ0NTY5NHoKCQkgTTM5MC4zNjc4ODk0LDEzNi40NDU2OTRIMjgyLjM0MjIyNDF2MTA4LjAyNTY1aDEwOC4wMjU2NjUzVjEzNi40NDU2OTR6IE01MjkuOTM1MzYzOCwxMzYuNDQ1Njk0SDQyMS45MDk2OTg1djEwOC4wMjU2NQoJCWgxMDguMDI1NjY1M1YxMzYuNDQ1Njk0eiBNNTI5LjkzNTM2MzgsMEg0MjEuOTA5Njk4NXYxMDguMDI1NjQyNGgxMDguMDI1NjY1M1YweiIvPgo8L2c+Cjwvc3ZnPgo=" alt="Logo de Docker Engine"><span>Docker Engine</span></div></td><td>El motor: construye y ejecuta contenedores (<code>dockerd</code> + CLI)</td><td>Siempre en Linux: laptop Ubuntu, CI y robot</td></tr>
+        <tr><td><div class="piece"><img class="logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4OSAxOSIgZmlsbD0iIzI1NjBGRiI+PHBhdGggZD0iTTIzLjYwOTYgNy43ODI4MUMyMy4wMjExIDcuMzg2NjggMjEuNDc1MSA3LjIxNzUyIDIwLjM1MTMgNy41MjA1MUMyMC4yOTEgNi40MDA5OCAxOS43MTMyIDUuNDU3MzkgMTguNjU3MiA0LjYzNDA3TDE4LjI2NjQgNC4zNzE3N0wxOC4wMDU5IDQuNzY1NEMxNy40OTM3IDUuNTQyNjkgMTcuMjc3OCA2LjU3ODcgMTcuMzU0MiA3LjUyMDUxQzE3LjQxNDUgOC4xMDA3OSAxNy42MTYyIDguNzUyODEgMTguMDA1OSA5LjIyNjAzQzE2LjU0MyAxMC4wNzQ3IDE1LjE5NDQgOS44ODE5NyA5LjIyMjM2IDkuODgxOTdIMC4wMDIwNDE1MUMtMC4wMjQ3MjQ0IDExLjIzMDYgMC4xOTE5MDEgMTMuODI0NCAxLjg0MTM5IDE1LjkzNjFDMi4wMjM3NiAxNi4xNjk1IDIuMjIzMjYgMTYuMzk1IDIuNDQwMjQgMTYuNjEyNEMzLjc4MTM5IDE3Ljk1NTMgNS44MDc3NSAxOC45NDAzIDguODM3NjUgMTguOTQyOEMxMy40NjAzIDE4Ljk0NzEgMTcuNDIwNiAxNi40NDgyIDE5LjgyOTkgMTAuNDA2OUMyMC42MjI1IDEwLjQxOTggMjIuNzE1MiAxMC41NDkgMjMuNzM5NSA4LjU3MDA5QzIzLjc2NDUgOC41MzY5IDI0IDguMDQ1NDggMjQgOC4wNDU0OEwyMy42MDk2IDcuNzgzMTdWNy43ODI4MVpNNi4wMTkzOCA2LjU0OThIMy40MjY2NVY5LjE0MjUySDYuMDE5MzhWNi41NDk4Wk05LjM2ODY4IDYuNTQ5OEg2Ljc3NTk2VjkuMTQyNTJIOS4zNjg2OFY2LjU0OThaTTEyLjcxODMgNi41NDk4SDEwLjEyNTZWOS4xNDI1MkgxMi43MTgzVjYuNTQ5OFpNMTYuMDY4IDYuNTQ5OEgxMy40NzUzVjkuMTQyNTJIMTYuMDY4VjYuNTQ5OFpNMi42Njk3MSA2LjU0OThIMC4wNzY5ODYxVjkuMTQyNTJIMi42Njk3MVY2LjU0OThaTTYuMDE5MzggMy4yNzUwOEgzLjQyNjY1VjUuODY3OEg2LjAxOTM4VjMuMjc1MDhaTTkuMzY4NjggMy4yNzUwOEg2Ljc3NTk2VjUuODY3OEg5LjM2ODY4VjMuMjc1MDhaTTEyLjcxODMgMy4yNzUwOEgxMC4xMjU2VjUuODY3OEgxMi43MTgzVjMuMjc1MDhaTTEyLjcxODMgMEgxMC4xMjU2VjIuNTkyNzJIMTIuNzE4M1YwWiI+PC9wYXRoPjxwYXRoIGQ9Ik0zNS4xMzYgMTQuNjMyQzM0Ljk1NiAxNC45MzggMzQuMDIgMTYuMTk4IDMyLjA0IDE2LjE5OEMyOS42ODIgMTYuMTk4IDI3Ljc3NCAxNC4zNjIgMjcuNzc0IDExLjMzOEMyNy43NzQgOC4zMzIgMjkuNyA2LjQ5NiAzMi4wNTggNi40OTZDMzQuMDIgNi40OTYgMzQuOTM4IDcuNjg0IDM1LjEgNy45NzJWMi43NTJIMzguMDE2VjE2SDM1LjEzNlYxNC42MzJaTTM1LjEzNiAxMS4zMzhDMzUuMTM2IDkuOTg4IDM0LjI3MiA4Ljk4IDMyLjk0IDguOThDMzEuNTkgOC45OCAzMC43MjYgOS45ODggMzAuNzI2IDExLjMzOEMzMC43MjYgMTIuNjg4IDMxLjU5IDEzLjY5NiAzMi45NCAxMy42OTZDMzQuMjcyIDEzLjY5NiAzNS4xMzYgMTIuNzA2IDM1LjEzNiAxMS4zMzhaTTQ0LjA5MjcgNi40NDJDNDcuMDA4NyA2LjQ0MiA0OS4yMDQ3IDguNDQgNDkuMjA0NyAxMS4zMzhDNDkuMjA0NyAxNC4yMTggNDcuMDA4NyAxNi4yMzQgNDQuMDkyNyAxNi4yMzRDNDEuMTU4NyAxNi4yMzQgMzguOTgwNyAxNC4yMTggMzguOTgwNyAxMS4zMzhDMzguOTgwNyA4LjQ0IDQxLjE1ODcgNi40NDIgNDQuMDkyNyA2LjQ0MlpNNDQuMDkyNyAxMy42OTZDNDUuNDA2NyAxMy42OTYgNDYuMjcwNyAxMi42NyA0Ni4yNzA3IDExLjMzOEM0Ni4yNzA3IDEwLjAwNiA0NS40MDY3IDguOTggNDQuMDkyNyA4Ljk4QzQyLjc3ODcgOC45OCA0MS44OTY3IDEwLjAwNiA0MS44OTY3IDExLjMzOEM0MS44OTY3IDEyLjY3IDQyLjc3ODcgMTMuNjk2IDQ0LjA5MjcgMTMuNjk2Wk01Ni4zMDMzIDkuOTM0QzU2LjE1OTMgOS42ODIgNTUuNjkxMyA4Ljk4IDU0LjU1NzMgOC45OEM1My4zNTEzIDguOTggNTIuNTU5MyAxMC4wMDYgNTIuNTU5MyAxMS4zMzhDNTIuNTU5MyAxMi42ODggNTMuMzUxMyAxMy43MTQgNTQuNTc1MyAxMy43MTRDNTUuNzQ1MyAxMy43MTQgNTYuMjMxMyAxMi45NzYgNTYuMzM5MyAxMi43Nkg1OS4xNDczQzU5LjAzOTMgMTQuMDU2IDU3Ljc5NzMgMTYuMjM0IDU0LjUwMzMgMTYuMjM0QzUxLjc0OTMgMTYuMjM0IDQ5LjYyNTMgMTQuMzA4IDQ5LjYyNTMgMTEuMzM4QzQ5LjYyNTMgOC4zODYgNTEuNzQ5MyA2LjQ0MiA1NC40NjczIDYuNDQyQzU3Ljc2MTMgNi40NDIgNTkuMDAzMyA4LjU4NCA1OS4xNDczIDkuOTM0SDU2LjMwMzNaTTY2Ljc4NjkgMTZMNjIuOTM0OSAxMS44NDJWMTZINjAuMDE4OVYyLjc1Mkg2Mi45MzQ5VjEwLjMzTDY2LjY2MDkgNi42NzZINzAuMzMyOUw2NS44Njg5IDEwLjk3OEw3MC41NjY5IDE2SDY2Ljc4NjlaTTc0Ljc1NzkgNi40NDJDNzcuNzQ1OSA2LjQ0MiA3OS43NDM5IDguMzUgNzkuNzQzOSAxMS4zOTJWMTEuODk2SDcyLjY1MTlDNzIuNzk1OSAxMy4wNjYgNzMuNjc3OSAxMy45NDggNzQuOTU1OSAxMy45NDhDNzYuMDg5OSAxMy45NDggNzYuNjI5OSAxMy40MjYgNzYuNzU1OSAxMy4yMjhINzkuNjUzOUM3OS41MDk5IDE0LjM0NCA3OC4xNzc5IDE2LjIzNCA3NC45NTU5IDE2LjIzNEM3MS43ODc5IDE2LjIzNCA2OS43NzE5IDE0LjE4MiA2OS43NzE5IDExLjMzOEM2OS43NzE5IDguMzg2IDcxLjgyMzkgNi40NDIgNzQuNzU3OSA2LjQ0MlpNNzQuNzU3OSA4LjU2NkM3My42OTU5IDguNTY2IDcyLjk1NzkgOS4xNiA3Mi43MDU5IDEwLjExNEg3Ni44MDk5Qzc2LjU1NzkgOS4xNDIgNzUuODAxOSA4LjU2NiA3NC43NTc5IDguNTY2Wk04My41NzM3IDExLjQ0NlYxNkg4MC42NTc3VjYuNjc2SDgzLjU3MzdWOC4xMzRDODMuNzcxNyA3LjcwMiA4NC40NTU3IDYuNjU4IDg2LjM5OTcgNi42NThIODguMzk3N1Y5LjUzOEg4NS44NDE3Qzg0LjIwMzcgOS41MzggODMuNTczNyAxMC4xNSA4My41NzM3IDExLjQ0NloiPjwvcGF0aD48L3N2Zz4=" alt="Logo de Docker Desktop"><span>Docker Desktop</span></div></td><td>App gráfica que corre el Engine dentro de una VM</td><td>Mac y Windows. En Ubuntu, evitarlo para robótica</td></tr>
+        <tr><td><div class="piece"><img class="logo" src="data:image/png;base64,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" alt="Logo de Docker Compose"><span>Docker Compose</span></div></td><td>Describe varios contenedores en un <code>compose.yaml</code></td><td>Cuando el sistema tiene más de un nodo o servicio</td></tr>
+        <tr><td><div class="piece"><img class="logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MiAxOSIgZmlsbD0iIzI1NjBGRiI+PHBhdGggZD0iTTIzLjYwOTYgNy43ODI4MUMyMy4wMjExIDcuMzg2NjggMjEuNDc1MSA3LjIxNzUyIDIwLjM1MTMgNy41MjA1MUMyMC4yOTEgNi40MDA5OCAxOS43MTMyIDUuNDU3MzkgMTguNjU3MiA0LjYzNDA3TDE4LjI2NjQgNC4zNzE3N0wxOC4wMDU5IDQuNzY1NEMxNy40OTM3IDUuNTQyNjkgMTcuMjc3OCA2LjU3ODcgMTcuMzU0MiA3LjUyMDUxQzE3LjQxNDUgOC4xMDA3OSAxNy42MTYyIDguNzUyODEgMTguMDA1OSA5LjIyNjAzQzE2LjU0MyAxMC4wNzQ3IDE1LjE5NDQgOS44ODE5NyA5LjIyMjM2IDkuODgxOTdIMC4wMDIwNDE1MUMtMC4wMjQ3MjQ0IDExLjIzMDYgMC4xOTE5MDEgMTMuODI0NCAxLjg0MTM5IDE1LjkzNjFDMi4wMjM3NiAxNi4xNjk1IDIuMjIzMjYgMTYuMzk1IDIuNDQwMjQgMTYuNjEyNEMzLjc4MTM5IDE3Ljk1NTMgNS44MDc3NSAxOC45NDAzIDguODM3NjUgMTguOTQyOEMxMy40NjAzIDE4Ljk0NzEgMTcuNDIwNiAxNi40NDgyIDE5LjgyOTkgMTAuNDA2OUMyMC42MjI1IDEwLjQxOTggMjIuNzE1MiAxMC41NDkgMjMuNzM5NSA4LjU3MDA5QzIzLjc2NDUgOC41MzY5IDI0IDguMDQ1NDggMjQgOC4wNDU0OEwyMy42MDk2IDcuNzgzMTdWNy43ODI4MVpNNi4wMTkzOCA2LjU0OThIMy40MjY2NVY5LjE0MjUySDYuMDE5MzhWNi41NDk4Wk05LjM2ODY4IDYuNTQ5OEg2Ljc3NTk2VjkuMTQyNTJIOS4zNjg2OFY2LjU0OThaTTEyLjcxODMgNi41NDk4SDEwLjEyNTZWOS4xNDI1MkgxMi43MTgzVjYuNTQ5OFpNMTYuMDY4IDYuNTQ5OEgxMy40NzUzVjkuMTQyNTJIMTYuMDY4VjYuNTQ5OFpNMi42Njk3MSA2LjU0OThIMC4wNzY5ODYxVjkuMTQyNTJIMi42Njk3MVY2LjU0OThaTTYuMDE5MzggMy4yNzUwOEgzLjQyNjY1VjUuODY3OEg2LjAxOTM4VjMuMjc1MDhaTTkuMzY4NjggMy4yNzUwOEg2Ljc3NTk2VjUuODY3OEg5LjM2ODY4VjMuMjc1MDhaTTEyLjcxODMgMy4yNzUwOEgxMC4xMjU2VjUuODY3OEgxMi43MTgzVjMuMjc1MDhaTTEyLjcxODMgMEgxMC4xMjU2VjIuNTkyNzJIMTIuNzE4M1YwWiI+PC9wYXRoPjxwYXRoIGQ9Ik0zMS4yMTIgMTEuMTA0VjE2SDI4LjI5NlYyLjc1MkgzMS4yMTJWOC4xMTZDMzEuNTcyIDcuNTA0IDMyLjU5OCA2LjQ3OCAzNC4yMTggNi40NzhDMzYuNTQgNi40NzggMzguMDE2IDguMTUyIDM4LjAxNiAxMC41MVYxNkgzNS4wODJWMTEuMTA0QzM1LjA4MiA5Ljg2MiAzNC4zMjYgOS4wNyAzMy4xNTYgOS4wN0MzMS45ODYgOS4wNyAzMS4yMTIgOS44OCAzMS4yMTIgMTEuMTA0Wk00NC4xNDkyIDE2LjIxNkM0MC45ODEyIDE2LjIxNiAzOS4zMDcyIDE0LjM4IDM5LjMwNzIgMTEuNzUyVjYuNjc2SDQyLjI0MTJWMTEuNTM2QzQyLjI0MTIgMTIuNzI0IDQyLjg4OTIgMTMuNTM0IDQ0LjA5NTIgMTMuNTM0QzQ1LjMwMTIgMTMuNTM0IDQ1Ljk2NzIgMTIuNzI0IDQ1Ljk2NzIgMTEuNTM2VjYuNjc2SDQ4LjkwMTJWMTEuNzUyQzQ4LjkwMTIgMTQuMzggNDcuMjQ1MiAxNi4yMTYgNDQuMTQ5MiAxNi4yMTZaTTUzLjE2NzkgMTQuNjY4VjE2SDUwLjMwNTlWMi43NTJINTMuMjAzOVY4LjA0NEM1My4zNDc5IDcuNzc0IDU0LjMwMTkgNi40OTYgNTYuMjQ1OSA2LjQ5NkM1OC42MjE5IDYuNDk2IDYwLjUxMTkgOC4zMzIgNjAuNTExOSAxMS4zMzhDNjAuNTExOSAxNC4zNjIgNTguNjIxOSAxNi4xOTggNTYuMjQ1OSAxNi4xOThDNTQuMjY1OSAxNi4xOTggNTMuMzI5OSAxNC45NzQgNTMuMTY3OSAxNC42NjhaTTUzLjE2NzkgMTEuMzM4QzUzLjE2NzkgMTIuNjg4IDU0LjA0OTkgMTMuNjk2IDU1LjM4MTkgMTMuNjk2QzU2LjcxMzkgMTMuNjk2IDU3LjU3NzkgMTIuNjg4IDU3LjU3NzkgMTEuMzM4QzU3LjU3NzkgOS45ODggNTYuNzEzOSA4Ljk4IDU1LjM4MTkgOC45OEM1NC4wNDk5IDguOTggNTMuMTY3OSA5Ljk4OCA1My4xNjc5IDExLjMzOFoiPjwvcGF0aD48L3N2Zz4=" alt="Logo de Docker Hub"><span>Docker Hub</span></div></td><td>Registro público por defecto de <code>docker pull</code></td><td>Imágenes base oficiales: <code>ros</code>, <code>ubuntu</code></td></tr>
+        <tr><td><div class="piece"><img class="logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0iIzBDMEQwRiI+PHBhdGggZD0iTTggMEMzLjU4IDAgMCAzLjU4IDAgOGMwIDMuNTQgMi4yOSA2LjUzIDUuNDcgNy41OS40LjA3LjU1LS4xNy41NS0uMzggMC0uMTktLjAxLS44Mi0uMDEtMS40OS0yLjAxLjM3LTIuNTMtLjQ5LTIuNjktLjk0LS4wOS0uMjMtLjQ4LS45NC0uODItMS4yOC0uMjgtLjE1LS42OC0uNTItLjAxLS41My42My0uMDEgMS4wOC41OCAxLjIzLjgyLjcyIDEuMjEgMS44Ny44NyAyLjMzLjY2LjA3LS41Mi4yOC0uODcuNTEtMS4wNy0xLjc4LS4yLTMuNjQtLjg5LTMuNjQtMy45NSAwLS44Ny4zMS0xLjU5LjgyLTIuMTUtLjA4LS4yLS4zNi0xLjAyLjA4LTIuMTIgMCAwIC42Ny0uMjEgMi4yLjgyLjY0LS4xOCAxLjMyLS4yNyAyLS4yNy42OCAwIDEuMzYuMDkgMiAuMjcgMS41My0xLjA0IDIuMi0uODIgMi4yLS44Mi40NCAxLjEuMTYgMS45Mi4wOCAyLjEyLjUxLjU2LjgyIDEuMjcuODIgMi4xNSAwIDMuMDctMS44NyAzLjc1LTMuNjUgMy45NS4yOS4yNS41NC43My41NCAxLjQ4IDAgMS4wNy0uMDEgMS45My0uMDEgMi4yIDAgLjIxLjE1LjQ2LjU1LjM4QTguMDEzIDguMDEzIDAgMDAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg==" alt="Logo de GHCR"><span>GHCR</span></div></td><td>Registro de GitHub en <code>ghcr.io</code></td><td>Nuestras imágenes, con los permisos del repo</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</div><!-- /.deck -->
+
+<!-- ==========================================================================
+     MOTOR: navegación (barra, contador, teclado, botones) + cambio de acento.
+     Detecta automáticamente cuántas slides hay. No requiere edición.
+     ========================================================================== -->
+<script>
+  const deck   = document.getElementById('deck');
+  const slides = Array.from(deck.querySelectorAll('.s'));
+  const fill   = document.getElementById('fill');
+  const cur    = document.getElementById('cur');
+  document.getElementById('tot').textContent = slides.length;   // total automático
+
+  function idx(){
+    const top = deck.scrollTop; let best=0, bd=Infinity;
+    slides.forEach((s,i)=>{ const d=Math.abs(s.offsetTop-top); if(d<bd){bd=d;best=i;} });
+    return best;
+  }
+  function paint(){
+    cur.textContent = idx()+1;
+    const max = deck.scrollHeight - deck.clientHeight;
+    fill.style.width = (max>0 ? (deck.scrollTop/max)*100 : 0) + '%';
+  }
+  function go(dir){
+    const t = Math.min(slides.length-1, Math.max(0, idx()+dir));
+    deck.scrollTo({ top: slides[t].offsetTop, behavior:'smooth' });
+  }
+  deck.addEventListener('scroll', paint, { passive:true });
+
+  /* ---- Cambio de color de acento (puntos del HUD + teclas 1/2/3) ---- */
+  const dots = Array.from(document.querySelectorAll('.accsw .dot'));
+  function setAccent(a){
+    document.body.dataset.accent = a;
+    dots.forEach(d => d.classList.toggle('active', d.dataset.accent === a));
+  }
+  dots.forEach(d => d.addEventListener('click', () => setAccent(d.dataset.accent)));
+  setAccent(document.body.dataset.accent || 'green');
+
+  /* ---- Teclado ---- */
+  const ACCENTS = { '1':'green', '2':'orange', '3':'blue' };
+  document.addEventListener('keydown', e => {
+    if (['ArrowDown','PageDown',' '].includes(e.key)) { e.preventDefault(); go(1); }
+    if (['ArrowUp','PageUp'].includes(e.key))         { e.preventDefault(); go(-1); }
+    if (e.key === 'Home') { e.preventDefault(); deck.scrollTo({top:0,behavior:'smooth'}); }
+    if (e.key === 'End')  { e.preventDefault(); deck.scrollTo({top:deck.scrollHeight,behavior:'smooth'}); }
+    if (ACCENTS[e.key])   { setAccent(ACCENTS[e.key]); }
+  });
+
+  paint();
+</script>
+</body>
+</html>

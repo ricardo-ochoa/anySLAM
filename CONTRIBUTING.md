@@ -99,6 +99,14 @@ npm run build
 
 Debe pasar sin errores. El build valida el frontmatter, el MDX y todas las rutas.
 
+El script lleva `--webpack` a propósito. Los loaders de `fumadocs-mdx` se publican como ESM y
+Turbopack —el compilador por defecto desde Next 16— los carga con `require()`, así que
+`next build` falla en cuanto cambia cualquier `.mdx`. El síntoma es
+`require() of ES Module .../fumadocs-mdx/dist/webpack/mdx.js not supported`, y despista porque
+`npm run dev` sí funciona y porque un build que no toque contenido pasa con la caché anterior.
+Cuando `fumadocs-mdx` publique loaders CommonJS, o Turbopack acepte ESM, se puede quitar la
+bandera: la prueba es borrar `.next` y `.source` y volver a construir sin ella.
+
 ## Añadir un repositorio al proyecto
 
 1. Que cumpla el [estándar de repositorio](docs/07-standards/repository-standard.mdx).

@@ -1,0 +1,46 @@
+# Clase grabada de Docker.
+#
+# `chapters` se pega tal cual de la descripción del video en YouTube: cada línea
+# es "m:ss Título" o "h:mm:ss Título", en el orden del video. El portal calcula
+# los segundos para poder saltar a cada capítulo.
+#
+# Los títulos de capítulo no se traducen: son lo que se dice en el video, y la
+# clase está hablada en español. Lo que sí tiene versión en inglés son los
+# textos que pone el portal alrededor (`title_en`, `note_en`).
+
+id: OI5UiHvB1Ec
+
+# Idioma hablado. Si no coincide con el de la página, se avisa al lector.
+spoken: es
+
+title: Docker desde cero, aplicado a robótica
+title_en: Docker from scratch, applied to robotics
+
+note: >-
+  Grabación de la clase del equipo: los mismos conceptos de esta página,
+  explicados de corrido y con ejemplos en vivo.
+note_en: >-
+  Recording of the team class: the same concepts as this page, explained
+  end to end with live examples.
+
+chapters:
+  - '0:00 Intro'
+  - '1:26 ¿Por qué Docker?'
+  - '3:36 Conceptos básicos de Docker'
+  - '7:44 ¿Dónde se usa y por qué lo usamos en robótica?'
+  - '9:57 Diferencias con una VM'
+  - '11:28 Multiarquitectura'
+  - '14:40 Docker Desktop'
+  - '17:50 GHCR · Packages'
+  - '19:36 Conceptos generales a entender'
+  - '22:20 Flujos de ejemplo al trabajar en equipo'
+  - '22:55 Nivel 1'
+  - '24:47 Nivel 2'
+  - '25:59 Nivel 3'
+  - '27:46 Nivel 4'
+  - '30:31 Nivel 5'
+  - '32:22 Ejemplo de proyecto y archivos'
+  - '38:25 Ejemplo de comandos básicos'
+  - '40:50 Subiendo a GH y al GHCR'
+  - '44:04 Validando los comandos en Docker Desktop'
+  - '48:55 Descargando la imagen en otra computadora'

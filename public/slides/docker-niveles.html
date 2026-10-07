@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pipelines en robótica · flujos animados por nivel</title>
+
+<!-- ==========================================================================
+     PIPELINES DE DESARROLLO EN ROBÓTICA · diagramas animados por nivel
+     Autocontenido. Pensado para incrustarse en un slide.
+
+     USO EN EL DECK
+       <iframe src="niveles-flujo-animado.html?nivel=2&theme=dark"
+               style="width:100%;height:760px;border:0" loading="lazy"></iframe>
+
+     PARÁMETROS DE URL
+       ?nivel=1..N        cuál abre por defecto
+       ?theme=light|dark
+       ?autoplay=1        arranca solo
+       ?tabs=0            oculta las pestañas (para fijar un nivel en un slide)
+
+     CONTROLES
+       Botones  · Reproducir / Pausa · ← · Paso → · Reiniciar · velocidad
+       Teclado  · Espacio play-pausa · ← → pasos · R reiniciar
+                  1 · 2 · 3 … cambian de nivel
+
+     ========================= CÓMO AGREGAR UN NIVEL =========================
+     Todo vive en el arreglo LEVELS, al final del <script>. Un nivel es:
+
+       { id, tab, kicker, title, viewBox,
+         frames : [ {x,y,w,h,label} ],
+         nodes  : [ {id,x,y,w,h,kind,lines:[{t,mono,small}]} ],
+         edges  : [ {id,d,kind,label:{t,x,y,w} | {t,x,y,rot}} ],
+         steps  : [ {node,edge,extra,kind,who,text} ] }
+
+       kind de nodo : 'pain' rojo · 'hub' azul · 'robot' negro · nada = neutro
+       kind de paso : 'pain' pinta la narración en rojo · 'end' cierra
+       node         : id del nodo que se enciende
+       edge         : arista que recorre la bolita ANTES de encender el nodo
+       extra        : aristas que se encienden sin recorrer
+
+     El SVG se dibuja solo a partir de eso: no hay marcado que mantener.
+     ========================================================================== -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;600;800&family=Michroma&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0C0D0F; --ink-2:#14161A; --paper:#FFFFFF;
+    --g1:#5F6369; --g2:#9A9DA3; --g3:#DBDDD8; --g4:#E7E8E4;
+    --tech:'Michroma','Segoe UI',system-ui,sans-serif;
+    --doto:'Doto','JetBrains Mono',Consolas,monospace;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --radius:20px;
+    --accent:#2F6BFF; --on-accent:#FFFFFF;
+    --accent-weak:rgba(47,107,255,.12); --glow:rgba(47,107,255,.40);
+    --pain:#F0531C; --pain-weak:#FDE7E0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:transparent}
+  body{
+    font-family:var(--tech);color:var(--ink);line-height:1.6;
+    -webkit-font-smoothing:antialiased;letter-spacing:-.005em;
+    display:flex;justify-content:center;padding:14px;
+  }
+  body[data-theme="dark"]{color:#EEF0F1}
+
+  .wrap{
+    width:100%;max-width:1220px;background:var(--paper);
+    border:1px solid var(--g3);border-radius:var(--radius);padding:18px 22px 18px;
+    box-shadow:0 1px 2px rgba(12,13,15,.04),0 18px 40px -30px rgba(12,13,15,.25);
+  }
+  body[data-theme="dark"] .wrap{background:var(--ink-2);border-color:rgba(255,255,255,.12);box-shadow:none}
+
+  /* ---------- pestañas de nivel ---------- */
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;
+    border-bottom:1px solid var(--g3);padding-bottom:12px}
+  body[data-theme="dark"] .tabs{border-color:rgba(255,255,255,.12)}
+  .tab{font-family:var(--tech);font-size:11.5px;letter-spacing:.02em;cursor:pointer;
+    background:transparent;border:1px solid var(--g3);color:var(--g1);
+    border-radius:999px;padding:8px 16px;display:inline-flex;align-items:baseline;gap:8px;
+    transition:border-color .18s,color .18s,background .18s}
+  body[data-theme="dark"] .tab{border-color:rgba(255,255,255,.16);color:#A9AEB4}
+  .tab:hover:not(.on){border-color:var(--accent);color:var(--accent)}
+  .tab.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);
+    box-shadow:0 0 22px var(--glow)}
+  .tab i{font-family:var(--doto);font-weight:800;font-size:13px;font-style:normal;opacity:.65}
+  .tab.on i{opacity:1}
+  .tabs.hidden{display:none}
+
+  /* ---------- encabezado ---------- */
+  .kicker{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--g1);
+    display:inline-flex;align-items:center;gap:9px;margin-bottom:8px}
+  body[data-theme="dark"] .kicker{color:#8A8F96}
+  .kicker::before{content:"";width:20px;height:2px;background:var(--accent);border-radius:2px}
+  h1{font-size:21px;font-weight:400;margin:0 0 4px;letter-spacing:-.015em}
+  body[data-theme="dark"] h1{color:#fff}
+
+  /* ---------- lienzo ---------- */
+  .stage{width:100%;margin:6px 0 0}
+  svg.diagram{width:100%;height:auto;display:block;overflow:visible}
+
+  .node,.edge{transition:opacity .45s ease,filter .45s ease}
+  .node,.edge{opacity:.20;filter:grayscale(1)}
+  /* los marcos son el mapa, no parte del flujo: el recuadro se atenúa,
+     el título se lee completo desde el primer segundo */
+  .f-box{opacity:.42}
+
+  .n-box{fill:var(--paper);stroke:var(--g3);stroke-width:1.5;transition:fill .4s ease,stroke .4s ease}
+  body[data-theme="dark"] .n-box{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.14)}
+  .n-t{font-size:12.5px;fill:var(--ink);letter-spacing:-.01em}
+  body[data-theme="dark"] .n-t{fill:#EAECEE}
+  .n-t.mono{font-family:var(--mono);font-weight:500;letter-spacing:0}
+  .n-t.small{font-size:10.5px;opacity:.72}
+
+  .node.on{opacity:1;filter:none}
+  .node.on .n-box{stroke:var(--accent);stroke-width:2}
+
+  .node.on.pain .n-box{fill:var(--pain-weak);stroke:var(--pain);stroke-width:2}
+  body[data-theme="dark"] .node.on.pain .n-box{fill:rgba(240,83,28,.16)}
+  .node.on.pain .n-t{fill:#7A2A0D}
+  body[data-theme="dark"] .node.on.pain .n-t{fill:#FFCBB6}
+
+  .node.on.hub .n-box{fill:var(--accent-weak);stroke:var(--accent);stroke-width:2.5}
+  body[data-theme="dark"] .node.on.hub .n-box{fill:rgba(47,107,255,.22)}
+
+  .node.on.robot .n-box{fill:var(--ink);stroke:var(--ink)}
+  body[data-theme="dark"] .node.on.robot .n-box{fill:#000;stroke:rgba(255,255,255,.25)}
+  .node.robot.on .n-t{fill:#fff}
+
+  .n-ring{fill:none;stroke:var(--accent);stroke-width:2;opacity:0;transform-box:fill-box;transform-origin:center}
+  .node.pain .n-ring{stroke:var(--pain)}
+  .node.active .n-ring{animation:ring 1.5s ease-out infinite}
+  @keyframes ring{
+    0%{opacity:.55;transform:scale(1)}
+    70%{opacity:0;transform:scale(1.045)}
+    100%{opacity:0;transform:scale(1.045)}
+  }
+  .node.active .n-box{filter:drop-shadow(0 0 16px var(--glow))}
+  .node.active.pain .n-box{filter:drop-shadow(0 0 16px rgba(240,83,28,.45))}
+
+  .e-path{fill:none;stroke:var(--g2);stroke-width:2;stroke-linecap:round}
+  body[data-theme="dark"] .e-path{stroke:#6E757D}
+  .edge.on{opacity:1;filter:none}
+  .edge.on .e-path{stroke:var(--accent)}
+  .edge.on.pain .e-path{stroke:var(--pain);stroke-dasharray:7 6}
+  .e-lbl{font-size:10.5px;fill:var(--g1);letter-spacing:.02em}
+  body[data-theme="dark"] .e-lbl{fill:#9CA1A7}
+  .edge.on .e-lbl{fill:var(--ink)}
+  body[data-theme="dark"] .edge.on .e-lbl{fill:#E4E7EA}
+  .e-lbl-bg{fill:var(--paper)}
+  body[data-theme="dark"] .e-lbl-bg{fill:var(--ink-2)}
+
+  .f-box{fill:none;stroke:var(--g3);stroke-width:1.5;stroke-dasharray:6 7}
+  body[data-theme="dark"] .f-box{stroke:rgba(255,255,255,.18)}
+  .f-t{font-size:11px;letter-spacing:.2em;text-transform:uppercase;fill:var(--g1)}
+  body[data-theme="dark"] .f-t{fill:#B7BCC2}
+  .f-tick{fill:var(--accent)}
+
+  #token{opacity:0;pointer-events:none}
+  #token .core{fill:var(--accent)}
+  #token .halo{fill:var(--accent);opacity:.22}
+  #token.pain .core,#token.pain .halo{fill:var(--pain)}
+
+  /* ---------- narración ---------- */
+  .caption{display:flex;gap:16px;align-items:flex-start;margin-top:14px;
+    padding:15px 18px;min-height:78px;background:var(--accent-weak);
+    border:1px solid var(--g3);border-radius:14px;transition:background .4s,border-color .4s}
+  body[data-theme="dark"] .caption{border-color:rgba(255,255,255,.12)}
+  .caption.pain{background:rgba(240,83,28,.10);border-color:rgba(240,83,28,.38)}
+  .cap-n{font-family:var(--doto);font-weight:800;font-size:20px;color:var(--accent);min-width:34px;line-height:1.3}
+  .caption.pain .cap-n{color:var(--pain)}
+  .cap-b{flex:1}
+  .cap-who{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--g2);margin-bottom:3px}
+  .cap-tx{font-size:14px;color:var(--ink);margin:0;line-height:1.55}
+  body[data-theme="dark"] .cap-tx{color:#DCDFE3}
+
+  /* ---------- controles ---------- */
+  .bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--tech);font-size:12.5px;
+    background:var(--accent);color:var(--on-accent);border:0;border-radius:999px;
+    padding:10px 20px;cursor:pointer;box-shadow:0 0 24px var(--glow)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--g3);box-shadow:none}
+  body[data-theme="dark"] .btn.ghost{color:#fff;border-color:rgba(255,255,255,.24)}
+  .btn:disabled{opacity:.4;cursor:default;box-shadow:none}
+  .btn.ghost:hover:not(:disabled){border-color:var(--accent)}
+
+  .spd{display:flex;gap:5px;margin-left:auto;align-items:center}
+  .spd span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--g2);margin-right:4px}
+  .spd button{font-family:var(--doto);font-weight:600;font-size:12px;background:transparent;
+    border:1px solid var(--g3);color:var(--g1);border-radius:999px;padding:6px 12px;cursor:pointer}
+  body[data-theme="dark"] .spd button{border-color:rgba(255,255,255,.18);color:#AEB2B8}
+  .spd button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+
+  .prog{height:3px;background:var(--g4);border-radius:3px;overflow:hidden;margin-top:14px}
+  body[data-theme="dark"] .prog{background:rgba(255,255,255,.10)}
+  .prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .35s ease}
+  .cnt{font-family:var(--doto);font-weight:600;font-size:12px;color:var(--g2);letter-spacing:.06em}
+  .cnt b{color:var(--accent);font-weight:600}
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+
+  @media (prefers-reduced-motion:reduce){
+    .node.active .n-ring{animation:none}
+    .node,.edge,.frame,.caption,.prog i{transition-duration:.01ms}
+  }
+  @media (max-width:760px){
+    .wrap{padding:14px}
+    h1{font-size:16px}
+    .btn{padding:9px 14px;font-size:11.5px}
+    .spd{margin-left:0}
+    .tab{padding:7px 12px;font-size:11px}
+  }
+</style>
+</head>
+<body data-theme="light">
+
+<div class="wrap">
+
+  <div class="tabs" id="tabs" role="tablist" aria-label="Nivel de madurez"></div>
+
+  <div class="kicker" id="kicker"></div>
+  <h1 id="title"></h1>
+
+  <div class="stage" id="stage"></div>
+
+  <div class="caption" id="cap">
+    <div class="cap-n" id="capN">—</div>
+    <div class="cap-b">
+      <div class="cap-who" id="capWho"></div>
+      <p class="cap-tx" id="capTx"></p>
+    </div>
+  </div>
+
+  <div class="prog"><i id="prog"></i></div>
+
+  <div class="bar">
+    <button class="btn" id="play">▶&nbsp; Reproducir</button>
+    <button class="btn ghost" id="prev">←</button>
+    <button class="btn ghost" id="next">Paso &nbsp;→</button>
+    <button class="btn ghost" id="reset">Reiniciar</button>
+    <span class="cnt"><b id="cur">0</b> / <span id="tot">0</span></span>
+    <div class="spd">
+      <span>Velocidad</span>
+      <button data-spd="0.6">0.6×</button>
+      <button data-spd="1" class="on">1×</button>
+      <button data-spd="1.8">1.8×</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   MOTOR · no necesitas tocar nada de aquí para agregar niveles
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const stage=$('#stage'), tabsEl=$('#tabs'), capBox=$('#cap'), capN=$('#capN'),
+      capWho=$('#capWho'), capTx=$('#capTx'), prog=$('#prog'), curEl=$('#cur'), totEl=$('#tot'),
+      btnPlay=$('#play'), btnNext=$('#next'), btnPrev=$('#prev'), btnReset=$('#reset');
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LH = 19;                       // alto de línea dentro de un nodo
+let L, i = -1, playing = false, speed = 1, run = 0, token;
+
+const sleep = ms => new Promise(r => setTimeout(r, ms / speed));
+const node  = id => document.getElementById('n-' + id);
+const esc   = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+/* ---------- dibuja el SVG de un nivel ---------- */
+function buildSVG(lv){
+  const frames = lv.frames.map(f => `
+    <g class="frame">
+      <rect class="f-box" x="${f.x}" y="${f.y}" width="${f.w}" height="${f.h}" rx="18"/>
+      <rect class="f-tick" x="${f.x + 18}" y="${f.y - 15}" width="14" height="2" rx="1"/>
+      <text class="f-t" x="${f.x + 38}" y="${f.y - 10}">${esc(f.label)}</text>
+    </g>`).join('');
+
+  const edges = lv.edges.map(e => {
+    let lbl = '';
+    if (e.label){
+      const t = e.label;
+      if (t.rot){
+        lbl = `<text class="e-lbl" x="${t.x}" y="${t.y}" text-anchor="middle"
+                 transform="rotate(${t.rot} ${t.x} ${t.y})">${esc(t.t)}</text>`;
+      } else {
+        const w = t.w || (t.t.length * 6.6 + 16);
+        lbl = `<rect class="e-lbl-bg" x="${t.x - w/2}" y="${t.y - 13}" width="${w}" height="18" rx="6"/>
+               <text class="e-lbl" x="${t.x}" y="${t.y}" text-anchor="middle">${esc(t.t)}</text>`;
+      }
+    }
+    return `<g class="edge ${e.kind || ''}" id="${e.id}">
+              <path class="e-path" d="${e.d}" marker-end="url(#ah)"/>${lbl}
+            </g>`;
+  }).join('');
+
+  const nodes = lv.nodes.map(n => {
+    const cx = n.x + n.w/2, cy = n.y + n.h/2;
+    const first = cy - (n.lines.length - 1) * LH/2 + 6;
+    const txt = n.lines.map((l, k) =>
+      `<text class="n-t${l.mono?' mono':''}${l.small?' small':''}" x="${cx}" y="${first + k*LH}"
+         text-anchor="middle">${esc(l.t)}</text>`).join('');
+    return `<g class="node ${n.kind || ''}" id="n-${n.id}">
+              <rect class="n-ring" x="${n.x-4}" y="${n.y-4}" width="${n.w+8}" height="${n.h+8}" rx="15"/>
+              <rect class="n-box"  x="${n.x}"   y="${n.y}"   width="${n.w}"   height="${n.h}"   rx="13"/>
+              ${txt}
+            </g>`;
+  }).join('');
+
+  stage.innerHTML = `
+    <svg class="diagram" viewBox="${lv.viewBox}" role="img" aria-label="${esc(lv.title)}">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6"
+                orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/>
+        </marker>
+      </defs>
+      ${frames}${edges}${nodes}
+      <g id="token"><circle class="halo" r="13"/><circle class="core" r="5.5"/></g>
+    </svg>`;
+  token = document.getElementById('token');
+}
+
+/* ---------- estado del diagrama hasta el paso n, sin animar ---------- */
+function paint(n){
+  document.querySelectorAll('.node').forEach(e => e.classList.remove('on','active'));
+  document.querySelectorAll('.edge').forEach(e => {
+    e.classList.remove('on');
+    const p = e.querySelector('.e-path');
+    p.style.strokeDasharray = ''; p.style.strokeDashoffset = '';
+  });
+  token.style.opacity = 0;
+
+  for (let k = 0; k <= n; k++){
+    const s = L.steps[k];
+    if (s.edge) document.getElementById(s.edge).classList.add('on');
+    (s.extra || []).forEach(id => document.getElementById(id).classList.add('on'));
+    if (s.node) node(s.node).classList.add('on');
+  }
+  const last = L.steps[n];
+  if (last && last.node) node(last.node).classList.add('active');
+  if (last && isFinal(last.kind)) finish(last.kind);
+  caption(n);
+}
+
+/* cierre del guion: 'end' deja latiendo los puntos de dolor,
+   'done' apaga todo foco (niveles que terminan sin nada en rojo) */
+function finish(kind){
+  document.querySelectorAll('.node.on').forEach(e => e.classList.remove('active'));
+  if (kind === 'end') document.querySelectorAll('.node.pain.on').forEach(e => e.classList.add('active'));
+}
+const isFinal = k => k === 'end' || k === 'done';
+
+function caption(n){
+  const s = L.steps[n];
+  if (!s){
+    capN.textContent = '—';
+    capWho.textContent = 'Listo para empezar';
+    capTx.textContent = 'Presiona Reproducir para recorrer el flujo etapa por etapa. Todo arranca apagado: cada paso se enciende cuando le toca.';
+    capBox.classList.remove('pain');
+  } else {
+    capN.textContent = String(n + 1).padStart(2,'0');
+    capWho.textContent = s.who;
+    capTx.textContent = s.text;
+    capBox.classList.toggle('pain', s.kind === 'pain' || s.kind === 'end');
+  }
+  curEl.textContent = n + 1;
+  prog.style.width = ((n + 1) / L.steps.length * 100) + '%';
+  btnPrev.disabled = n < 0;
+  btnNext.disabled = n >= L.steps.length - 1;
+}
+
+/* ---------- la bolita recorre una arista mientras se dibuja ---------- */
+function travel(edgeEl, ms){
+  return new Promise(resolve => {
+    const path = edgeEl.querySelector('.e-path');
+    const len = path.getTotalLength();
+    edgeEl.classList.add('on');
+    token.classList.toggle('pain', edgeEl.classList.contains('pain'));
+
+    if (reduce){ token.style.opacity = 0; return resolve(); }
+
+    path.style.strokeDasharray  = len + ' ' + len;
+    path.style.strokeDashoffset = len;
+    token.style.opacity = 1;
+
+    const t0 = performance.now(), dur = ms / speed, mine = run;
+    (function frame(t){
+      if (mine !== run){ token.style.opacity = 0; return resolve(); }
+      const raw = Math.min(1, (t - t0) / dur);
+      const e = raw < .5 ? 2*raw*raw : 1 - Math.pow(-2*raw + 2, 2)/2;   // easeInOutQuad
+      const pt = path.getPointAtLength(e * len);
+      token.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
+      path.style.strokeDashoffset = len * (1 - e);
+      if (raw < 1) requestAnimationFrame(frame);
+      else { token.style.opacity = 0; path.style.strokeDasharray = ''; resolve(); }
+    })(performance.now());
+  });
+}
+
+async function step(n){
+  const mine = ++run;
+  i = n;
+  paint(n - 1);                       // reconstruye lo anterior de golpe
+  const s = L.steps[n];
+  (s.extra || []).forEach(id => document.getElementById(id).classList.add('on'));
+
+  if (s.edge){ await travel(document.getElementById(s.edge), 950); if (mine !== run) return; }
+  if (s.node){
+    node(s.node).classList.add('on','active');
+    await sleep(reduce ? 10 : 260); if (mine !== run) return;
+  }
+  if (isFinal(s.kind)) finish(s.kind);
+  caption(n);
+}
+
+async function play(){
+  playing = true; setPlayBtn();
+  if (i >= L.steps.length - 1){ i = -1; paint(-1); await sleep(300); }
+  for (let n = i + 1; n < L.steps.length; n++){
+    await step(n);
+    if (!playing) return;
+    await sleep(1100 + Math.min(3200, L.steps[n].text.length * 26));   // pausa según lo que hay que leer
+    if (!playing) return;
+  }
+  playing = false; setPlayBtn();
+}
+
+function pause(){ playing = false; setPlayBtn(); }
+function setPlayBtn(){
+  const last = L ? L.steps.length - 1 : 0;      // en el primer load() aún no hay nivel
+  btnPlay.innerHTML = playing ? '❚❚&nbsp; Pausa'
+    : (i >= last ? '↻&nbsp; Repetir' : '▶&nbsp; Reproducir');
+}
+
+/* ---------- cambio de nivel ---------- */
+function load(id){
+  pause(); run++;
+  L = LEVELS.find(l => l.id === id) || LEVELS[0];
+  $('#kicker').textContent = L.kicker;
+  $('#title').textContent  = L.title;
+  totEl.textContent = L.steps.length;
+  [...tabsEl.children].forEach(b => {
+    const on = +b.dataset.id === L.id;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-selected', on);
+  });
+  buildSVG(L);
+  i = -1; paint(-1); setPlayBtn();
+}
+
+LEVELS_TABS: {
+  // se llena abajo, después de definir LEVELS
+}
+
+btnPlay.onclick  = () => playing ? pause() : play();
+btnNext.onclick  = () => { pause(); if (i < L.steps.length - 1) step(i + 1); };
+btnPrev.onclick  = () => { pause(); i = Math.max(-1, i - 1); run++; paint(i); setPlayBtn(); };
+btnReset.onclick = () => { pause(); i = -1; run++; paint(-1); setPlayBtn(); };
+
+document.querySelectorAll('.spd button').forEach(b => b.onclick = () => {
+  speed = parseFloat(b.dataset.spd);
+  document.querySelectorAll('.spd button').forEach(x => x.classList.toggle('on', x === b));
+});
+
+addEventListener('keydown', e => {
+  if (e.key === ' ')          { e.preventDefault(); playing ? pause() : play(); }
+  if (e.key === 'ArrowRight') { e.preventDefault(); btnNext.click(); }
+  if (e.key === 'ArrowLeft')  { e.preventDefault(); btnPrev.click(); }
+  if (e.key === 'r' || e.key === 'R') btnReset.click();
+  const n = parseInt(e.key, 10);
+  if (n >= 1 && n <= 9 && LEVELS.some(l => l.id === n)) load(n);
+});
+
+
+/* ============================================================================
+   NIVELES
+   ============================================================================ */
+const LEVELS = [
+
+/* ─────────────────────────── NIVEL 1 ─────────────────────────── */
+{
+  id: 1,
+  tab: 'Local',
+  kicker: 'Nivel 1 de 5 · el punto de partida',
+  title: 'Ambiente local, cada quien en su máquina',
+  viewBox: '0 0 1180 660',
+
+  frames: [
+    { x:90,  y:76,  w:340, h:400, label:'Ana · laptop'  },
+    { x:750, y:76,  w:340, h:400, label:'Beto · laptop' },
+    { x:452, y:514, w:280, h:124, label:'Robot'         }
+  ],
+
+  nodes: [
+    { id:'A1', x:110, y:120, w:300, h:62, kind:'pain',
+      lines:[{t:'Instala ROS 2 y'},{t:'dependencias a mano'}] },
+    { id:'A2', x:110, y:210, w:300, h:62,
+      lines:[{t:'Escribe código'},{t:'~/proyecto',mono:true}] },
+    { id:'A3', x:110, y:300, w:300, h:62,
+      lines:[{t:'colcon build',mono:true}] },
+    { id:'A4', x:110, y:390, w:300, h:62,
+      lines:[{t:'Prueba local'},{t:'funciona',small:true}] },
+
+    { id:'B1', x:770, y:120, w:300, h:62, kind:'pain',
+      lines:[{t:'Instala ROS 2:'},{t:'otra versión, otro día'}] },
+    { id:'B2', x:770, y:210, w:300, h:62, kind:'pain',
+      lines:[{t:'Recibe la carpeta'}] },
+    { id:'B3', x:770, y:300, w:300, h:62,
+      lines:[{t:'colcon build',mono:true}] },
+    { id:'B4', x:770, y:390, w:300, h:62, kind:'pain',
+      lines:[{t:'Falla: faltan'},{t:'dependencias'}] },
+
+    { id:'ROB', x:470, y:540, w:240, h:72, kind:'robot',
+      lines:[{t:'Robot'},{t:'sin versión conocida',small:true}] }
+  ],
+
+  edges: [
+    { id:'e-a12', d:'M260,182 L260,203' },
+    { id:'e-a23', d:'M260,272 L260,293' },
+    { id:'e-a34', d:'M260,362 L260,383' },
+    { id:'e-loop', d:'M110,421 C52,421 46,404 46,347 C46,262 54,241 110,241',
+      label:{t:'algo falla', x:38, y:347, rot:-90} },
+    { id:'e-share', kind:'pain', d:'M410,421 C540,421 610,241 763,241',
+      label:{t:'ZIP, USB o chat', x:577, y:324, w:126} },
+    { id:'e-rob', kind:'pain', d:'M260,452 C260,545 330,576 463,576',
+      label:{t:'copia manual + build', x:358, y:540, w:168} },
+    { id:'e-b12', d:'M920,182 L920,203' },
+    { id:'e-b23', d:'M920,272 L920,293' },
+    { id:'e-b34', kind:'pain', d:'M920,362 L920,383' }
+  ],
+
+  steps: [
+    { node:'A1', kind:'pain', who:'Ana · día 1',
+      text:'Ana instala ROS 2 y sus dependencias a mano. Funciona, pero ese conocimiento no queda escrito en ninguna parte: vive en su terminal y en su memoria.' },
+    { node:'A2', edge:'e-a12', who:'Ana',
+      text:'Escribe el código en una carpeta de su casa. Nada fuera de esa laptop sabe que este proyecto existe.' },
+    { node:'A3', edge:'e-a23', who:'Ana',
+      text:'Compila con colcon. Aquí todo va bien: en una sola máquina, este flujo es cómodo y rápido.' },
+    { node:'A4', edge:'e-a34', who:'Ana',
+      text:'Prueba en local y funciona. Este es el momento en que alguien dice “ya quedó”.' },
+    { node:'A2', edge:'e-loop', who:'Ana · ciclo sano',
+      text:'Si algo falla, vuelve al código y repite. Este ciclo no es el problema: es el trabajo normal de desarrollo, y se conserva en todos los niveles.' },
+    { node:'B1', kind:'pain', who:'Beto · mientras tanto',
+      text:'Beto ya tenía su propio entorno, instalado otro día, con otras versiones. Nadie lo comparó nunca con el de Ana porque no hay con qué compararlo.' },
+    { node:'B2', edge:'e-share', extra:['e-b12'], kind:'pain', who:'La transferencia',
+      text:'Para compartir, Ana comprime la carpeta y la manda. No hay historia, no hay diff, no hay reversa: solo un archivo con fecha en el nombre.' },
+    { node:'B3', edge:'e-b23', who:'Beto',
+      text:'Beto descomprime y compila. El código es idéntico al de Ana; el entorno debajo, no.' },
+    { node:'B4', edge:'e-b34', kind:'pain', who:'Beto · el choque',
+      text:'Falla. Faltan dependencias que solo existen en la laptop de Ana, instaladas en algún momento que nadie registró. Empiezan treinta minutos de depurar la máquina en vez del código.' },
+    { node:'ROB', edge:'e-rob', kind:'pain', who:'El despliegue',
+      text:'Y al robot se copia a mano y se compila ahí mismo. Cada despliegue es un ritual distinto, y nadie sabe con certeza qué versión trae el robot ahora.' },
+    { kind:'end', who:'El saldo del nivel 1',
+      text:'Tres puntos de falla, todos del mismo tipo: nada está escrito fuera de las laptops. El nivel 2 arregla la mitad de esto con Git.' }
+  ]
+},
+
+/* ─────────────────────────── NIVEL 2 ─────────────────────────── */
+{
+  id: 2,
+  tab: 'Git + GitHub',
+  kicker: 'Nivel 2 de 5 · el código deja de ser un archivo suelto',
+  title: 'Ambiente local, proyecto compartido por Git y GitHub',
+  viewBox: '0 0 1180 700',
+
+  frames: [
+    { x:70,  y:76,  w:290, h:400, label:'Ana · laptop'  },
+    { x:820, y:76,  w:290, h:400, label:'Beto · laptop' },
+    { x:448, y:539, w:284, h:128, label:'Robot'         }
+  ],
+
+  nodes: [
+    { id:'A1', x:86, y:120, w:258, h:62, kind:'pain',
+      lines:[{t:'Entorno instalado'},{t:'a mano'}] },
+    { id:'A2', x:86, y:210, w:258, h:62,
+      lines:[{t:'Rama + commits'}] },
+    { id:'A3', x:86, y:300, w:258, h:62,
+      lines:[{t:'colcon build',mono:true},{t:'y prueba local',small:true}] },
+    { id:'A4', x:86, y:390, w:258, h:62,
+      lines:[{t:'git push',mono:true}] },
+
+    { id:'GH', x:455, y:195, w:270, h:86, kind:'hub',
+      lines:[{t:'GitHub'},{t:'ramas · PRs · historia',small:true}] },
+
+    { id:'B1', x:836, y:120, w:258, h:62, kind:'pain',
+      lines:[{t:'Entorno propio,'},{t:'instalado otro día'}] },
+    { id:'B2', x:836, y:210, w:258, h:62,
+      lines:[{t:'Revisa el'},{t:'Pull Request'}] },
+    { id:'B3', x:836, y:300, w:258, h:62,
+      lines:[{t:'git pull',mono:true},{t:'y compila',small:true}] },
+    { id:'B4', x:836, y:390, w:258, h:62, kind:'pain',
+      lines:[{t:'A veces falla solo'},{t:'en su máquina'}] },
+
+    { id:'ROB', x:470, y:565, w:240, h:76, kind:'robot',
+      lines:[{t:'Robot'},{t:'git pull + build a mano',small:true}] }
+  ],
+
+  edges: [
+    { id:'e-a12', d:'M215,182 L215,203' },
+    { id:'e-a23', d:'M215,272 L215,293' },
+    { id:'e-a34', d:'M215,362 L215,383' },
+    { id:'e-loop', d:'M86,331 C34,331 28,320 28,286 C28,252 34,241 86,241',
+      label:{t:'algo falla', x:18, y:286, rot:-90} },
+
+    { id:'e-push', d:'M344,421 C396,421 408,292 448,266',
+      label:{t:'git push', x:402, y:352, w:70} },
+
+    { id:'e-pr', d:'M725,213 C768,203 792,226 829,230',
+      label:{t:'Pull Request', x:778, y:186, w:88} },
+    { id:'e-merge', d:'M836,256 C796,260 772,284 732,271',
+      label:{t:'merge a main', x:782, y:306, w:92} },
+
+    { id:'e-pull', d:'M620,281 C640,400 700,392 830,350',
+      label:{t:'git pull', x:686, y:404, w:66} },
+
+    { id:'e-b12', d:'M965,182 L965,203' },
+    { id:'e-b34', kind:'pain', d:'M965,362 L965,383' },
+
+    { id:'e-rob', kind:'pain', d:'M545,281 C532,400 548,500 573,558',
+      label:{t:'build en el robot', x:464, y:452, w:120} }
+  ],
+
+  steps: [
+    { node:'A1', kind:'pain', who:'Lo que Git no arregla',
+      text:'Ana sigue instalando su entorno a mano. Vale la pena decirlo de entrada: Git versiona el código, no la máquina donde corre.' },
+    { node:'A2', edge:'e-a12', who:'Ana',
+      text:'Crea una rama y trabaja con commits. Cada cambio ya tiene autor, fecha y motivo, y se puede revertir uno solo sin tocar los demás.' },
+    { node:'A3', edge:'e-a23', who:'Ana',
+      text:'Compila y prueba en local, exactamente igual que en el nivel 1.' },
+    { node:'A2', edge:'e-loop', who:'Ana · ciclo sano',
+      text:'El ciclo de iteración local no cambia. Es el mismo de siempre y sobrevive intacto hasta el nivel 5.' },
+    { node:'A4', edge:'e-a34', who:'Ana',
+      text:'git push. El código sale de su laptop por primera vez y deja de depender de que ese disco siga vivo.' },
+    { node:'GH', edge:'e-push', who:'El punto único de verdad',
+      text:'GitHub guarda la rama y abre un Pull Request. Ya no existe “la versión buena”: existe main, y todo lo demás es una propuesta con nombre y apellido.' },
+    { node:'B1', kind:'pain', who:'Beto · mientras tanto',
+      text:'Beto también tiene su entorno instalado a mano, otro día y con otras versiones. Esa diferencia sigue sin estar escrita en ningún lado.' },
+    { node:'B2', edge:'e-pr', extra:['e-b12'], who:'La revisión',
+      text:'Recibe el Pull Request y lo revisa. Aquí aparece algo que en el nivel 1 era imposible: ver exactamente qué líneas cambiaron y discutirlas antes de que entren.' },
+    { node:'GH', edge:'e-merge', who:'El merge',
+      text:'Aprueba y hace merge a main. La historia del proyecto queda completa: qué cambió, quién lo propuso y quién lo aceptó.' },
+    { node:'B3', edge:'e-pull', who:'Beto',
+      text:'Hace git pull y compila. Recibe el código correcto, en segundos y sin archivos comprimidos de por medio.' },
+    { node:'B4', edge:'e-b34', kind:'pain', who:'El problema que queda',
+      text:'Y aun así, a veces falla solo en su máquina. El código es idéntico; el entorno debajo, no. Este es el “en mi máquina sí funciona” en estado puro.' },
+    { node:'ROB', edge:'e-rob', kind:'pain', who:'El despliegue',
+      text:'En el robot: git pull y compilar ahí. Mejor que copiar carpetas, pero sigue tardando minutos, sigue dependiendo de que el entorno del robot esté bien, y sigue sin haber forma limpia de volver a la versión anterior.' },
+    { kind:'end', who:'El saldo del nivel 2',
+      text:'Git resolvió compartir, revisar y revertir el código. No tocó el entorno ni el despliegue: quedan tres puntos rojos, y los tres son el mismo problema. Eso es lo que viene a resolver Docker en el nivel 3.' }
+  ]
+}
+,
+
+/* ─────────────────────────── NIVEL 3 ─────────────────────────── */
+{
+  id: 3,
+  tab: 'Docker + CI',
+  kicker: 'Nivel 3 de 5 · el entorno entra al repositorio',
+  title: 'Git y GitHub + Docker con integración continua',
+  viewBox: '0 0 1180 780',
+
+  frames: [
+    { x:60,  y:76,  w:290, h:400, label:'Ana · laptop'   },
+    { x:420, y:300, w:320, h:286, label:'GitHub Actions' },
+    { x:830, y:230, w:290, h:350, label:'Beto · laptop'  },
+    { x:438, y:634, w:304, h:128, label:'Robot'          }
+  ],
+
+  nodes: [
+    { id:'A1', x:76, y:120, w:258, h:62,
+      lines:[{t:'Edita código'},{t:'y Dockerfile'}] },
+    { id:'A2', x:76, y:210, w:258, h:62, kind:'pain',
+      lines:[{t:'docker build',mono:true},{t:'minutos, en su laptop',small:true}] },
+    { id:'A3', x:76, y:300, w:258, h:62,
+      lines:[{t:'docker run',mono:true},{t:'y prueba',small:true}] },
+    { id:'A4', x:76, y:390, w:258, h:62,
+      lines:[{t:'git push',mono:true}] },
+
+    { id:'GH', x:445, y:150, w:270, h:86, kind:'hub',
+      lines:[{t:'GitHub'},{t:'código + Dockerfile',small:true}] },
+
+    { id:'C1', x:436, y:330, w:288, h:62,
+      lines:[{t:'Construye la imagen'},{t:'en una máquina limpia',small:true}] },
+    { id:'C2', x:436, y:410, w:288, h:62,
+      lines:[{t:'Lint y pruebas'},{t:'dentro de la imagen',small:true}] },
+    { id:'C3', x:436, y:490, w:288, h:62,
+      lines:[{t:'PR en verde o rojo'}] },
+
+    { id:'B1', x:846, y:270, w:258, h:62,
+      lines:[{t:'Revisa el PR'},{t:'con el CI en verde',small:true}] },
+    { id:'B2', x:846, y:380, w:258, h:62,
+      lines:[{t:'merge + git pull',mono:true}] },
+    { id:'B3', x:846, y:490, w:258, h:62, kind:'pain',
+      lines:[{t:'docker build',mono:true},{t:'otra vez, en su máquina',small:true}] },
+
+    { id:'ROB', x:460, y:660, w:260, h:76, kind:'robot',
+      lines:[{t:'Robot'},{t:'compila ahí mismo',small:true}] }
+  ],
+
+  edges: [
+    { id:'e-a12', d:'M205,182 L205,203' },
+    { id:'e-a23', d:'M205,272 L205,293' },
+    { id:'e-a34', d:'M205,362 L205,383' },
+    { id:'e-loop', d:'M76,331 C24,331 18,300 18,241 C18,182 26,151 76,151',
+      label:{t:'algo falla', x:8, y:241, rot:-90} },
+
+    { id:'e-push', d:'M334,421 C386,421 398,240 438,203',
+      label:{t:'git push', x:394, y:330, w:70} },
+
+    { id:'e-ci', d:'M580,236 L580,323',
+      label:{t:'dispara el workflow', x:654, y:283, w:134} },   // a la derecha: el título del marco ocupa la izquierda
+    { id:'e-c12', d:'M580,392 L580,403' },
+    { id:'e-c23', d:'M580,472 L580,483' },
+
+    { id:'e-verde', d:'M724,521 C790,521 792,350 839,303',
+      label:{t:'CI en verde', x:784, y:420, w:84} },
+    { id:'e-b12', d:'M975,332 L975,373' },
+    { id:'e-b23', kind:'pain', d:'M975,442 L975,483' },
+
+    { id:'e-rob', kind:'pain',
+      d:'M460,236 C430,260 378,270 374,330 C370,420 370,560 386,630 C400,678 420,694 452,697',
+      label:{t:'git pull + docker build ahí', x:276, y:640, w:186} }
+  ],
+
+  steps: [
+    { node:'A1', who:'Ana · lo que cambia',
+      text:'Ana edita el código y, junto a él, el Dockerfile. El entorno deja de vivir en su terminal: ahora es un archivo del repositorio, con diffs y con historia.' },
+    { node:'A2', edge:'e-a12', kind:'pain', who:'El costo de entrada',
+      text:'docker build en su laptop. Funciona y es reproducible, pero tarda minutos. Guarda ese detalle: es el único dolor que va a quedar al final de este nivel.' },
+    { node:'A3', edge:'e-a23', who:'Ana',
+      text:'docker run y prueba. Ya no corre sobre su sistema: corre dentro del contenedor, el mismo que van a levantar todos los demás.' },
+    { node:'A1', edge:'e-loop', who:'Ana · ciclo sano',
+      text:'El ciclo de iteración sigue ahí, igual que en los niveles anteriores. Con un bind mount ni siquiera hay que reconstruir para ver un cambio.' },
+    { node:'A4', edge:'e-a34', who:'Ana',
+      text:'git push. Sale el código y sale la receta del entorno en el mismo commit, que es lo que los mantiene sincronizados.' },
+    { node:'GH', edge:'e-push', who:'El repositorio',
+      text:'GitHub guarda código y Dockerfile juntos. Cambiar una dependencia ahora es un cambio revisable en un Pull Request, no algo que alguien hizo en su máquina un martes.' },
+    { node:'C1', edge:'e-ci', who:'CI · paso 1',
+      text:'Actions arranca solo y construye la imagen desde cero en una máquina limpia. Si el Dockerfile depende de algo que solo existía en la laptop de Ana, revienta aquí.' },
+    { node:'C2', edge:'e-c12', who:'CI · paso 2',
+      text:'Corre linters y pruebas dentro de esa misma imagen. No se prueba “el código”: se prueba el código en el entorno real donde va a vivir.' },
+    { node:'C3', edge:'e-c23', who:'CI · paso 3',
+      text:'Marca el Pull Request en verde o en rojo. A partir de aquí, “a mí sí me compila” deja de ser una opinión y pasa a ser un dato.' },
+    { node:'B1', edge:'e-verde', who:'Beto · lo que ya no hace',
+      text:'Beto abre el PR y lo encuentra en verde. Ya no depura su entorno antes de opinar: solo revisa el código, que es para lo que sirve una revisión.' },
+    { node:'B2', edge:'e-b12', who:'Beto',
+      text:'Aprueba, hace merge a main y jala los cambios.' },
+    { node:'B3', edge:'e-b23', kind:'pain', who:'El dolor que queda',
+      text:'Y vuelve a construir la imagen en su máquina. El entorno sí es idéntico al de Ana, pero el build se repite persona por persona, cada vez, aunque el CI ya lo hizo hace un minuto.' },
+    { node:'ROB', edge:'e-rob', kind:'pain', who:'El despliegue',
+      text:'En el robot, lo mismo: git pull y docker build ahí. En una Jetson eso son entre diez y treinta minutos con el robot fuera de servicio, y si sale mal no hay versión anterior a la que volver.' },
+    { kind:'end', who:'El saldo del nivel 3',
+      text:'Docker resolvió el entorno y el CI resolvió el “en mi máquina”. Lo único rojo que queda es el mismo build repetido tres veces. El nivel 4 lo construye una sola vez y reparte el resultado.' }
+  ]
+}
+,
+
+/* ─────────────────────────── NIVEL 4 ─────────────────────────── */
+{
+  id: 4,
+  tab: 'GHCR + Compose',
+  kicker: 'Nivel 4 de 5 · la imagen se construye una sola vez',
+  title: 'Git, GitHub, CI/CD, GHCR, Docker y Docker Compose',
+  viewBox: '0 0 1180 800',
+
+  frames: [
+    { x:70,  y:76,  w:280, h:400, label:'Ana · laptop'        },
+    { x:400, y:250, w:330, h:272, label:'GitHub Actions'      },
+    { x:824, y:140, w:290, h:280, label:'Beto · laptop'       },
+    { x:824, y:520, w:290, h:240, label:'Robot · Jetson arm64' }
+  ],
+
+  nodes: [
+    { id:'A1', x:86, y:120, w:248, h:62,
+      lines:[{t:'Edita código'},{t:'y compose.dev.yaml',small:true}] },
+    { id:'A2', x:86, y:210, w:248, h:62,
+      lines:[{t:'compose up',mono:true},{t:'con bind mount',small:true}] },
+    { id:'A3', x:86, y:300, w:248, h:62,
+      lines:[{t:'Prueba en caliente'},{t:'sin reconstruir',small:true}] },
+    { id:'A4', x:86, y:390, w:248, h:62,
+      lines:[{t:'git push + tag',mono:true},{t:'v0.3.1',small:true}] },
+
+    { id:'GH', x:430, y:110, w:270, h:80, kind:'hub',
+      lines:[{t:'GitHub'},{t:'código · Dockerfile · compose',small:true}] },
+
+    { id:'C1', x:416, y:280, w:298, h:62,
+      lines:[{t:'Pruebas y lint'}] },
+    { id:'C2', x:416, y:360, w:298, h:62,
+      lines:[{t:'buildx multi-arch',mono:true},{t:'amd64 + arm64 · el único build',small:true}] },
+    { id:'C3', x:416, y:440, w:298, h:62,
+      lines:[{t:'push a GHCR',mono:true}] },
+
+    { id:'REG', x:430, y:570, w:270, h:86, kind:'hub',
+      lines:[{t:'GHCR'},{t:'ghcr.io/org/app:0.3.1',small:true,mono:true}] },
+
+    { id:'B1', x:840, y:180, w:258, h:62,
+      lines:[{t:'Revisa el PR'},{t:'con el CI en verde',small:true}] },
+    { id:'B2', x:840, y:290, w:258, h:62,
+      lines:[{t:'compose up',mono:true},{t:'jala la imagen, no la construye',small:true}] },
+
+    { id:'ROB', x:840, y:560, w:258, h:76, kind:'robot',
+      lines:[{t:'Robot'},{t:'compose pull && up -d',small:true}] },
+    { id:'RB', x:840, y:680, w:258, h:62, kind:'robot',
+      lines:[{t:'Rollback'},{t:'tag anterior, en segundos',small:true}] }
+  ],
+
+  edges: [
+    { id:'e-a12', d:'M210,182 L210,203' },
+    { id:'e-a23', d:'M210,272 L210,293' },
+    { id:'e-a34', d:'M210,362 L210,383' },
+    { id:'e-loop', d:'M86,331 C28,331 22,300 22,241 C22,182 30,151 86,151',
+      label:{t:'algo falla', x:12, y:241, rot:-90} },
+
+    { id:'e-push', d:'M334,421 C388,421 398,200 423,162',
+      label:{t:'push + tag', x:392, y:208, w:80} },   // arriba del título del marco: abajo el pasillo es de 50 px
+
+    { id:'e-ci', d:'M565,190 L565,273',
+      label:{t:'el tag dispara el release', x:648, y:233, w:150} },
+    { id:'e-c12', d:'M565,342 L565,353' },
+    { id:'e-c23', d:'M565,422 L565,433' },
+    { id:'e-reg', d:'M565,502 L565,563',
+      label:{t:'imagen publicada', x:660, y:539, w:114} },
+
+    { id:'e-verde', d:'M714,311 C778,311 784,230 833,213',
+      label:{t:'CI en verde', x:777, y:268, w:84} },
+    { id:'e-b12', d:'M969,242 L969,283' },
+    { id:'e-regb', d:'M690,575 C768,556 774,390 833,326',
+      label:{t:'compose up', x:777, y:462, w:88} },
+
+    { id:'e-regrob', d:'M700,604 C748,600 766,598 817,598',
+      label:{t:'compose pull', x:758, y:578, w:94} },
+    { id:'e-rollback', d:'M969,636 L969,673' }
+  ],
+
+  steps: [
+    { node:'A1', who:'Ana · lo que cambia',
+      text:'Ana edita el código y el compose.dev.yaml. El repo ya no solo dice cómo se construye el entorno: dice cómo se levanta.' },
+    { node:'A2', edge:'e-a12', who:'Ana',
+      text:'docker compose up y listo. Un comando, sin flags que recordar, sin pegar nada de un chat. Su carpeta de código entra al contenedor por un bind mount.' },
+    { node:'A3', edge:'e-a23', who:'Ana',
+      text:'Prueba en caliente: edita con su editor de siempre y el cambio ya está adentro. No reconstruye nada para ver el resultado.' },
+    { node:'A1', edge:'e-loop', who:'Ana · ciclo sano',
+      text:'El mismo ciclo de iteración de los cuatro niveles, ahora sin esperar builds en medio. Es el nivel donde el desarrollo local se vuelve más rápido, no más lento.' },
+    { node:'A4', edge:'e-a34', who:'Ana',
+      text:'git push y una etiqueta: v0.3.1. Ese tag es la decisión de publicar una versión, y es lo único que la distingue de un commit cualquiera.' },
+    { node:'GH', edge:'e-push', who:'El repositorio',
+      text:'GitHub recibe el código, el Dockerfile y los composes juntos. El tag dispara el flujo de release; los commits sin tag solo corren pruebas.' },
+    { node:'C1', edge:'e-ci', who:'CI · paso 1',
+      text:'Actions corre linters y pruebas dentro de la imagen, igual que en el nivel 3.' },
+    { node:'C2', edge:'e-c12', who:'CI · paso 2 · el punto clave',
+      text:'buildx construye para amd64 y arm64 en una sola pasada. Aquí es donde la imagen se construye, y es la única vez que alguien la construye en todo el flujo.' },
+    { node:'C3', edge:'e-c23', who:'CI · paso 3',
+      text:'Empuja el resultado al registro con el tag de la versión. El build deja de ser un trámite de cada persona y pasa a ser un artefacto compartido.' },
+    { node:'REG', edge:'e-reg', who:'El registro',
+      text:'GHCR guarda la imagen bajo ghcr.io/org/app:0.3.1, con los mismos permisos del repositorio. Es el equivalente de GitHub para los artefactos: un punto único de verdad, pero de binarios.' },
+    { node:'B1', edge:'e-verde', who:'Beto',
+      text:'Revisa el Pull Request en verde, aprueba y hace merge. Hasta aquí, igual que antes.' },
+    { node:'B2', edge:'e-regb', extra:['e-b12'], who:'Beto · lo que desaparece',
+      text:'Y para levantarlo: compose up. Descarga la imagen ya construida en vez de compilarla. Alguien que entra hoy al equipo pasa de clonar a tener el sistema corriendo en minutos, no en una tarde.' },
+    { node:'ROB', edge:'e-regrob', who:'El despliegue',
+      text:'En el robot: compose pull y up -d. Descarga solo las capas que le faltan, en la arquitectura correcta, y arranca. Segundos, no media hora con el robot detenido.' },
+    { node:'RB', edge:'e-rollback', who:'La red de seguridad',
+      text:'Y si la versión nueva se porta mal, se cambia el tag al anterior y se levanta otra vez. Esas capas ya están en el disco del robot, así que volver atrás es instantáneo.' },
+    { kind:'done', who:'El saldo del nivel 4',
+      text:'Ni un solo punto rojo: nadie construye salvo el CI, nadie improvisa flags, y cada despliegue tiene número de versión y vuelta atrás. Con esto se puede trabajar en equipo de verdad. Lo que falta ya no es del día a día: pruebas en simulación, firma de imágenes y despliegue a más de un robot.' }
+  ]
+}
+,
+
+/* ─────────────────────────── NIVEL 5 ─────────────────────────── */
+/* Lienzo más ancho que los anteriores: el pipeline crece a lo largo,
+   no a lo alto. Si lo incrustas solo, basta con menos altura de iframe. */
+{
+  id: 5,
+  tab: 'Producción',
+  kicker: 'Nivel 5 de 5 · referencia, no el destino de este trimestre',
+  title: 'Producción y flota: simulación, firma y despliegue escalonado',
+  viewBox: '0 0 1400 690',
+
+  frames: [
+    { x:300,  y:60, w:310, h:610, label:'GitHub Actions · pipeline de release' },
+    { x:1010, y:60, w:370, h:360, label:'Despliegue escalonado'               }
+  ],
+
+  nodes: [
+    { id:'GH', x:20, y:95, w:200, h:84, kind:'hub',
+      lines:[{t:'GitHub'},{t:'tag v0.4.0',small:true,mono:true}] },
+
+    { id:'S1', x:316, y:95,  w:278, h:58, lines:[{t:'Lint + pruebas unitarias'}] },
+    { id:'S2', x:316, y:193, w:278, h:58, lines:[{t:'Integración'},{t:'en simulación',small:true}] },
+    { id:'S3', x:316, y:291, w:278, h:58, lines:[{t:'buildx multi-arch',mono:true}] },
+    { id:'S4', x:316, y:389, w:278, h:58, lines:[{t:'Trivy: escaneo de CVEs'}] },
+    { id:'S5', x:316, y:487, w:278, h:58, lines:[{t:'SBOM + firma cosign'}] },
+    { id:'S6', x:316, y:585, w:278, h:58, lines:[{t:'push a GHCR',mono:true}] },
+
+    { id:'REG', x:700, y:330, w:250, h:86, kind:'hub',
+      lines:[{t:'GHCR'},{t:'imagen firmada + SBOM',small:true}] },
+
+    { id:'D1', x:1026, y:95,  w:338, h:62, kind:'robot',
+      lines:[{t:'Robot de pruebas'},{t:'en banco',small:true}] },
+    { id:'D2', x:1026, y:205, w:338, h:62, kind:'robot',
+      lines:[{t:'Canario'},{t:'un robot en campo',small:true}] },
+    { id:'D3', x:1026, y:315, w:338, h:62, kind:'robot',
+      lines:[{t:'Flota completa'}] },
+
+    { id:'RB', x:1026, y:460, w:338, h:62,
+      lines:[{t:'Rollback automático'}] },
+    { id:'OBS', x:700, y:580, w:250, h:86,
+      lines:[{t:'Telemetría'},{t:'logs · métricas · bags',small:true}] }
+  ],
+
+  edges: [
+    { id:'e-gh',  d:'M220,132 C258,132 272,126 309,124',
+      label:{t:'tag v0.4.0', x:262, y:105, w:80} },
+
+    { id:'e-s12', d:'M455,153 L455,186' },
+    { id:'e-s23', d:'M455,251 L455,284' },
+    { id:'e-s34', d:'M455,349 L455,382' },
+    { id:'e-s45', d:'M455,447 L455,480' },
+    { id:'e-s56', d:'M455,545 L455,578' },
+
+    { id:'e-reg', d:'M594,614 C648,610 660,440 693,392',
+      label:{t:'publica', x:650, y:520, w:62} },
+
+    { id:'e-dep', d:'M825,330 C825,205 890,135 1019,124',
+      label:{t:'verifica la firma antes de correr', x:880, y:180, w:216} },
+    { id:'e-d12', d:'M1195,157 L1195,198' },
+    { id:'e-d23', d:'M1195,267 L1195,308' },
+
+    { id:'e-obs', d:'M1085,377 C1000,430 840,470 758,574',
+      label:{t:'telemetría', x:905, y:455, w:84} },
+    { id:'e-rb',  d:'M950,600 C985,590 995,540 1019,499',
+      label:{t:'regresión', x:988, y:552, w:74} },
+    { id:'e-back', d:'M1195,457 L1195,384',
+      label:{t:'tag anterior', x:1265, y:428, w:94} }
+  ],
+
+  steps: [
+    { node:'GH', who:'El disparador',
+      text:'Todo arranca igual que en el nivel 4: alguien etiqueta una versión. Lo que cambia es lo que pasa después del tag, no antes.' },
+    { node:'S1', edge:'e-gh', who:'CI · 1 de 6',
+      text:'Linters y pruebas unitarias. Rápidas y baratas: van primero para que un error tonto no consuma los veinte minutos siguientes.' },
+    { node:'S2', edge:'e-s12', who:'CI · 2 de 6 · lo nuevo',
+      text:'Pruebas de integración en simulación. Aquí el pipeline levanta el sistema completo en Gazebo y comprueba que el robot hace lo que debe. Es la diferencia entre “compila” y “funciona”.' },
+    { node:'S3', edge:'e-s23', who:'CI · 3 de 6',
+      text:'Se construye la imagen multi-arquitectura, igual que en el nivel 4.' },
+    { node:'S4', edge:'e-s34', who:'CI · 4 de 6',
+      text:'Trivy escanea la imagen en busca de vulnerabilidades conocidas. Una imagen de robot arrastra cientos de paquetes de sistema; esto dice cuáles tienen CVEs abiertos antes de que salgan a campo.' },
+    { node:'S5', edge:'e-s45', who:'CI · 5 de 6',
+      text:'Se genera el SBOM —la lista exacta de todo lo que va dentro— y se firma la imagen con cosign. A partir de aquí se puede probar que esta imagen la produjo este pipeline y nadie la tocó después.' },
+    { node:'S6', edge:'e-s56', who:'CI · 6 de 6',
+      text:'Publicación. Lo que sale del pipeline ya no es solo una imagen: es una imagen firmada, con inventario y con historial de pruebas.' },
+    { node:'REG', edge:'e-reg', who:'El registro',
+      text:'GHCR guarda la imagen junto con su firma y su SBOM. El registro deja de ser un simple almacén y pasa a ser la evidencia de qué se desplegó y cuándo.' },
+    { node:'D1', edge:'e-dep', who:'Despliegue · anillo 1',
+      text:'El primer robot que la recibe es uno de banco, y antes de correr verifica la firma: si la imagen no viene del pipeline, no arranca. Aquí se detecta lo que la simulación no vio.' },
+    { node:'D2', edge:'e-d12', who:'Despliegue · anillo 2',
+      text:'Si el banco pasa, va a un solo robot en campo: el canario. Un robot con un problema es un incidente; toda la flota con el mismo problema es una crisis.' },
+    { node:'D3', edge:'e-d23', who:'Despliegue · anillo 3',
+      text:'Y recién entonces, la flota completa. Cada anillo es una oportunidad más de parar antes de que el costo se multiplique.' },
+    { node:'OBS', edge:'e-obs', who:'Observación',
+      text:'Los robots reportan logs, métricas y bags de forma continua. Sin esto los anillos no sirven de nada: no se puede frenar un despliegue que nadie está mirando.' },
+    { node:'RB', edge:'e-rb', who:'La reacción',
+      text:'Cuando una métrica se sale de rango, el rollback se dispara solo. No hay que despertar a nadie ni entrar por ssh a cada robot.' },
+    { node:'D3', edge:'e-back', who:'Vuelta atrás',
+      text:'La flota regresa al tag anterior, que ya está en caché en cada robot. Volver atrás es más rápido que avanzar, y ese es justo el punto.' },
+    { kind:'done', who:'Para qué sirve este nivel',
+      text:'Esto es el norte, no el plan del trimestre. Casi todo aquí solo se justifica con varios robots en campo o cuando una regresión cuesta dinero o seguridad. El objetivo real del equipo es el nivel 4: con eso ya se trabaja bien. De aquí, lo primero que conviene adelantar son las pruebas en simulación, porque se agregan al pipeline que ya existe.' }
+  ]
+}
+
+];
+
+/* ---------- pestañas + arranque ---------- */
+tabsEl.innerHTML = LEVELS.map(l =>
+  `<button class="tab" role="tab" data-id="${l.id}" aria-selected="false">
+     <i>${l.id}</i> ${esc(l.tab)}
+   </button>`).join('');
+[...tabsEl.children].forEach(b => b.onclick = () => load(+b.dataset.id));
+
+const q = new URLSearchParams(location.search);
+if (q.get('theme') === 'dark') document.body.dataset.theme = 'dark';
+if (q.get('tabs') === '0') tabsEl.classList.add('hidden');
+load(parseInt(q.get('nivel'), 10) || 1);
+if (q.get('autoplay') === '1') setTimeout(play, 600);
+</script>
+</body>
+</html>

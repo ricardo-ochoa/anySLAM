@@ -5,6 +5,7 @@ import { i18nProvider } from 'fumadocs-ui/i18n';
 import { Doto, Inter, Mulish } from 'next/font/google';
 import type { Metadata } from 'next';
 import { translations } from '@/lib/layout.shared';
+import { siteUrl } from '@/lib/site';
 
 /**
  * Tres familias, tres papeles (el reparto se aplica en global.css):
@@ -16,21 +17,6 @@ import { translations } from '@/lib/layout.shared';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const mulish = Mulish({ subsets: ['latin'], variable: '--font-mulish' });
 const doto = Doto({ subsets: ['latin'], weight: '800', variable: '--font-doto' });
-
-/**
- * Dominio del sitio. Las etiquetas Open Graph necesitan URLs absolutas, así que
- * `metadataBase` es lo que convierte `/og.jpg` en un enlace que los buscadores
- * y las apps de mensajería pueden resolver.
- *
- * En producción hay que definir `NEXT_PUBLIC_SITE_URL` con el dominio real
- * (Vercel ya expone el suyo). Sin ninguna de las dos, se queda en localhost:
- * las previsualizaciones no funcionarán, pero nada se rompe.
- */
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'http://localhost:3000');
 
 const description =
   'Portal central de documentacion del proyecto de investigacion SLAM sobre el robot ANYmal D.';
