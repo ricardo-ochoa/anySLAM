@@ -1,5 +1,6 @@
 import type { source } from '@/lib/source';
 import { getMDXComponents } from '@/components/mdx';
+import { siteUrl } from '@/lib/site';
 
 const HEADER = {
   es: 'Fuente',
@@ -26,8 +27,12 @@ function unescapeDelimiters(markdown: string): string {
 
 /**
  * Convierte una página del portal en Markdown plano, con un encabezado que
- * indica de dónde salió. Lo consumen la ruta `.md` de cada página y el botón
- * de "Copiar Markdown".
+ * indica de dónde salió. Lo consumen la ruta `.md` de cada página, el botón de
+ * "Copiar Markdown" y `/llms-full.txt`.
+ *
+ * La URL de la fuente es absoluta: este texto se lee fuera del sitio —pegado en
+ * un chat, dentro del volcado completo— donde una ruta relativa no identifica
+ * nada.
  *
  * Se le pasan los componentes MDX para que Mermaid y Callout se serialicen a
  * Markdown legible en vez de a JSX crudo.
@@ -42,7 +47,7 @@ export async function getLLMText(page: (typeof source)['$inferPage']) {
 
   return `# ${page.data.title}
 
-${description}> ${label}: anySLAM — ${page.url}
+${description}> ${label}: anySLAM — ${siteUrl}${page.url}
 
 ${unescapeDelimiters(processed)}`;
 }

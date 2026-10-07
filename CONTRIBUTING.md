@@ -61,6 +61,17 @@ Para que el texto exportado se lea bien, `Mermaid` y `Callout` definen su forma 
 `asMarkdown()` (ver `components/mdx/`). Si añades un componente MDX propio que deba exportarse
 como algo distinto a JSX, haz lo mismo.
 
+### Las rutas para asistentes de IA
+
+- `/llms.txt` — el índice en el formato de [llmstxt.org](https://llmstxt.org): resumen del portal
+  y la lista de todas las páginas, enlazadas a su versión Markdown.
+- `/llms-full.txt` — toda la documentación concatenada en un solo archivo.
+
+Los dos se generan solos a partir del árbol de documentación (`lib/llms.ts`): **no hay un archivo
+que editar**. Una página nueva entra en el índice en cuanto existe, y el título de cada sección
+sale de su `meta.json`. Si una página necesita una descripción distinta ahí, se cambia el
+`description` de su frontmatter, que es lo que se publica como resumen.
+
 ## El catálogo de repositorios se genera
 
 No edites `docs/03-repositories/repository-catalog.mdx` ni su versión en inglés: se sobrescriben.
