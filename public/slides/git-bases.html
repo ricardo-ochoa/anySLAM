@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git · Clase 1 — Qué es Git</title>
+
+<!-- ==========================================================================
+     TEMPLATE DE PRESENTACIÓN · v2
+     ==========================================================================
+     IDENTIDAD
+       · Base blanco / negro, minimalista, con degradados sutiles.
+       · UN color de acento a la vez, intercambiable EN VIVO:
+           verde fosforescente · naranja · azul
+         (3 puntos en el HUD, o teclas 1 / 2 / 3).
+       · Tipografía: Michroma (texto/títulos) + Doto 800 (números y datos).
+
+     CÓMO USARLO
+       1. Duplica y renombra el archivo por presentación.
+       2. Cambia <title>, la marca (.brand) y, si aplica, el acento por defecto:
+          <body data-accent="orange">  →  "green" | "orange" | "blue".
+       3. Cada <section class="s"> es una diapositiva. Agrega, quita o reordena:
+          el contador y la barra de progreso se recalculan solos.
+       4. Slide oscura: <section class="s dark">. Slide de cierre: "s dark end".
+
+     NAVEGACIÓN (ya lista, no toques el <script>)
+       · Teclado : ↓ / ↑ / Espacio / PageUp / PageDown / Home / End
+       · Acento  : teclas 1 (verde) · 2 (naranja) · 3 (azul)
+       · Botones : flechas del HUD (esquina inferior derecha)
+
+     BLOQUES (ver ejemplos abajo)
+       .kicker · h1/h2/h3 · p / p.big · .cols .box (.two/.three)
+       .stat (número Doto) · .gauge (medidor) · .bars (mini-gráfica)
+       .flow .step · table (usa .num en celdas numéricas) · .pills (.on = acento)
+       .quote · .note · .num-list · .cover-meta · .btn / .btn.ghost · .glow (halo)
+     ========================================================================== -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Michroma (texto, 1 solo peso) + Doto variable (usamos 400/600/800) -->
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;600;800&family=Michroma&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     1) TOKENS BASE  (blanco / negro / grises + tipografías)
+     ============================================================ */
+  :root{
+    --ink:#0C0D0F;          /* negro de marca */
+    --ink-2:#14161A;        /* superficie oscura ligeramente elevada */
+    --paper:#FFFFFF;        /* blanco */
+    --bg:#ECEDEA;           /* gris neutro de fondo (slides claras) */
+    --g1:#5F6369;           /* texto secundario */
+    --g2:#9A9DA3;           /* texto terciario / etiquetas */
+    --g3:#DBDDD8;           /* bordes */
+    --g4:#E7E8E4;           /* rellenos / pista de medidores */
+
+    --tech:'Michroma','Segoe UI',system-ui,sans-serif; /* texto general */
+    --doto:'Doto','JetBrains Mono',Consolas,monospace;  /* números / datos */
+
+    --radius:22px;          /* radio tarjetas grandes */
+    --radius-s:13px;        /* radio elementos chicos */
+    --shadow:0 1px 2px rgba(12,13,15,.04), 0 18px 40px -28px rgba(12,13,15,.22);
+  }
+
+  /* ============================================================
+     2) ACENTO INTERCAMBIABLE  (cambia todo con data-accent)
+        --on-accent = color del texto SOBRE el acento.
+     ============================================================ */
+  body[data-accent="green"]{
+    --accent:#C9F23A; --on-accent:#0C0D0F;
+    --accent-weak:rgba(201,242,58,.16); --accent-line:rgba(201,242,58,.55);
+    --glow:rgba(201,242,58,.40);
+  }
+  body[data-accent="orange"]{
+    --accent:#F0531C; --on-accent:#FFFFFF;
+    --accent-weak:rgba(240,83,28,.11); --accent-line:rgba(240,83,28,.45);
+    --glow:rgba(240,83,28,.34);
+  }
+  body[data-accent="blue"]{
+    --accent:#2F6BFF; --on-accent:#FFFFFF;
+    --accent-weak:rgba(47,107,255,.11); --accent-line:rgba(47,107,255,.42);
+    --glow:rgba(47,107,255,.34);
+  }
+
+  /* ============================================================
+     3) RESET / BASE
+     ============================================================ */
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--ink);color:var(--ink);
+    font-family:var(--tech);line-height:1.7;-webkit-font-smoothing:antialiased;
+    letter-spacing:-.005em;
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  .doto{font-family:var(--doto);font-weight:800;letter-spacing:.01em}
+
+  /* ============================================================
+     4) BARRA DE PROGRESO + HUD (contador, acento, navegación)
+     ============================================================ */
+  .topbar{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(0,0,0,.10);z-index:100}
+  .topbar .fill{height:100%;width:0;background:var(--accent);transition:width .18s ease}
+
+  .hud{
+    position:fixed;bottom:18px;right:20px;z-index:100;display:flex;align-items:center;gap:12px;
+    background:rgba(12,13,15,.92);border:1px solid rgba(255,255,255,.14);border-radius:999px;
+    padding:7px 9px 7px 12px;backdrop-filter:blur(10px);
+  }
+  /* Selector de acento: 3 puntos de color */
+  .accsw{display:flex;gap:7px;padding-right:11px;border-right:1px solid rgba(255,255,255,.16)}
+  .accsw .dot{
+    width:16px;height:16px;border-radius:50%;border:0;cursor:pointer;padding:0;
+    box-shadow:0 0 0 0 transparent;transition:box-shadow .15s,transform .15s;
+  }
+  .accsw .dot:hover{transform:scale(1.12)}
+  .accsw .d-green{background:#C9F23A}
+  .accsw .d-orange{background:#F0531C}
+  .accsw .d-blue{background:#2F6BFF}
+  .accsw .dot.active{box-shadow:0 0 0 2px var(--ink),0 0 0 3.5px currentColor}
+  .accsw .d-green.active{color:#C9F23A}
+  .accsw .d-orange.active{color:#F0531C}
+  .accsw .d-blue.active{color:#2F6BFF}
+
+  .hud .cnt{font-family:var(--doto);font-weight:600;font-size:13px;color:#EDEFF0;letter-spacing:.06em}
+  .hud .cnt #cur{color:var(--accent)}
+  .hud .nav{
+    width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.26);
+    background:transparent;color:#fff;cursor:pointer;font-size:14px;line-height:1;
+    display:flex;align-items:center;justify-content:center;font-family:var(--tech);
+  }
+  .hud .nav:hover{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+
+  /* ============================================================
+     5) DIAPOSITIVA  (degradado sutil: claro y oscuro)
+     ============================================================ */
+  .deck{scroll-snap-type:y mandatory;overflow-y:scroll;height:100vh}
+  .s{
+    scroll-snap-align:start;min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+    padding:64px 68px;position:relative;overflow:hidden;
+    background:radial-gradient(130% 90% at 100% 0%,#FFFFFF 0%,var(--bg) 78%);
+    color:var(--ink);
+  }
+  .s-in{max-width:1160px;margin:0 auto;width:100%;position:relative;z-index:2}
+  .s.dark{
+    color:#EEF0F1;
+    background:radial-gradient(120% 90% at 0% 0%,var(--ink-2) 0%,var(--ink) 70%);
+  }
+  .s.dark h1,.s.dark h2,.s.dark h3{color:#fff}
+  .s.dark p{color:#AEB2B8}
+
+  /* Halo de acento decorativo (opcional): <div class="glow"></div> */
+  .glow{
+    position:absolute;width:520px;height:520px;border-radius:50%;z-index:1;pointer-events:none;
+    background:radial-gradient(circle,var(--glow) 0%,transparent 66%);
+    filter:blur(8px);top:-120px;right:-90px;opacity:.9;
+  }
+
+  /* ============================================================
+     6) TIPOGRAFÍA
+     ============================================================ */
+  .kicker{
+    font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--g1);
+    margin-bottom:22px;display:inline-flex;align-items:center;gap:10px;
+  }
+  .s.dark .kicker{color:#8A8F96}
+  .kicker::before{content:"";width:22px;height:2px;background:var(--accent);border-radius:2px}
+  h1{font-size:clamp(32px,5vw,58px);line-height:1.04;margin:0 0 22px;font-weight:400;letter-spacing:-.02em}
+  h2{font-size:clamp(24px,3.3vw,38px);line-height:1.12;margin:0 0 18px;font-weight:400;letter-spacing:-.015em}
+  h3{font-size:16px;font-weight:400;margin:0 0 10px;letter-spacing:-.01em}
+  p{margin:0 0 14px;font-size:15px;color:var(--g1);max-width:70ch}
+  p.big{font-size:19px;line-height:1.55;color:var(--ink);letter-spacing:-.01em}
+  .s.dark p.big{color:#D4D7DB}
+  em{font-style:normal;color:var(--accent);text-shadow:0 0 24px var(--glow)}
+  strong{font-weight:400;color:var(--ink)}
+  .s.dark strong{color:#fff}
+  code{font-family:var(--doto);font-weight:600;font-size:.88em;background:var(--g4);
+    padding:1px 7px;border-radius:6px;color:var(--ink)}
+  .s.dark code{background:rgba(255,255,255,.09);color:#EAECEE}
+
+  /* ============================================================
+     7) PORTADA / MARCA
+     ============================================================ */
+  .brand{display:flex;align-items:center;gap:13px;margin-bottom:56px}
+  .brand-logo{
+    width:44px;height:44px;border-radius:12px;background:var(--accent);color:var(--on-accent);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;
+    box-shadow:0 0 34px var(--glow);
+  }
+  .brand-logo.docker{width:58px;height:46px;border-radius:0;background:none;box-shadow:none}
+  .brand-logo.docker svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 18px rgba(37,96,255,.45))}
+  .brand-txt{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--g2)}
+  .s.dark .brand-txt{color:#8A8F96}
+  .brand-txt b{color:var(--ink);font-weight:400}
+  .s.dark .brand-txt b{color:#fff}
+
+  .cover-meta{display:flex;gap:52px;flex-wrap:wrap;margin-top:48px;padding-top:26px;
+    border-top:1px solid rgba(255,255,255,.14)}
+  .s:not(.dark) .cover-meta{border-top-color:var(--g3)}
+  .cover-meta dt{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--g2);margin-bottom:6px}
+  .cover-meta dd{margin:0;font-size:15px;color:#fff}
+  .s:not(.dark) .cover-meta dd{color:var(--ink)}
+  .cover-meta .doto{font-size:19px}
+
+  /* ============================================================
+     8) TARJETAS
+     ============================================================ */
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin:28px 0 0}
+  .cols.two{grid-template-columns:1fr 1fr}
+  .cols.three{grid-template-columns:repeat(3,1fr)}
+  .box{
+    background:var(--paper);border:1px solid var(--g3);border-radius:var(--radius);
+    padding:26px 26px;box-shadow:var(--shadow);
+  }
+  .s.dark .box{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);box-shadow:none}
+  .box h3{color:var(--ink)}
+  .s.dark .box h3{color:#fff}
+  .box p{font-size:14px;margin:0}
+  .box p+p{margin-top:10px}
+  .box ul{margin:0;padding-left:18px;font-size:14px;color:var(--g1)}
+  .s.dark .box ul{color:#AEB2B8}
+  .box li{margin-bottom:8px}
+  .box li:last-child{margin-bottom:0}
+
+  /* ============================================================
+     9) STAT  (número grande en Doto)
+     ============================================================ */
+  .stat .n{font-family:var(--doto);font-weight:800;font-size:56px;line-height:.95;
+    color:var(--ink);display:block;margin-bottom:10px;letter-spacing:.01em}
+  .stat .n em{color:var(--accent)}          /* pinta el número en acento con <em> */
+  .s.dark .stat .n{color:#fff}
+  .stat .n small{font-size:24px;color:var(--g2);font-weight:400}
+  .stat .t{font-size:13.5px;color:var(--g1);line-height:1.5}
+  .s.dark .stat .t{color:#9CA1A7}
+
+  /* ============================================================
+     10) GAUGE  (medidor semicircular)
+         Cambia el valor: ajusta style="--pct:NN" (0–100) en .g-fill,
+         y el número dentro de .gauge-val.
+     ============================================================ */
+  .gauge{position:relative;padding:6px 0 4px}
+  .gauge-svg{width:100%;max-width:280px;display:block;margin:0 auto;overflow:visible}
+  .g-track,.g-fill{fill:none;stroke-linecap:round;stroke-width:15}
+  .g-track{stroke:var(--g4)}
+  .s.dark .g-track{stroke:rgba(255,255,255,.12)}
+  /* long. del semicírculo r=92 → π·92 ≈ 289.03 */
+  .g-fill{stroke:var(--accent);stroke-dasharray:289.03;
+    stroke-dashoffset:calc(289.03 - (289.03 * var(--pct,70) / 100));
+    filter:drop-shadow(0 0 10px var(--glow))}
+  .gauge-val{position:absolute;left:0;right:0;top:52%;text-align:center}
+  .gauge-val .doto{font-size:44px;color:var(--ink)}
+  .s.dark .gauge-val .doto{color:#fff}
+  .gauge-val small{font-size:18px;color:var(--g2)}
+  .gauge-lbl{text-align:center;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--g2);margin-top:10px}
+
+  /* ============================================================
+     11) BARS  (mini-gráfica de barras) — cada barra: style="--h:NN%"
+     ============================================================ */
+  .bars{display:flex;align-items:flex-end;gap:9px;height:150px;padding-bottom:26px;position:relative}
+  .bar{flex:1;height:var(--h,50%);min-height:6px;border-radius:7px 7px 3px 3px;
+    background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 55%,transparent));position:relative}
+  .bar.mute{background:var(--g4)}
+  .s.dark .bar.mute{background:rgba(255,255,255,.10)}
+  .bar span{position:absolute;bottom:-24px;left:0;right:0;text-align:center;font-size:11px;color:var(--g2);font-family:var(--doto);font-weight:600}
+
+  /* ============================================================
+     12) FLOW  (pasos de un proceso)
+     ============================================================ */
+  .flow{display:flex;gap:12px;margin:28px 0 0;flex-wrap:wrap}
+  .flow .step{flex:1;min-width:180px;background:var(--paper);border:1px solid var(--g3);
+    border-radius:var(--radius-s);padding:22px 22px;box-shadow:var(--shadow)}
+  .s.dark .flow .step{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);box-shadow:none}
+  .flow .step .lbl{font-family:var(--doto);font-weight:800;font-size:22px;color:var(--accent);margin-bottom:12px}
+  .flow .step .ttl{font-size:15px;color:var(--ink);margin-bottom:7px}
+  .s.dark .flow .step .ttl{color:#fff}
+  .flow .step .d{font-size:13px;color:var(--g1);line-height:1.5}
+  .s.dark .flow .step .d{color:#9CA1A7}
+
+  /* ============================================================
+     13) TABLA  (usa class="num" en celdas numéricas → Doto)
+     ============================================================ */
+  table{width:100%;border-collapse:collapse;font-size:14.5px;margin:26px 0 0;
+    background:var(--paper);border:1px solid var(--g3);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .s.dark table{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.12);box-shadow:none}
+  th{background:var(--ink);color:#fff;text-align:left;font-weight:400;padding:13px 18px;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  td{padding:14px 18px;border-top:1px solid var(--g4);vertical-align:top;color:var(--g1)}
+  .s.dark td{border-top-color:rgba(255,255,255,.09);color:#AEB2B8}
+  td:first-child{color:var(--ink)}
+  .s.dark td:first-child{color:#EAECEE}
+  td.num{font-family:var(--doto);font-weight:600;color:var(--ink)}
+  .s.dark td.num{color:#fff}
+  tbody tr:nth-child(even) td{background:rgba(12,13,15,.02)}
+  .s.dark tbody tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+
+  /* ============================================================
+     14) PILLS  (.on = acento) — sirven también como tabs
+     ============================================================ */
+  .pills{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 0}
+  .pill{background:var(--paper);border:1px solid var(--g3);border-radius:999px;padding:8px 17px;font-size:13px;color:var(--g1)}
+  .s.dark .pill{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);color:#B8BCC1}
+  .pill.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+
+  /* ============================================================
+     15) QUOTE
+     ============================================================ */
+  .quote{border-left:3px solid var(--accent);padding:4px 0 4px 24px;margin:28px 0 0;
+    font-size:20px;line-height:1.5;color:var(--ink);letter-spacing:-.01em}
+  .s.dark .quote{color:#EAECEE}
+
+  /* ============================================================
+     16) NOTE  (fondo tenue del acento)
+     ============================================================ */
+  .note{background:var(--accent-weak);border:1px solid var(--accent-line);border-radius:16px;
+    padding:20px 24px;margin:26px 0 0;font-size:15px;color:var(--ink)}
+  .note b{color:var(--ink);font-weight:400;border-bottom:2px solid var(--accent)}
+  .s.dark .note{color:#E7E9EB}
+  .s.dark .note b{color:#fff}
+
+  /* ============================================================
+     17) NUM-LIST  (lista numerada — número en Doto)
+     ============================================================ */
+  .num-list{counter-reset:n;list-style:none;padding:0;margin:28px 0 0}
+  .num-list li{counter-increment:n;position:relative;padding-left:56px;margin-bottom:19px;
+    font-size:16px;color:var(--g1)}
+  .s.dark .num-list li{color:#B0B4BA}
+  .num-list li::before{content:counter(n);position:absolute;left:0;top:-2px;
+    font-family:var(--doto);font-weight:800;font-size:18px;color:var(--accent);
+    width:38px;height:32px;border:1px solid var(--accent-line);border-radius:9px;
+    display:flex;align-items:center;justify-content:center}
+  .num-list li b{color:var(--ink);font-weight:400}
+  .s.dark .num-list li b{color:#fff}
+
+  /* ============================================================
+     18) BOTONES / CTA
+     ============================================================ */
+  .btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--tech);font-size:14px;
+    background:var(--accent);color:var(--on-accent);border:0;border-radius:999px;
+    padding:13px 26px;cursor:pointer;text-decoration:none;box-shadow:0 0 30px var(--glow)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--g3);box-shadow:none}
+  .s.dark .btn.ghost{color:#fff;border-color:rgba(255,255,255,.24)}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+
+  .end{color:#EEF0F1}
+
+  /* ============================================================
+     19) RESPONSIVO / IMPRESIÓN / MOVIMIENTO REDUCIDO
+     ============================================================ */
+  @media (max-width:900px){
+    .s{padding:44px 24px;min-height:auto;padding-top:60px;padding-bottom:60px}
+    .deck{scroll-snap-type:none}
+    .cols.two,.cols.three{grid-template-columns:1fr}
+    .cover-meta{gap:28px}
+    .hud{gap:9px;padding:6px 8px}
+    .glow{width:320px;height:320px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important}
+  }
+  @media print{
+    body{background:#fff}
+    .deck{height:auto;overflow:visible}
+    .topbar,.hud{display:none}
+    .s{min-height:auto;break-after:page;padding:16mm;background:#fff!important;color:var(--ink)!important}
+    .s.dark h1,.s.dark h2,.s.dark h3,.s.dark .quote,.s.dark td:first-child{color:var(--ink)!important}
+    .s.dark p,.s.dark .stat .t,.s.dark .num-list li,.s.dark td{color:var(--g1)!important}
+    .s.dark .box,.s.dark .flow .step,.s.dark table{background:#fff!important;border-color:var(--g3)!important}
+    .glow{display:none}
+    .brand-txt b,.cover-meta dd{color:var(--ink)!important}
+    .s:last-child{break-after:auto}
+  }
+
+  /* ============================================================
+     19) EXTENSIÓN · CLASE TÉCNICA  (bloques de código)
+         Añadido para esta presentación. No altera el resto del
+         sistema: solo suma la tipografía mono y el bloque <pre>.
+
+         <pre class="code">   bloque de código
+           <span class="k">   instrucción / comando
+           <span class="f">   flag o argumento
+           <span class="st">  valor, cadena o ruta
+           <span class="c">   comentario
+         <div class="code-ttl">  etiqueta chica encima del bloque
+     ============================================================ */
+  :root{
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,'Courier New',monospace;
+  }
+  /* el código inline pasa a mono: Doto no es legible en comandos largos */
+  code{font-family:var(--mono);font-weight:500;letter-spacing:0;font-size:.85em}
+
+  pre.code{
+    font-family:var(--mono);font-size:13px;line-height:1.62;letter-spacing:0;
+    background:var(--ink);color:#DDE2E7;border:1px solid rgba(255,255,255,.10);
+    border-radius:16px;padding:20px 22px;margin:24px 0 0;overflow:auto;
+    box-shadow:var(--shadow);tab-size:2;white-space:pre;
+  }
+  .s.dark pre.code{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);box-shadow:none}
+  pre.code .k{color:var(--accent)}
+  pre.code .f{color:#8FB4FF}
+  pre.code .st{color:#A6D8A8}
+  pre.code .c{color:#7C858E}
+  /* código inline dentro de un título: más discreto */
+  h1 code,h2 code{font-size:.66em;padding:2px 10px;border-radius:9px;vertical-align:.08em}
+  /* el acento azul/naranja se aclara dentro del bloque oscuro para que se lea */
+  body[data-accent="blue"]   pre.code .k{color:#7FA2FF}
+  body[data-accent="orange"] pre.code .k{color:#FF7A45}
+
+  .box pre.code{margin-top:14px;font-size:12px;padding:16px 18px;line-height:1.6}
+  .code-ttl{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--g2);margin:26px 0 -16px;
+  }
+  .s.dark .code-ttl{color:#8A8F96}
+  .box .code-ttl{margin:0 0 -6px}
+  .cols.two.eq{align-items:stretch}
+  .cols.two.eq .box{display:flex;flex-direction:column}
+  .cols.two.eq .box pre.code{flex:1}
+
+  /* slides densas (tablas largas / código largo) */
+  .s.tight{padding:46px 68px}
+  .s.tight h2{margin-bottom:12px}
+  .s.tight table{margin-top:18px}
+  .s.tight table td,.s.tight table th{padding-top:10px;padding-bottom:10px}
+  .s.tight pre.code{margin-top:16px}
+
+  /* seguridad: pantallas bajas o angostas (proyector 720p, laptop 13") */
+  @media (max-height:780px){
+    .s{padding:40px 56px}
+    .s.tight{padding:32px 56px}
+    pre.code{font-size:12px;padding:16px 18px}
+    .num-list li{margin-bottom:13px;font-size:15px}
+  }
+  @media (max-width:880px){
+    .s{padding:40px 24px}
+    .cols.two,.cols.three{grid-template-columns:1fr}
+    pre.code{font-size:11.5px}
+  }
+
+  /* ============================================================
+     20) EXTENSIÓN · DIAGRAMA DE CAPAS (VM vs contenedor)
+         <div class="stack"> con filas .ly; .row agrupa en horizontal;
+         .acc resalta la capa clave en el color de acento.
+     ============================================================ */
+  .stack{display:flex;flex-direction:column;gap:6px;margin-top:16px}
+  .stack .row{display:flex;gap:6px}
+  .stack .ly{flex:1;border:1px solid var(--g3);border-radius:10px;padding:10px 12px;
+    font-size:12.5px;text-align:center;background:var(--paper);color:var(--ink)}
+  .stack .ly.acc{background:var(--accent-weak);border-color:var(--accent-line)}
+  .stack .ly.mute{background:var(--g4);color:var(--g1)}
+  .s.dark .stack .ly{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:#EAECEE}
+  .s.dark .stack .ly.mute{background:rgba(255,255,255,.02);color:#9CA1A7}
+  .s.dark .stack .ly.acc{background:var(--accent-weak);border-color:var(--accent-line)}
+  .stack .ly code{font-size:13px;background:none;padding:0}
+  .box .stack-cap{font-size:13px;color:var(--g1);margin-top:14px}
+
+  /* ============================================================
+     21) EXTENSIÓN · LOGO + NOMBRE EN CELDA DE TABLA
+         <td><div class="piece"><img class="logo" …><span>Nombre</span></div></td>
+     ============================================================ */
+  td .piece{display:flex;align-items:center;gap:12px}
+  td .piece .logo{height:34px;width:72px;object-fit:contain;object-position:center;flex:none}
+
+  /* ============================================================
+     22) EXTENSIÓN · DIAGRAMAS SVG  (<svg class="diagram">)
+         Toman colores de los tokens: cambian con el acento.
+     ============================================================ */
+  .diagram{display:block;width:100%;height:auto;margin-top:22px;overflow:visible}
+  .diagram text{font-family:var(--tech);fill:var(--ink)}
+  .diagram .mono{font-family:var(--mono)}
+  .diagram .d-sub{fill:var(--g1)}
+  .diagram .d-on{fill:var(--on-accent)}
+  .diagram .d-acc-t{fill:var(--accent)}
+  .diagram .d-acc{fill:var(--accent)}
+  .diagram .d-weak{fill:var(--accent-weak);stroke:var(--accent-line);stroke-width:1.5}
+  .diagram .d-weak-line{fill:none;stroke:var(--accent-line);stroke-width:1.5}
+  .diagram .d-core{fill:var(--paper);stroke:var(--accent);stroke-width:2}
+  .diagram .d-card{fill:var(--paper);stroke:var(--g3);stroke-width:1.5}
+  .diagram .d-dark{fill:var(--ink)}
+  .diagram .d-plate{fill:var(--paper)}
+  .diagram .d-rib{stroke:rgba(255,255,255,.35);stroke-width:2}
+  .diagram .d-arrow{stroke:var(--accent);stroke-width:3}
+  .diagram .d-link{fill:none;stroke:var(--g3);stroke-width:1.5}
+  .diagram .d-link-on{fill:none;stroke:var(--accent);stroke-width:2.5}
+  .diagram .d-icon{fill:none;stroke:var(--accent);stroke-width:2}
+  .diagram .d-fillp{fill:var(--paper)}
+  .diagram .d-inkfill{fill:var(--ink)}
+  body[data-accent="green"] .diagram .d-acc-t{fill:#6E8A12}
+  .diagram .d-white{fill:#fff}
+  .diagram .d-cli{fill:var(--accent)}
+  body[data-accent="blue"]   .diagram .d-cli{fill:#7FA2FF}
+  body[data-accent="orange"] .diagram .d-cli{fill:#FF7A45}
+
+  /* ============================================================
+     23) EXTENSIÓN · GIT  (colores de áreas + diagramas animados)
+         Rosa = directorio de trabajo · Cian = staging · Violeta = repo.
+         Animaciones: .sa-N (aparece con pop), .sf-N (aparece con fade),
+         .sd-N (se dibuja un path con pathLength="1"), N = % del ciclo
+         (el ciclo se fija con style="--T:12s" en el <svg>).
+     ============================================================ */
+  :root{--c-work:#FF2E7E;--c-stage:#19E3D1;--c-repo:#8A4DFF;--c-head:#FF2BD6}
+  .brand-logo.git{width:56px;height:56px;border-radius:0;background:none;box-shadow:none}
+  .brand-logo.git svg{width:100%;height:100%;display:block;fill:#F05032;filter:drop-shadow(0 0 18px rgba(240,80,50,.5))}
+  .cover-graph{position:absolute;right:6%;bottom:9%;width:min(27vw,340px);z-index:1;overflow:visible}
+  @media (max-width:900px){.cover-graph{display:none}}
+
+  .cw{color:var(--c-work)}.cs{color:var(--c-stage)}.cr{color:var(--c-repo)}.ch{color:var(--c-head)}.cx{color:#fff}.cg{color:#35E08A}
+  .nb{fill:none;stroke:currentColor;stroke-width:3}
+  .ln{fill:none;stroke:currentColor;stroke-width:3;stroke-linejoin:round}
+  .nd{fill:currentColor}
+  .gl{filter:drop-shadow(0 0 7px currentColor)}
+  .mk-w{fill:var(--c-work)}.mk-s{fill:var(--c-stage)}.mk-r{fill:var(--c-repo)}.mk-x{fill:#fff}.mk-a{fill:var(--accent)}
+
+  .s.dark .diagram text{fill:#EEF0F1}
+  .s.dark .diagram .d-sub{fill:#9CA1A7}
+  .s .diagram text.tc{fill:currentColor}
+  .diagram .lbl{paint-order:stroke;stroke:#0C0D0F;stroke-width:6px;stroke-linejoin:round}
+  .diagram .pkt{fill:var(--accent);filter:drop-shadow(0 0 8px var(--glow))}
+  .diagram .dotmv{fill:var(--accent);filter:drop-shadow(0 0 8px var(--glow));animation:dotmv 9s ease-in-out infinite}
+
+  .s.dark .diagram .d-card{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.18)}
+
+  /* ---- animaciones escritas a mano ---- */
+  @keyframes cmdA{0%,10%{opacity:.35}16%,32%{opacity:1}38%,100%{opacity:.35}}
+  @keyframes cmdB{0%,44%{opacity:.35}50%,66%{opacity:1}72%,100%{opacity:.35}}
+  .cmdA{animation:cmdA var(--T,7s) ease-in-out infinite}
+  .cmdB{animation:cmdB var(--T,7s) ease-in-out infinite}
+  @keyframes pkS{
+    0%,4%{opacity:0;transform:translate(0,0)}
+    8%{opacity:1;transform:translate(0,0)}
+    18%{transform:translate(0,-70px)}
+    32%{transform:translate(450px,-70px)}
+    38%,46%{transform:translate(450px,-2px)}
+    52%{transform:translate(450px,-70px)}
+    66%{transform:translate(910px,-70px)}
+    72%,84%{opacity:1;transform:translate(910px,0)}
+    90%,100%{opacity:0;transform:translate(910px,0)}}
+  .pkS{animation:pkS var(--T,7s) ease-in-out infinite}
+
+  @keyframes rowpulse{0%{opacity:.35}3%,9%{opacity:1}14%,100%{opacity:.35}}
+  @keyframes flow{to{stroke-dashoffset:-32}}
+  .rw{opacity:.35;animation:rowpulse 10.8s ease-in-out infinite backwards;animation-delay:calc(var(--i)*1.2s)}
+  .rw.dsh{animation:rowpulse 10.8s ease-in-out infinite backwards,flow 1s linear infinite;animation-delay:calc(var(--i)*1.2s),0s}
+  .rw.dsh line{stroke-dasharray:8 8}
+
+  @keyframes dotmv{
+    0%{opacity:0;transform:translateX(0)}
+    4%,22%{opacity:1;transform:translateX(0)}
+    28%,46%{transform:translateX(300px)}
+    52%,70%{transform:translateX(600px)}
+    76%,94%{opacity:1;transform:translateX(900px)}
+    98%,100%{opacity:0;transform:translateX(900px)}}
+
+  @keyframes fg{
+    0%,22%{opacity:0;transform:translate(0,0)}
+    26%,68%{opacity:1;transform:translate(0,0)}
+    78%,94%{opacity:1;transform:translate(150px,81px)}
+    98%{opacity:0;transform:translate(150px,81px)}
+    100%{opacity:0;transform:translate(0,0)}}
+  @keyframes hd{
+    0%{opacity:0;transform:translate(0,0)}
+    4%,36%{opacity:1;transform:translate(0,0)}
+    46%,68%{opacity:1;transform:translate(0,113px)}
+    78%,94%{opacity:1;transform:translate(150px,194px)}
+    98%{opacity:0;transform:translate(150px,194px)}
+    100%{opacity:0;transform:translate(0,0)}}
+  .fg{opacity:0;animation:fg var(--T,11s) ease-in-out infinite}
+  .hd{opacity:0;animation:hd var(--T,11s) ease-in-out infinite}
+
+  @keyframes rowhl{0%{background:transparent}2%,30%{background:var(--accent-weak)}34%,100%{background:transparent}}
+  tr.hl td{animation:rowhl 9s linear infinite backwards;animation-delay:var(--d,0s)}
+
+  @media (prefers-reduced-motion:reduce){
+    .diagram *,.cover-graph *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+    tr.hl td{animation:none!important}
+  }
+  @media print{
+    .diagram *,.cover-graph *{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}
+    .rw{opacity:1}
+  }
+
+  @keyframes sa0{0%,0%{opacity:0;transform:scale(.4)}4%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf0{0%,0%{opacity:0;transform:translateY(8px)}4%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-0{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa0 var(--T,12s) ease-out infinite}
+  .sf-0{opacity:0;animation:sf0 var(--T,12s) ease-out infinite}
+  @keyframes sd0{0%,0%{stroke-dashoffset:1;opacity:1}8%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-0{stroke-dasharray:1;stroke-dashoffset:1;animation:sd0 var(--T,12s) ease-in-out infinite}
+  @keyframes sa2{0%,2%{opacity:0;transform:scale(.4)}6%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf2{0%,2%{opacity:0;transform:translateY(8px)}6%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-2{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa2 var(--T,12s) ease-out infinite}
+  .sf-2{opacity:0;animation:sf2 var(--T,12s) ease-out infinite}
+  @keyframes sd2{0%,2%{stroke-dashoffset:1;opacity:1}10%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-2{stroke-dasharray:1;stroke-dashoffset:1;animation:sd2 var(--T,12s) ease-in-out infinite}
+  @keyframes sa4{0%,4%{opacity:0;transform:scale(.4)}8%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf4{0%,4%{opacity:0;transform:translateY(8px)}8%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-4{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa4 var(--T,12s) ease-out infinite}
+  .sf-4{opacity:0;animation:sf4 var(--T,12s) ease-out infinite}
+  @keyframes sd4{0%,4%{stroke-dashoffset:1;opacity:1}12%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-4{stroke-dasharray:1;stroke-dashoffset:1;animation:sd4 var(--T,12s) ease-in-out infinite}
+  @keyframes sa6{0%,6%{opacity:0;transform:scale(.4)}10%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf6{0%,6%{opacity:0;transform:translateY(8px)}10%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-6{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa6 var(--T,12s) ease-out infinite}
+  .sf-6{opacity:0;animation:sf6 var(--T,12s) ease-out infinite}
+  @keyframes sd6{0%,6%{stroke-dashoffset:1;opacity:1}14%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-6{stroke-dasharray:1;stroke-dashoffset:1;animation:sd6 var(--T,12s) ease-in-out infinite}
+  @keyframes sa8{0%,8%{opacity:0;transform:scale(.4)}12%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf8{0%,8%{opacity:0;transform:translateY(8px)}12%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-8{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa8 var(--T,12s) ease-out infinite}
+  .sf-8{opacity:0;animation:sf8 var(--T,12s) ease-out infinite}
+  @keyframes sd8{0%,8%{stroke-dashoffset:1;opacity:1}16%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-8{stroke-dasharray:1;stroke-dashoffset:1;animation:sd8 var(--T,12s) ease-in-out infinite}
+  @keyframes sa10{0%,10%{opacity:0;transform:scale(.4)}14%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf10{0%,10%{opacity:0;transform:translateY(8px)}14%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-10{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa10 var(--T,12s) ease-out infinite}
+  .sf-10{opacity:0;animation:sf10 var(--T,12s) ease-out infinite}
+  @keyframes sd10{0%,10%{stroke-dashoffset:1;opacity:1}18%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-10{stroke-dasharray:1;stroke-dashoffset:1;animation:sd10 var(--T,12s) ease-in-out infinite}
+  @keyframes sa12{0%,12%{opacity:0;transform:scale(.4)}16%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf12{0%,12%{opacity:0;transform:translateY(8px)}16%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-12{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa12 var(--T,12s) ease-out infinite}
+  .sf-12{opacity:0;animation:sf12 var(--T,12s) ease-out infinite}
+  @keyframes sd12{0%,12%{stroke-dashoffset:1;opacity:1}20%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-12{stroke-dasharray:1;stroke-dashoffset:1;animation:sd12 var(--T,12s) ease-in-out infinite}
+  @keyframes sa14{0%,14%{opacity:0;transform:scale(.4)}18%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf14{0%,14%{opacity:0;transform:translateY(8px)}18%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-14{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa14 var(--T,12s) ease-out infinite}
+  .sf-14{opacity:0;animation:sf14 var(--T,12s) ease-out infinite}
+  @keyframes sd14{0%,14%{stroke-dashoffset:1;opacity:1}22%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-14{stroke-dasharray:1;stroke-dashoffset:1;animation:sd14 var(--T,12s) ease-in-out infinite}
+  @keyframes sa16{0%,16%{opacity:0;transform:scale(.4)}20%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf16{0%,16%{opacity:0;transform:translateY(8px)}20%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-16{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa16 var(--T,12s) ease-out infinite}
+  .sf-16{opacity:0;animation:sf16 var(--T,12s) ease-out infinite}
+  @keyframes sd16{0%,16%{stroke-dashoffset:1;opacity:1}24%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-16{stroke-dasharray:1;stroke-dashoffset:1;animation:sd16 var(--T,12s) ease-in-out infinite}
+  @keyframes sa18{0%,18%{opacity:0;transform:scale(.4)}22%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf18{0%,18%{opacity:0;transform:translateY(8px)}22%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-18{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa18 var(--T,12s) ease-out infinite}
+  .sf-18{opacity:0;animation:sf18 var(--T,12s) ease-out infinite}
+  @keyframes sd18{0%,18%{stroke-dashoffset:1;opacity:1}26%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-18{stroke-dasharray:1;stroke-dashoffset:1;animation:sd18 var(--T,12s) ease-in-out infinite}
+  @keyframes sa20{0%,20%{opacity:0;transform:scale(.4)}24%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf20{0%,20%{opacity:0;transform:translateY(8px)}24%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-20{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa20 var(--T,12s) ease-out infinite}
+  .sf-20{opacity:0;animation:sf20 var(--T,12s) ease-out infinite}
+  @keyframes sd20{0%,20%{stroke-dashoffset:1;opacity:1}28%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-20{stroke-dasharray:1;stroke-dashoffset:1;animation:sd20 var(--T,12s) ease-in-out infinite}
+  @keyframes sa22{0%,22%{opacity:0;transform:scale(.4)}26%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf22{0%,22%{opacity:0;transform:translateY(8px)}26%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-22{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa22 var(--T,12s) ease-out infinite}
+  .sf-22{opacity:0;animation:sf22 var(--T,12s) ease-out infinite}
+  @keyframes sd22{0%,22%{stroke-dashoffset:1;opacity:1}30%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-22{stroke-dasharray:1;stroke-dashoffset:1;animation:sd22 var(--T,12s) ease-in-out infinite}
+  @keyframes sa24{0%,24%{opacity:0;transform:scale(.4)}28%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf24{0%,24%{opacity:0;transform:translateY(8px)}28%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-24{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa24 var(--T,12s) ease-out infinite}
+  .sf-24{opacity:0;animation:sf24 var(--T,12s) ease-out infinite}
+  @keyframes sd24{0%,24%{stroke-dashoffset:1;opacity:1}32%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-24{stroke-dasharray:1;stroke-dashoffset:1;animation:sd24 var(--T,12s) ease-in-out infinite}
+  @keyframes sa26{0%,26%{opacity:0;transform:scale(.4)}30%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf26{0%,26%{opacity:0;transform:translateY(8px)}30%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-26{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa26 var(--T,12s) ease-out infinite}
+  .sf-26{opacity:0;animation:sf26 var(--T,12s) ease-out infinite}
+  @keyframes sd26{0%,26%{stroke-dashoffset:1;opacity:1}34%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-26{stroke-dasharray:1;stroke-dashoffset:1;animation:sd26 var(--T,12s) ease-in-out infinite}
+  @keyframes sa28{0%,28%{opacity:0;transform:scale(.4)}32%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf28{0%,28%{opacity:0;transform:translateY(8px)}32%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-28{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa28 var(--T,12s) ease-out infinite}
+  .sf-28{opacity:0;animation:sf28 var(--T,12s) ease-out infinite}
+  @keyframes sd28{0%,28%{stroke-dashoffset:1;opacity:1}36%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-28{stroke-dasharray:1;stroke-dashoffset:1;animation:sd28 var(--T,12s) ease-in-out infinite}
+  @keyframes sa30{0%,30%{opacity:0;transform:scale(.4)}34%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf30{0%,30%{opacity:0;transform:translateY(8px)}34%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-30{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa30 var(--T,12s) ease-out infinite}
+  .sf-30{opacity:0;animation:sf30 var(--T,12s) ease-out infinite}
+  @keyframes sd30{0%,30%{stroke-dashoffset:1;opacity:1}38%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-30{stroke-dasharray:1;stroke-dashoffset:1;animation:sd30 var(--T,12s) ease-in-out infinite}
+  @keyframes sa32{0%,32%{opacity:0;transform:scale(.4)}36%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf32{0%,32%{opacity:0;transform:translateY(8px)}36%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-32{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa32 var(--T,12s) ease-out infinite}
+  .sf-32{opacity:0;animation:sf32 var(--T,12s) ease-out infinite}
+  @keyframes sd32{0%,32%{stroke-dashoffset:1;opacity:1}40%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-32{stroke-dasharray:1;stroke-dashoffset:1;animation:sd32 var(--T,12s) ease-in-out infinite}
+  @keyframes sa34{0%,34%{opacity:0;transform:scale(.4)}38%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf34{0%,34%{opacity:0;transform:translateY(8px)}38%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-34{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa34 var(--T,12s) ease-out infinite}
+  .sf-34{opacity:0;animation:sf34 var(--T,12s) ease-out infinite}
+  @keyframes sd34{0%,34%{stroke-dashoffset:1;opacity:1}42%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-34{stroke-dasharray:1;stroke-dashoffset:1;animation:sd34 var(--T,12s) ease-in-out infinite}
+  @keyframes sa36{0%,36%{opacity:0;transform:scale(.4)}40%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf36{0%,36%{opacity:0;transform:translateY(8px)}40%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-36{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa36 var(--T,12s) ease-out infinite}
+  .sf-36{opacity:0;animation:sf36 var(--T,12s) ease-out infinite}
+  @keyframes sd36{0%,36%{stroke-dashoffset:1;opacity:1}44%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-36{stroke-dasharray:1;stroke-dashoffset:1;animation:sd36 var(--T,12s) ease-in-out infinite}
+  @keyframes sa38{0%,38%{opacity:0;transform:scale(.4)}42%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf38{0%,38%{opacity:0;transform:translateY(8px)}42%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-38{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa38 var(--T,12s) ease-out infinite}
+  .sf-38{opacity:0;animation:sf38 var(--T,12s) ease-out infinite}
+  @keyframes sd38{0%,38%{stroke-dashoffset:1;opacity:1}46%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-38{stroke-dasharray:1;stroke-dashoffset:1;animation:sd38 var(--T,12s) ease-in-out infinite}
+  @keyframes sa40{0%,40%{opacity:0;transform:scale(.4)}44%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf40{0%,40%{opacity:0;transform:translateY(8px)}44%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-40{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa40 var(--T,12s) ease-out infinite}
+  .sf-40{opacity:0;animation:sf40 var(--T,12s) ease-out infinite}
+  @keyframes sd40{0%,40%{stroke-dashoffset:1;opacity:1}48%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-40{stroke-dasharray:1;stroke-dashoffset:1;animation:sd40 var(--T,12s) ease-in-out infinite}
+  @keyframes sa42{0%,42%{opacity:0;transform:scale(.4)}46%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf42{0%,42%{opacity:0;transform:translateY(8px)}46%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-42{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa42 var(--T,12s) ease-out infinite}
+  .sf-42{opacity:0;animation:sf42 var(--T,12s) ease-out infinite}
+  @keyframes sd42{0%,42%{stroke-dashoffset:1;opacity:1}50%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-42{stroke-dasharray:1;stroke-dashoffset:1;animation:sd42 var(--T,12s) ease-in-out infinite}
+  @keyframes sa44{0%,44%{opacity:0;transform:scale(.4)}48%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf44{0%,44%{opacity:0;transform:translateY(8px)}48%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-44{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa44 var(--T,12s) ease-out infinite}
+  .sf-44{opacity:0;animation:sf44 var(--T,12s) ease-out infinite}
+  @keyframes sd44{0%,44%{stroke-dashoffset:1;opacity:1}52%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-44{stroke-dasharray:1;stroke-dashoffset:1;animation:sd44 var(--T,12s) ease-in-out infinite}
+  @keyframes sa46{0%,46%{opacity:0;transform:scale(.4)}50%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf46{0%,46%{opacity:0;transform:translateY(8px)}50%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-46{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa46 var(--T,12s) ease-out infinite}
+  .sf-46{opacity:0;animation:sf46 var(--T,12s) ease-out infinite}
+  @keyframes sd46{0%,46%{stroke-dashoffset:1;opacity:1}54%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-46{stroke-dasharray:1;stroke-dashoffset:1;animation:sd46 var(--T,12s) ease-in-out infinite}
+  @keyframes sa48{0%,48%{opacity:0;transform:scale(.4)}52%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf48{0%,48%{opacity:0;transform:translateY(8px)}52%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-48{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa48 var(--T,12s) ease-out infinite}
+  .sf-48{opacity:0;animation:sf48 var(--T,12s) ease-out infinite}
+  @keyframes sd48{0%,48%{stroke-dashoffset:1;opacity:1}56%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-48{stroke-dasharray:1;stroke-dashoffset:1;animation:sd48 var(--T,12s) ease-in-out infinite}
+  @keyframes sa50{0%,50%{opacity:0;transform:scale(.4)}54%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf50{0%,50%{opacity:0;transform:translateY(8px)}54%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-50{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa50 var(--T,12s) ease-out infinite}
+  .sf-50{opacity:0;animation:sf50 var(--T,12s) ease-out infinite}
+  @keyframes sd50{0%,50%{stroke-dashoffset:1;opacity:1}58%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-50{stroke-dasharray:1;stroke-dashoffset:1;animation:sd50 var(--T,12s) ease-in-out infinite}
+  @keyframes sa52{0%,52%{opacity:0;transform:scale(.4)}56%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf52{0%,52%{opacity:0;transform:translateY(8px)}56%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-52{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa52 var(--T,12s) ease-out infinite}
+  .sf-52{opacity:0;animation:sf52 var(--T,12s) ease-out infinite}
+  @keyframes sd52{0%,52%{stroke-dashoffset:1;opacity:1}60%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-52{stroke-dasharray:1;stroke-dashoffset:1;animation:sd52 var(--T,12s) ease-in-out infinite}
+  @keyframes sa54{0%,54%{opacity:0;transform:scale(.4)}58%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf54{0%,54%{opacity:0;transform:translateY(8px)}58%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-54{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa54 var(--T,12s) ease-out infinite}
+  .sf-54{opacity:0;animation:sf54 var(--T,12s) ease-out infinite}
+  @keyframes sd54{0%,54%{stroke-dashoffset:1;opacity:1}62%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-54{stroke-dasharray:1;stroke-dashoffset:1;animation:sd54 var(--T,12s) ease-in-out infinite}
+  @keyframes sa56{0%,56%{opacity:0;transform:scale(.4)}60%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf56{0%,56%{opacity:0;transform:translateY(8px)}60%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-56{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa56 var(--T,12s) ease-out infinite}
+  .sf-56{opacity:0;animation:sf56 var(--T,12s) ease-out infinite}
+  @keyframes sd56{0%,56%{stroke-dashoffset:1;opacity:1}64%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-56{stroke-dasharray:1;stroke-dashoffset:1;animation:sd56 var(--T,12s) ease-in-out infinite}
+  @keyframes sa58{0%,58%{opacity:0;transform:scale(.4)}62%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf58{0%,58%{opacity:0;transform:translateY(8px)}62%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-58{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa58 var(--T,12s) ease-out infinite}
+  .sf-58{opacity:0;animation:sf58 var(--T,12s) ease-out infinite}
+  @keyframes sd58{0%,58%{stroke-dashoffset:1;opacity:1}66%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-58{stroke-dasharray:1;stroke-dashoffset:1;animation:sd58 var(--T,12s) ease-in-out infinite}
+  @keyframes sa60{0%,60%{opacity:0;transform:scale(.4)}64%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf60{0%,60%{opacity:0;transform:translateY(8px)}64%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-60{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa60 var(--T,12s) ease-out infinite}
+  .sf-60{opacity:0;animation:sf60 var(--T,12s) ease-out infinite}
+  @keyframes sd60{0%,60%{stroke-dashoffset:1;opacity:1}68%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-60{stroke-dasharray:1;stroke-dashoffset:1;animation:sd60 var(--T,12s) ease-in-out infinite}
+  @keyframes sa62{0%,62%{opacity:0;transform:scale(.4)}66%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf62{0%,62%{opacity:0;transform:translateY(8px)}66%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-62{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa62 var(--T,12s) ease-out infinite}
+  .sf-62{opacity:0;animation:sf62 var(--T,12s) ease-out infinite}
+  @keyframes sd62{0%,62%{stroke-dashoffset:1;opacity:1}70%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-62{stroke-dasharray:1;stroke-dashoffset:1;animation:sd62 var(--T,12s) ease-in-out infinite}
+  @keyframes sa64{0%,64%{opacity:0;transform:scale(.4)}68%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf64{0%,64%{opacity:0;transform:translateY(8px)}68%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-64{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa64 var(--T,12s) ease-out infinite}
+  .sf-64{opacity:0;animation:sf64 var(--T,12s) ease-out infinite}
+  @keyframes sd64{0%,64%{stroke-dashoffset:1;opacity:1}72%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-64{stroke-dasharray:1;stroke-dashoffset:1;animation:sd64 var(--T,12s) ease-in-out infinite}
+  @keyframes sa66{0%,66%{opacity:0;transform:scale(.4)}70%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf66{0%,66%{opacity:0;transform:translateY(8px)}70%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-66{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa66 var(--T,12s) ease-out infinite}
+  .sf-66{opacity:0;animation:sf66 var(--T,12s) ease-out infinite}
+  @keyframes sd66{0%,66%{stroke-dashoffset:1;opacity:1}74%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-66{stroke-dasharray:1;stroke-dashoffset:1;animation:sd66 var(--T,12s) ease-in-out infinite}
+  @keyframes sa68{0%,68%{opacity:0;transform:scale(.4)}72%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf68{0%,68%{opacity:0;transform:translateY(8px)}72%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-68{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa68 var(--T,12s) ease-out infinite}
+  .sf-68{opacity:0;animation:sf68 var(--T,12s) ease-out infinite}
+  @keyframes sd68{0%,68%{stroke-dashoffset:1;opacity:1}76%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-68{stroke-dasharray:1;stroke-dashoffset:1;animation:sd68 var(--T,12s) ease-in-out infinite}
+  @keyframes sa70{0%,70%{opacity:0;transform:scale(.4)}74%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf70{0%,70%{opacity:0;transform:translateY(8px)}74%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-70{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa70 var(--T,12s) ease-out infinite}
+  .sf-70{opacity:0;animation:sf70 var(--T,12s) ease-out infinite}
+  @keyframes sd70{0%,70%{stroke-dashoffset:1;opacity:1}78%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-70{stroke-dasharray:1;stroke-dashoffset:1;animation:sd70 var(--T,12s) ease-in-out infinite}
+  @keyframes sa72{0%,72%{opacity:0;transform:scale(.4)}76%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf72{0%,72%{opacity:0;transform:translateY(8px)}76%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-72{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa72 var(--T,12s) ease-out infinite}
+  .sf-72{opacity:0;animation:sf72 var(--T,12s) ease-out infinite}
+  @keyframes sd72{0%,72%{stroke-dashoffset:1;opacity:1}80%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-72{stroke-dasharray:1;stroke-dashoffset:1;animation:sd72 var(--T,12s) ease-in-out infinite}
+  @keyframes sa74{0%,74%{opacity:0;transform:scale(.4)}78%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf74{0%,74%{opacity:0;transform:translateY(8px)}78%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-74{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa74 var(--T,12s) ease-out infinite}
+  .sf-74{opacity:0;animation:sf74 var(--T,12s) ease-out infinite}
+  @keyframes sd74{0%,74%{stroke-dashoffset:1;opacity:1}82%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-74{stroke-dasharray:1;stroke-dashoffset:1;animation:sd74 var(--T,12s) ease-in-out infinite}
+  @keyframes sa76{0%,76%{opacity:0;transform:scale(.4)}80%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf76{0%,76%{opacity:0;transform:translateY(8px)}80%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-76{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa76 var(--T,12s) ease-out infinite}
+  .sf-76{opacity:0;animation:sf76 var(--T,12s) ease-out infinite}
+  @keyframes sd76{0%,76%{stroke-dashoffset:1;opacity:1}84%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-76{stroke-dasharray:1;stroke-dashoffset:1;animation:sd76 var(--T,12s) ease-in-out infinite}
+  @keyframes sa78{0%,78%{opacity:0;transform:scale(.4)}82%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf78{0%,78%{opacity:0;transform:translateY(8px)}82%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-78{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa78 var(--T,12s) ease-out infinite}
+  .sf-78{opacity:0;animation:sf78 var(--T,12s) ease-out infinite}
+  @keyframes sd78{0%,78%{stroke-dashoffset:1;opacity:1}86%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-78{stroke-dasharray:1;stroke-dashoffset:1;animation:sd78 var(--T,12s) ease-in-out infinite}
+  @keyframes sa80{0%,80%{opacity:0;transform:scale(.4)}84%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf80{0%,80%{opacity:0;transform:translateY(8px)}84%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-80{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa80 var(--T,12s) ease-out infinite}
+  .sf-80{opacity:0;animation:sf80 var(--T,12s) ease-out infinite}
+  @keyframes sd80{0%,80%{stroke-dashoffset:1;opacity:1}88%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-80{stroke-dasharray:1;stroke-dashoffset:1;animation:sd80 var(--T,12s) ease-in-out infinite}
+  @keyframes sa82{0%,82%{opacity:0;transform:scale(.4)}86%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf82{0%,82%{opacity:0;transform:translateY(8px)}86%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-82{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa82 var(--T,12s) ease-out infinite}
+  .sf-82{opacity:0;animation:sf82 var(--T,12s) ease-out infinite}
+  @keyframes sd82{0%,82%{stroke-dashoffset:1;opacity:1}90%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-82{stroke-dasharray:1;stroke-dashoffset:1;animation:sd82 var(--T,12s) ease-in-out infinite}
+  @keyframes sa84{0%,84%{opacity:0;transform:scale(.4)}88%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf84{0%,84%{opacity:0;transform:translateY(8px)}88%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-84{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa84 var(--T,12s) ease-out infinite}
+  .sf-84{opacity:0;animation:sf84 var(--T,12s) ease-out infinite}
+  @keyframes sd84{0%,84%{stroke-dashoffset:1;opacity:1}92%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-84{stroke-dasharray:1;stroke-dashoffset:1;animation:sd84 var(--T,12s) ease-in-out infinite}
+  @keyframes sa86{0%,86%{opacity:0;transform:scale(.4)}90%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf86{0%,86%{opacity:0;transform:translateY(8px)}90%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-86{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa86 var(--T,12s) ease-out infinite}
+  .sf-86{opacity:0;animation:sf86 var(--T,12s) ease-out infinite}
+  @keyframes sd86{0%,86%{stroke-dashoffset:1;opacity:1}94%,94%{stroke-dashoffset:0;opacity:1}98%{stroke-dashoffset:0;opacity:0}99%{stroke-dashoffset:1;opacity:0}100%{stroke-dashoffset:1;opacity:1}}
+  .sd-86{stroke-dasharray:1;stroke-dashoffset:1;animation:sd86 var(--T,12s) ease-in-out infinite}
+  @keyframes sa88{0%,88%{opacity:0;transform:scale(.4)}92%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf88{0%,88%{opacity:0;transform:translateY(8px)}92%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-88{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa88 var(--T,12s) ease-out infinite}
+  .sf-88{opacity:0;animation:sf88 var(--T,12s) ease-out infinite}
+  @keyframes sa90{0%,90%{opacity:0;transform:scale(.4)}94%,94%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+  @keyframes sf90{0%,90%{opacity:0;transform:translateY(8px)}94%,94%{opacity:1;transform:none}98%,100%{opacity:0;transform:none}}
+  .sa-90{opacity:0;transform-box:fill-box;transform-origin:center;animation:sa90 var(--T,12s) ease-out infinite}
+  .sf-90{opacity:0;animation:sf90 var(--T,12s) ease-out infinite}
+  @keyframes pk1{0%,4%{opacity:0;transform:translate(0,0)}5%{opacity:1;transform:translate(0,0)}20%{opacity:1;transform:translate(110px,0px)}22%,100%{opacity:0;transform:translate(110px,0px)}}
+  .pk1{animation:pk1 var(--T,12s) linear infinite}
+  @keyframes pk2{0%,26%{opacity:0;transform:translate(0,0)}27%{opacity:1;transform:translate(0,0)}42%{opacity:1;transform:translate(110px,0px)}44%,100%{opacity:0;transform:translate(110px,0px)}}
+  .pk2{animation:pk2 var(--T,12s) linear infinite}
+  @keyframes pk3{0%,52%{opacity:0;transform:translate(0,0)}53%{opacity:1;transform:translate(0,0)}68%{opacity:1;transform:translate(-110px,0px)}70%,100%{opacity:0;transform:translate(-110px,0px)}}
+  .pk3{animation:pk3 var(--T,12s) linear infinite}
+  @keyframes pk4{0%,74%{opacity:0;transform:translate(0,0)}75%{opacity:1;transform:translate(0,0)}90%{opacity:1;transform:translate(-110px,0px)}92%,100%{opacity:0;transform:translate(-110px,0px)}}
+  .pk4{animation:pk4 var(--T,12s) linear infinite}
+  @keyframes w1{0%,2%{opacity:0}5%,22%{opacity:1}25%,100%{opacity:0}}
+  .w1{opacity:0;animation:w1 var(--T,12s) linear infinite}
+  @keyframes w2{0%,26%{opacity:0}29%,64%{opacity:1}67%,100%{opacity:0}}
+  .w2{opacity:0;animation:w2 var(--T,12s) linear infinite}
+  @keyframes w3{0%,68%{opacity:0}71%,94%{opacity:1}97%,100%{opacity:0}}
+  .w3{opacity:0;animation:w3 var(--T,12s) linear infinite}
+  @keyframes ndk1{0%,4%{fill:var(--paper)}6%,22%{fill:var(--accent-weak)}26%,100%{fill:var(--paper)}}
+  .nd1{animation:ndk1 var(--T,9s) linear infinite}
+  @keyframes ndk2{0%,28%{fill:var(--paper)}30%,46%{fill:var(--accent-weak)}50%,100%{fill:var(--paper)}}
+  .nd2{animation:ndk2 var(--T,9s) linear infinite}
+  @keyframes ndk3{0%,52%{fill:var(--paper)}54%,70%{fill:var(--accent-weak)}74%,100%{fill:var(--paper)}}
+  .nd3{animation:ndk3 var(--T,9s) linear infinite}
+  @keyframes ndk4{0%,76%{fill:var(--paper)}78%,94%{fill:var(--accent-weak)}98%,100%{fill:var(--paper)}}
+  .nd4{animation:ndk4 var(--T,9s) linear infinite}
+</style>
+</head>
+<!-- Acento por defecto: "green" | "orange" | "blue" -->
+<body data-accent="orange">
+
+<!-- ====== BARRA DE PROGRESO (no editar) ====== -->
+<div class="topbar"><div class="fill" id="fill"></div></div>
+
+<!-- ====== HUD: acento + contador + navegación (no editar) ====== -->
+<div class="hud">
+  <div class="accsw" role="group" aria-label="Color de acento">
+    <button class="dot d-green"  data-accent="green"  aria-label="Verde fosforescente"></button>
+    <button class="dot d-orange" data-accent="orange" aria-label="Naranja"></button>
+    <button class="dot d-blue"   data-accent="blue"   aria-label="Azul"></button>
+  </div>
+  <span class="cnt"><span id="cur">1</span> / <span id="tot">0</span></span>
+  <button class="nav" onclick="go(-1)" aria-label="Anterior">&#8593;</button>
+  <button class="nav" onclick="go(1)"  aria-label="Siguiente">&#8595;</button>
+</div>
+
+<!-- ==========================================================================
+     CONTENIDO. Cada <section class="s"> es una slide.
+     Clase 1 · Qué es Git. Se irán agregando slides clase a clase.
+     ========================================================================== -->
+<div class="deck" id="deck">
+
+<!-- ====== DEFINICIONES SVG COMPARTIDAS (iconos y puntas de flecha) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="ic-folder" viewBox="0 0 110 90">
+      <path d="M6 10Q6 4 12 4H38L48 14H88Q94 14 94 20V70H6Z" fill="#D5D8DC"/>
+      <path d="M2 32Q2 26 8 26H100Q108 26 106 34L100 80Q99 86 92 86H10Q2 86 2 78Z" fill="#fff"/>
+    </symbol>
+    <symbol id="ic-cloud" viewBox="0 0 130 80">
+      <g fill="#fff"><circle cx="40" cy="46" r="22"/><circle cx="68" cy="34" r="28"/><circle cx="98" cy="48" r="20"/><rect x="22" y="46" width="94" height="22" rx="11"/></g>
+    </symbol>
+    <marker id="mk-w" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10Z" class="mk-w"/></marker>
+    <marker id="mk-s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10Z" class="mk-s"/></marker>
+    <marker id="mk-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10Z" class="mk-r"/></marker>
+    <marker id="mk-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10Z" class="mk-x"/></marker>
+    <marker id="mk-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10Z" class="mk-a"/></marker>
+  </defs>
+</svg>
+
+<!-- ====== C1 · 01 · PORTADA ====== -->
+<section class="s dark">
+  <div class="glow"></div>
+  <svg class="cover-graph" viewBox="0 0 340 200" aria-hidden="true" style="--T:9s">
+    <path d="M10 50 H330" class="ln cs gl sd-2" pathLength="1"/>
+    <path d="M90 50 C90 110 120 140 170 140 H230 C290 140 300 100 300 50" class="ln cr gl sd-10" pathLength="1"/>
+    <circle cx="30" cy="50" r="9" class="nd cs gl sa-4"/>
+    <circle cx="90" cy="50" r="9" class="nd cs gl sa-8"/>
+    <circle cx="170" cy="140" r="9" class="nd cr gl sa-16"/>
+    <circle cx="230" cy="140" r="9" class="nd cr gl sa-22"/>
+    <circle cx="300" cy="50" r="12" class="nd ch gl sa-34"/>
+  </svg>
+  <div class="s-in">
+    <div class="brand">
+      <div class="brand-logo git"><svg viewBox="0 0 24 24" role="img" aria-label="Logo de Git"><path d="M23.546 10.93L13.067.452c-.604-.603-1.582-.603-2.188 0L8.708 2.627l2.76 2.76c.645-.215 1.379-.07 1.889.441.516.515.658 1.258.438 1.9l2.658 2.66c.645-.223 1.387-.078 1.9.435.721.72.721 1.884 0 2.604-.719.719-1.881.719-2.6 0-.539-.541-.674-1.337-.404-1.996L12.86 8.955v6.525c.176.086.342.203.488.348.713.721.713 1.883 0 2.6-.719.721-1.889.721-2.609 0-.719-.719-.719-1.879 0-2.598.182-.18.387-.316.605-.406V8.835c-.217-.091-.424-.222-.6-.401-.545-.545-.676-1.342-.396-2.009L7.636 3.7.45 10.881c-.6.605-.6 1.584 0 2.189l10.48 10.477c.604.604 1.582.604 2.186 0l10.43-10.43c.605-.603.605-1.582 0-2.187"/></svg></div>
+      <div class="brand-txt"><b>GIT</b>&nbsp;&nbsp;control de versiones</div>
+    </div>
+    <div class="kicker">Clase 1</div>
+    <h1>Qué es Git<br>y por qué lo usamos</h1>
+    <dl class="cover-meta">
+      <div><dt>Curso</dt><dd>Git y control de versiones</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ====== C1 · 02 · AGENDA ====== -->
+<section class="s">
+  <div class="s-in">
+    <div class="kicker">En esta clase</div>
+    <h2>Preguntas</h2>
+    <ol class="num-list">
+      <li><b>¿Qué es Git y por qué se usa?</b> Commits como snapshots.</li>
+      <li><b>¿Qué es el staging?</b> La sala de espera del commit.</li>
+      <li><b>¿Cómo cambian de estado los archivos?</b> Comandos y flujo de trabajo.</li>
+      <li><b>¿Qué es una rama?</b> Cómo se conectan los cambios y qué pasa cuando chocan.</li>
+      <li><b>¿Cómo comparto mi trabajo?</b> Remotos y GitHub.</li>
+      <li><b>¿Cómo deshago un error?</b> <code>revert</code>, <code>reset</code> y <code>show</code>.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ====== C1 · 03 · EL PROBLEMA ====== -->
+<section class="s tight">
+  <div class="s-in">
+    <div class="kicker">El problema</div>
+    <h2>tesis_final_v2_AHORA_SI.docx<br>no es control de versiones.</h2>
+    <svg class="diagram" viewBox="0 0 1100 290" style="--T:10s" role="img" aria-label="Archivos duplicados contra una historia limpia de commits con git">
+      <g class="sf sf-4"><rect x="20" y="10" width="360" height="44" rx="12" class="d-card"/><text x="44" y="37" class="mono" font-size="14">tesis.docx</text></g>
+      <g class="sf sf-12"><rect x="20" y="64" width="360" height="44" rx="12" class="d-card"/><text x="44" y="91" class="mono" font-size="14">tesis_v2.docx</text></g>
+      <g class="sf sf-20"><rect x="20" y="118" width="360" height="44" rx="12" class="d-card"/><text x="44" y="145" class="mono" font-size="14">tesis_final.docx</text></g>
+      <g class="sf sf-28"><rect x="20" y="172" width="360" height="44" rx="12" class="d-card"/><text x="44" y="199" class="mono" font-size="14">tesis_final_AHORA_SI.docx</text></g>
+      <g class="sf sf-36"><rect x="20" y="226" width="360" height="44" rx="12" class="d-card"/><text x="44" y="253" class="mono" font-size="14">tesis_final_AHORA_SI_(2).docx</text></g>
+
+      <g class="sf sf-46">
+        <line x1="410" y1="150" x2="528" y2="150" class="d-arrow"/>
+        <polygon points="526,141 542,150 526,159" class="d-acc"/>
+        <text x="476" y="132" text-anchor="middle" class="mono d-acc-t" font-size="16">git</text>
+      </g>
+
+      <path d="M640 40 V250" class="d-link-on sd-52" pathLength="1"/>
+      <g class="sf sf-54"><circle cx="640" cy="40" r="11" class="d-acc"/><text x="672" y="36" font-size="15">Agrega introducción</text><text x="672" y="56" class="mono d-sub" font-size="12">a1b2c3d</text></g>
+      <g class="sf sf-60"><circle cx="640" cy="110" r="11" class="d-acc"/><text x="672" y="106" font-size="15">Corrige bibliografía</text><text x="672" y="126" class="mono d-sub" font-size="12">9c8b7a6</text></g>
+      <g class="sf sf-66"><circle cx="640" cy="180" r="11" class="d-acc"/><text x="672" y="176" font-size="15">Incorpora comentarios</text><text x="672" y="196" class="mono d-sub" font-size="12">4d5e6f7</text></g>
+      <g class="sf sf-72"><circle cx="640" cy="250" r="11" class="d-acc"/><text x="672" y="246" font-size="15">Versión entregada</text><text x="672" y="266" class="mono d-sub" font-size="12">e7d5b38</text></g>
+    </svg>
+    <div class="note">
+      <b>Un solo proyecto, toda la historia</b> — Git registra quién cambió qué, cuándo y por qué.
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 04 · QUÉ ES GIT ====== -->
+<section class="s tight">
+  <div class="s-in">
+    <div class="kicker">1 · Qué es Git</div>
+    <h2>Una historia de snapshots</h2>
+    <p class="big" style="max-width:62ch">Git guarda tu proyecto como una cadena de fotografías llamadas commits. Cada una apunta a la anterior.</p>
+    <svg class="diagram" viewBox="0 0 1100 220" style="--T:12s" role="img" aria-label="Cuatro commits encadenados, cada uno apunta a su padre; HEAD apunta al último">
+      <g class="sf sf-4">
+        <rect x="20" y="50" width="220" height="120" rx="16" class="d-card"/>
+        <text x="42" y="86" class="mono d-acc-t" font-size="14">3f9a1c2</text>
+        <text x="42" y="120" font-size="14">Primer commit</text>
+        <text x="42" y="148" class="mono d-sub" font-size="11">sin padre</text>
+      </g>
+      <g class="sf sf-14"><line x1="296" y1="110" x2="258" y2="110" class="d-arrow"/><polygon points="256,101 242,110 256,119" class="d-acc"/></g>
+      <g class="sf sf-16">
+        <rect x="300" y="50" width="220" height="120" rx="16" class="d-card"/>
+        <text x="322" y="86" class="mono d-acc-t" font-size="14">8b27d4e</text>
+        <text x="322" y="120" font-size="14">Agrega sensor</text>
+        <text x="322" y="148" class="mono d-sub" font-size="11">padre: 3f9a1c2</text>
+      </g>
+      <g class="sf sf-28"><line x1="576" y1="110" x2="538" y2="110" class="d-arrow"/><polygon points="536,101 522,110 536,119" class="d-acc"/></g>
+      <g class="sf sf-30">
+        <rect x="580" y="50" width="220" height="120" rx="16" class="d-card"/>
+        <text x="602" y="86" class="mono d-acc-t" font-size="14">c41e90a</text>
+        <text x="602" y="120" font-size="14">Corrige bug</text>
+        <text x="602" y="148" class="mono d-sub" font-size="11">padre: 8b27d4e</text>
+      </g>
+      <g class="sf sf-42"><line x1="856" y1="110" x2="818" y2="110" class="d-arrow"/><polygon points="816,101 802,110 816,119" class="d-acc"/></g>
+      <g class="sf sf-44">
+        <rect x="860" y="50" width="220" height="120" rx="16" class="d-weak"/>
+        <text x="882" y="86" class="mono d-acc-t" font-size="14">e7d5b38</text>
+        <text x="882" y="120" font-size="14">Publica v1.0</text>
+        <text x="882" y="148" class="mono d-sub" font-size="11">padre: c41e90a</text>
+      </g>
+      <g class="sf sf-58">
+        <line x1="970" y1="38" x2="970" y2="50" class="d-link-on"/>
+        <rect x="892" y="6" width="156" height="30" rx="15" class="d-acc"/>
+        <text x="970" y="26" text-anchor="middle" class="mono d-on" font-size="13">HEAD → main</text>
+      </g>
+    </svg>
+<pre class="code"><span class="k">git log</span> <span class="f">--oneline</span>
+<span class="st">e7d5b38</span> (HEAD -> main) Publica v1.0
+<span class="st">c41e90a</span> Corrige bug
+<span class="st">8b27d4e</span> Agrega sensor
+<span class="st">3f9a1c2</span> Primer commit</pre>
+  </div>
+</section>
+
+<!-- ====== C1 · 05 · STAGING ====== -->
+<section class="s dark tight">
+  <div class="glow" style="top:auto;bottom:-160px;right:-120px"></div>
+  <div class="s-in">
+    <div class="kicker">2 · Staging</div>
+    <h2>El staging: tu sala de espera</h2>
+    <p class="big" style="max-width:62ch">Primero eliges qué cambios entran con <code>git add</code>. Después los guardas con <code>git commit</code>.</p>
+    <svg class="diagram" viewBox="0 0 1100 260" style="--T:7s" role="img" aria-label="Proyecto, git add, staging, git commit, carpeta .git">
+      <use href="#ic-folder" x="30" y="70" width="110" height="90"/>
+      <text x="85" y="210" text-anchor="middle" font-size="18">Proyecto</text>
+
+      <g class="cmdA cw">
+        <rect x="180" y="86" width="220" height="58" rx="16" class="nb gl"/>
+        <text x="290" y="123" text-anchor="middle" class="mono tc" font-size="19">$ git add</text>
+        <polygon points="278,191 278,219 304,205" class="nd gl"/>
+      </g>
+
+      <use href="#ic-cloud" x="470" y="68" width="130" height="80"/>
+      <text x="535" y="210" text-anchor="middle" font-size="18">Staging</text>
+
+      <g class="cmdB cs">
+        <rect x="650" y="86" width="250" height="58" rx="16" class="nb gl"/>
+        <text x="775" y="123" text-anchor="middle" class="mono tc" font-size="19">$ git commit</text>
+        <polygon points="763,191 763,219 789,205" class="nd gl"/>
+      </g>
+
+      <use href="#ic-folder" x="940" y="70" width="110" height="90"/>
+      <text x="995" y="210" text-anchor="middle" class="mono" font-size="18">.git</text>
+
+      <circle class="pkS pkt" cx="85" cy="112" r="13" style="stroke:#0C0D0F;stroke-width:3"/>
+    </svg>
+    <div class="note">
+      <b>Para qué sirve</b> — te deja armar commits pequeños y con sentido aunque hayas tocado muchos archivos. Revisa el estado con <code>git status</code>.
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 06 · ESTADOS Y COMANDOS ====== -->
+<section class="s dark tight">
+  <div class="s-in">
+    <div class="kicker">3 · Estados y comandos</div>
+    <h2>Cómo viajan los cambios</h2>
+    <svg class="diagram" viewBox="0 0 1100 480" role="img" aria-label="Directorio de trabajo, área de staging y repositorio, con los comandos que mueven los cambios entre ellos">
+      <rect x="130" y="6" width="200" height="66" rx="16" class="nb cw gl"/>
+      <text x="230" y="34" text-anchor="middle" font-size="16">Directorio</text><text x="230" y="56" text-anchor="middle" font-size="16">de trabajo</text>
+      <rect x="490" y="6" width="200" height="66" rx="16" class="nb cs gl"/>
+      <text x="590" y="34" text-anchor="middle" font-size="16">Área de</text><text x="590" y="56" text-anchor="middle" font-size="16">staging</text>
+      <rect x="850" y="6" width="200" height="66" rx="16" class="nb cr gl"/>
+      <text x="950" y="34" text-anchor="middle" font-size="16">Repositorio</text><text x="950" y="56" text-anchor="middle" font-size="16">Git</text>
+
+      <rect x="210" y="92" width="40" height="370" rx="3" class="nb cw" style="stroke-width:2.5;opacity:.8"/>
+      <rect x="570" y="92" width="40" height="370" rx="3" class="nb cs" style="stroke-width:2.5;opacity:.8"/>
+      <rect x="930" y="92" width="40" height="370" rx="3" class="nb cr" style="stroke-width:2.5;opacity:.8"/>
+
+      <g class="rw cw" style="--i:0"><line x1="20" y1="128" x2="204" y2="128" class="ln" marker-end="url(#mk-w)"/><text x="20" y="116" class="mono lbl" font-size="12.5">touch · cp · mv · crear</text></g>
+      <g class="rw cw" style="--i:1"><line x1="204" y1="164" x2="26" y2="164" class="ln" marker-end="url(#mk-w)"/><text x="20" y="152" class="mono lbl" font-size="12.5">rm · mv · borrar</text></g>
+      <g class="rw cs" style="--i:2"><line x1="256" y1="208" x2="566" y2="208" class="ln" marker-end="url(#mk-s)"/><text x="410" y="198" text-anchor="middle" class="mono lbl" font-size="13">git add &lt;archivo&gt;</text></g>
+      <g class="rw cw" style="--i:3"><line x1="566" y1="248" x2="256" y2="248" class="ln" marker-end="url(#mk-w)"/><text x="410" y="238" text-anchor="middle" class="mono lbl" font-size="13">git restore --staged &lt;archivo&gt;</text></g>
+      <g class="rw cr" style="--i:4"><line x1="616" y1="288" x2="926" y2="288" class="ln" marker-end="url(#mk-r)"/><text x="770" y="278" text-anchor="middle" class="mono lbl" font-size="13">git commit</text></g>
+      <g class="rw cr" style="--i:5"><line x1="616" y1="326" x2="926" y2="326" class="ln" marker-end="url(#mk-r)"/><text x="770" y="316" text-anchor="middle" class="mono lbl" font-size="13">git commit --amend</text></g>
+      <g class="rw cs" style="--i:6"><line x1="926" y1="366" x2="616" y2="366" class="ln" marker-end="url(#mk-s)"/><text x="770" y="356" text-anchor="middle" class="mono lbl" font-size="13">git reset --soft HEAD~1</text></g>
+      <g class="rw dsh cw" style="--i:7"><line x1="926" y1="404" x2="256" y2="404" class="ln" marker-end="url(#mk-w)"/><text x="770" y="394" text-anchor="middle" class="mono lbl" font-size="13">git reset --mixed HEAD~1</text></g>
+      <g class="rw dsh cx" style="--i:8"><line x1="926" y1="442" x2="26" y2="442" class="ln" marker-end="url(#mk-x)"/><text x="770" y="432" text-anchor="middle" class="mono lbl" font-size="13">git reset --hard HEAD~1</text></g>
+    </svg>
+  </div>
+</section>
+
+<!-- ====== C1 · 07 · CICLO DE TRABAJO ====== -->
+<section class="s tight">
+  <div class="s-in">
+    <div class="kicker">3 · El ciclo de trabajo</div>
+    <h2>Editar, preparar, guardar</h2>
+    <svg class="diagram" viewBox="0 0 1100 235" style="--T:9s" role="img" aria-label="Ciclo de estados de un archivo: untracked, staged, committed, modified y de vuelta a staged">
+      <rect x="10" y="60" width="180" height="80" rx="16" class="d-card nd1"/>
+      <text x="100" y="96" text-anchor="middle" font-size="16">Untracked</text><text x="100" y="120" text-anchor="middle" class="mono d-sub" font-size="11">archivo nuevo</text>
+      <rect x="310" y="60" width="180" height="80" rx="16" class="d-card nd2"/>
+      <text x="400" y="96" text-anchor="middle" font-size="16">Staged</text><text x="400" y="120" text-anchor="middle" class="mono d-sub" font-size="11">listo para commit</text>
+      <rect x="610" y="60" width="180" height="80" rx="16" class="d-card nd3"/>
+      <text x="700" y="96" text-anchor="middle" font-size="16">Committed</text><text x="700" y="120" text-anchor="middle" class="mono d-sub" font-size="11">guardado en .git</text>
+      <rect x="910" y="60" width="180" height="80" rx="16" class="d-card nd4"/>
+      <text x="1000" y="96" text-anchor="middle" font-size="16">Modified</text><text x="1000" y="120" text-anchor="middle" class="mono d-sub" font-size="11">cambió tras commit</text>
+
+      <line x1="196" y1="100" x2="292" y2="100" class="d-arrow"/><polygon points="292,91 308,100 292,109" class="d-acc"/>
+      <text x="250" y="86" text-anchor="middle" class="mono d-acc-t" font-size="13">git add</text>
+      <line x1="496" y1="100" x2="592" y2="100" class="d-arrow"/><polygon points="592,91 608,100 592,109" class="d-acc"/>
+      <text x="550" y="86" text-anchor="middle" class="mono d-acc-t" font-size="13">git commit</text>
+      <line x1="796" y1="100" x2="892" y2="100" class="d-arrow"/><polygon points="892,91 908,100 892,109" class="d-acc"/>
+      <text x="850" y="86" text-anchor="middle" class="mono d-sub" font-size="13">editar</text>
+
+      <path d="M1000 146 C1000 214 400 214 400 152" class="d-link-on" marker-end="url(#mk-a)"/>
+      <text x="700" y="182" text-anchor="middle" class="mono d-acc-t" font-size="13">git add</text>
+
+      <circle class="dotmv" cx="100" cy="60" r="9"/>
+    </svg>
+<pre class="code"><span class="k">git init</span>                          <span class="c"># crea el repositorio (la carpeta .git)</span>
+<span class="k">git status</span>                        <span class="c"># ¿en qué estado está cada archivo?</span>
+<span class="k">git add</span> <span class="st">robot.py</span>                 <span class="c"># Untracked / Modified → Staged</span>
+<span class="k">git commit</span> <span class="f">-m</span> <span class="st">"Agrega robot"</span>    <span class="c"># Staged → Committed</span>
+<span class="k">git log</span> <span class="f">--oneline</span>                <span class="c"># historial de commits</span></pre>
+  </div>
+</section>
+
+<!-- ====== C1 · 08 · RAMAS ====== -->
+<section class="s dark tight">
+  <div class="glow"></div>
+  <div class="s-in">
+    <div class="kicker">4 · Ramas</div>
+    <h2>Una rama es un apuntador</h2>
+    <svg class="diagram" viewBox="0 0 1100 320" style="--T:11s" role="img" aria-label="main apunta al último commit; git switch -c crea la etiqueta feature en el mismo commit; un nuevo commit avanza solo feature">
+      <path d="M80 120 H500" class="ln cs gl sd-2" pathLength="1"/>
+      <circle cx="200" cy="120" r="14" class="nd cs gl sa-4"/>
+      <circle cx="350" cy="120" r="14" class="nd cs gl sa-6"/>
+      <circle cx="500" cy="120" r="14" class="nd cs gl sa-8"/>
+
+      <g class="sf sf-8 cs">
+        <line x1="500" y1="80" x2="500" y2="106" class="ln" style="stroke-width:2"/>
+        <rect x="455" y="52" width="90" height="28" rx="14" class="nb gl" style="stroke-width:2"/>
+        <text x="500" y="71" text-anchor="middle" class="tc mono" font-size="13">main</text>
+      </g>
+      <text class="hd ch tc mono" x="448" y="71" text-anchor="end" font-size="13">HEAD →</text>
+
+      <g class="fg cr">
+        <line x1="500" y1="134" x2="500" y2="165" class="ln" style="stroke-width:2"/>
+        <rect x="455" y="165" width="90" height="28" rx="14" class="nb gl" style="stroke-width:2"/>
+        <text x="500" y="184" text-anchor="middle" class="tc mono" font-size="13">feature</text>
+      </g>
+
+      <path d="M500 120 C575 120 575 200 650 200" class="ln cr gl sd-60" pathLength="1"/>
+      <circle cx="650" cy="200" r="14" class="nd cr gl sa-66"/>
+
+      <text x="80" y="300" class="d-sub cap w1" font-size="14">1 · main apunta al último commit</text>
+      <text x="80" y="300" class="d-sub cap w2" font-size="14">2 · git switch -c feature crea una etiqueta nueva en el mismo commit</text>
+      <text x="80" y="300" class="d-sub cap w3" font-size="14">3 · un commit nuevo avanza solo feature; main se queda</text>
+    </svg>
+<pre class="code"><span class="k">git switch</span> <span class="f">-c</span> <span class="st">feature</span>             <span class="c"># crea la rama y te mueve a ella</span>
+<span class="k">git commit</span> <span class="f">-m</span> <span class="st">"Agrega sensor"</span>    <span class="c"># solo avanza feature</span></pre>
+  </div>
+</section>
+
+<!-- ====== C1 · 09 · CONECTAR CAMBIOS ENTRE RAMAS ====== -->
+<section class="s dark tight">
+  <div class="s-in">
+    <div class="kicker">4 · Ramas</div>
+    <h2>Conectar cambios entre ramas</h2>
+    <svg class="diagram" viewBox="0 0 1100 400" style="--T:14s" role="img" aria-label="Las ramas feature y hotfix nacen de main y se unen de vuelta con git merge">
+      <text x="20" y="95" class="tc cs sf sf-0" font-size="15">main</text>
+      <text x="20" y="225" class="tc cr sf sf-0" font-size="15">feature</text>
+      <text x="20" y="345" class="tc cx sf sf-0" font-size="15">hotfix</text>
+
+      <path d="M150 90 H400" class="ln cs gl sd-2" pathLength="1"/>
+      <circle cx="240" cy="90" r="12" class="nd cs gl sa-4"/><text x="240" y="64" text-anchor="middle" class="d-sub sf sf-4" font-size="12">c1</text>
+      <circle cx="320" cy="90" r="12" class="nd cs gl sa-6"/><text x="320" y="64" text-anchor="middle" class="d-sub sf sf-6" font-size="12">c2</text>
+      <circle cx="400" cy="90" r="12" class="nd cs gl sa-8"/><text x="400" y="64" text-anchor="middle" class="d-sub sf sf-8" font-size="12">c3</text>
+
+      <text x="416" y="150" class="mono tc cr sf sf-10" font-size="13">git switch -c feature</text>
+      <path d="M400 90 V190 Q400 220 430 220 H720" class="ln cr gl sd-10" pathLength="1"/>
+      <circle cx="450" cy="220" r="12" class="nd cr gl sa-14"/><text x="450" y="250" text-anchor="middle" class="d-sub sf sf-14" font-size="12">c1</text>
+      <circle cx="510" cy="220" r="12" class="nd cr gl sa-16"/><text x="510" y="250" text-anchor="middle" class="d-sub sf sf-16" font-size="12">c2</text>
+      <circle cx="570" cy="220" r="12" class="nd cr gl sa-18"/><text x="570" y="250" text-anchor="middle" class="d-sub sf sf-18" font-size="12">c3</text>
+      <circle cx="720" cy="220" r="12" class="nd cr gl sa-20"/><text x="720" y="250" text-anchor="middle" class="d-sub sf sf-20" font-size="12">c-fin</text>
+
+      <path d="M400 90 H640" class="ln cs gl sd-24" pathLength="1"/>
+      <circle cx="640" cy="90" r="12" class="nd cs gl sa-32"/><text x="640" y="64" text-anchor="middle" class="d-sub sf sf-32" font-size="12">c-act</text>
+
+      <text x="624" y="300" text-anchor="end" class="mono tc cx sf sf-36" font-size="13">git switch -c hotfix</text>
+      <path d="M640 90 V310 Q640 340 670 340 H790 Q820 340 820 310 V90" class="ln cx gl sd-36" pathLength="1"/>
+      <circle cx="670" cy="340" r="12" class="nd cx gl sa-40"/><text x="670" y="370" text-anchor="middle" class="d-sub sf sf-40" font-size="12">c1</text>
+      <circle cx="790" cy="340" r="12" class="nd cx gl sa-44"/><text x="790" y="370" text-anchor="middle" class="d-sub sf sf-44" font-size="12">c2</text>
+
+      <path d="M640 90 H820" class="ln cs gl sd-48" pathLength="1"/>
+      <circle cx="820" cy="90" r="12" class="nd cx gl sa-54"/><text x="820" y="64" text-anchor="middle" class="d-sub sf sf-54" font-size="12">c-fin</text>
+      <text x="850" y="345" class="mono tc cx sf sf-52" font-size="13">git merge hotfix</text>
+
+      <path d="M720 220 H930 Q960 220 960 190 V90" class="ln ch gl sd-60" pathLength="1"/>
+      <text x="850" y="252" class="mono tc ch sf sf-62" font-size="13">git merge feature</text>
+      <path d="M820 90 H960" class="ln ch gl sd-68" pathLength="1"/>
+      <circle cx="960" cy="90" r="14" class="nd ch gl sa-72"/><text x="960" y="62" text-anchor="middle" class="d-sub sf sf-72" font-size="12">HEAD</text>
+    </svg>
+    <div class="note">
+      <b>En el diagrama</b> — feature y hotfix nacen de main y regresan con <code>git merge</code>. El commit final (rosa) junta las historias.
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 09b · CONFLICTO DE MERGE (ejercicio en vivo) ======
+     Guion completo del ejercicio:
+       1. mkdir test && cd test && git init -b main
+          echo "hola mundo" > archivo-prueba.txt
+          git add archivo-prueba.txt && git commit -m "Primer commit: hola mundo"
+       2. git switch -c rama-conflicto
+          echo "hola desde la rama" > archivo-prueba.txt && git commit -am "Cambio en rama-conflicto"
+       3. git switch main
+          echo "hola desde main" > archivo-prueba.txt && git commit -am "Cambio en main"
+       4. git merge rama-conflicto      -> CONFLICT (content)
+       5. git status ; cat archivo-prueba.txt
+       6. Resolver: A) editar a mano y borrar marcas · B) git checkout --ours / --theirs archivo-prueba.txt
+       7. git add archivo-prueba.txt ; git commit -m "Resuelvo conflicto entre main y rama-conflicto"
+       8. git log --oneline --graph --all     (extra: git merge --abort)
+-->
+<section class="s dark tight">
+  <div class="glow" style="top:auto;bottom:-160px;right:-120px"></div>
+  <div class="s-in">
+    <div class="kicker">4 · Conflictos</div>
+    <h2>Cuando dos ramas chocan</h2>
+    <svg class="diagram" viewBox="0 0 1100 250" style="--T:14s" role="img" aria-label="main y rama-conflicto cambian la misma línea; git merge produce un conflicto que se resuelve con un commit de merge">
+      <text x="20" y="75" class="tc cs sf sf-0" font-size="15">main</text>
+      <text x="20" y="185" class="tc cr sf sf-0" font-size="13">rama-conflicto</text>
+
+      <path d="M190 70 H300" class="ln cs gl sd-2" pathLength="1"/>
+      <circle cx="300" cy="70" r="13" class="nd cs gl sa-4"/>
+      <text x="300" y="44" text-anchor="middle" class="d-sub sf sf-4" font-size="12">hola mundo</text>
+
+      <path d="M300 70 V150 Q300 180 330 180 H500" class="ln cr gl sd-8" pathLength="1"/>
+      <circle cx="500" cy="180" r="13" class="nd cr gl sa-20"/>
+      <text x="500" y="212" text-anchor="middle" class="d-sub sf sf-20" font-size="12">hola desde la rama</text>
+
+      <path d="M300 70 H500" class="ln cs gl sd-28" pathLength="1"/>
+      <circle cx="500" cy="70" r="13" class="nd cs gl sa-36"/>
+      <text x="500" y="44" text-anchor="middle" class="d-sub sf sf-36" font-size="12">hola desde main</text>
+
+      <path d="M500 70 C640 70 650 125 744 125" class="ln ch gl sd-44" pathLength="1"/>
+      <path d="M500 180 C640 180 650 125 744 125" class="ln ch gl sd-44" pathLength="1"/>
+      <text x="760" y="200" text-anchor="middle" class="mono tc cx sf sf-44" font-size="12">git merge rama-conflicto</text>
+      <circle cx="760" cy="125" r="16" class="nd ch gl sa-54"/>
+      <text x="760" y="131" text-anchor="middle" class="mono sf sf-54" font-size="16" style="fill:#0C0D0F">!</text>
+      <text x="760" y="88" text-anchor="middle" class="mono tc ch sf sf-54" font-size="14">CONFLICT</text>
+
+      <path d="M776 125 H944" class="ln cx gl sd-66" pathLength="1"/>
+      <circle cx="960" cy="125" r="16" class="nd cx gl sa-76"/>
+      <text x="960" y="88" text-anchor="middle" class="d-sub sf sf-76" font-size="12">commit de merge</text>
+      <text x="960" y="170" text-anchor="middle" class="mono tc cx sf sf-76" font-size="12">git add + git commit</text>
+    </svg>
+    <div class="cols two eq" style="margin-top:10px">
+      <div>
+<pre class="code" style="margin-top:0"><span class="k">git switch</span> <span class="f">-c</span> <span class="st">rama-conflicto</span>
+<span class="k">echo</span> <span class="st">"hola desde la rama"</span> &gt; archivo-prueba.txt
+<span class="k">git add .</span>
+<span class="k">git commit</span> <span class="f">-am</span> <span class="st">"Cambio en rama-conflicto"</span>
+
+<span class="k">git switch</span> main
+<span class="k">echo</span> <span class="st">"hola desde main"</span> &gt; archivo-prueba.txt
+<span class="k">git add .</span>
+<span class="k">git commit</span> <span class="f">-am</span> <span class="st">"Cambio en main"</span>
+
+<span class="k">git merge</span> <span class="st">rama-conflicto</span>
+<span class="c"># CONFLICT (content): Merge conflict in archivo-prueba.txt</span></pre>
+      </div>
+      <div>
+<pre class="code" style="margin-top:0"><span class="k">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>              <span class="c"># tu versión (main)</span>
+<span class="st">hola desde main</span>
+<span class="k">=======</span>
+<span class="f">hola desde la rama</span>        <span class="c"># versión de la otra rama</span>
+<span class="k">&gt;&gt;&gt;&gt;&gt;&gt;&gt; rama-conflicto</span>
+
+<span class="c"># borra las marcas, deja el texto final y:</span>
+<span class="k">git add</span> archivo-prueba.txt
+<span class="k">git commit</span> <span class="f">-m</span> <span class="st">"Resuelvo conflicto"</span>
+<span class="k">git log</span> <span class="f">--oneline --graph --all</span>   <span class="c"># o: git merge --abort</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 10 · REMOTOS ====== -->
+<section class="s tight">
+  <div class="s-in">
+    <div class="kicker">5 · Remotos</div>
+    <h2>Compartir con origin y GitHub</h2>
+    <svg class="diagram" viewBox="0 0 1100 230" style="--T:12s" role="img" aria-label="Tu repositorio local, origin en GitHub y el repositorio de un compañero, conectados por git push y git pull">
+      <rect x="35" y="45" width="230" height="130" rx="18" class="d-card"/>
+      <text x="150" y="104" text-anchor="middle" font-size="17">Tu repo local</text>
+      <text x="150" y="130" text-anchor="middle" class="mono d-sub" font-size="12">.git en tu laptop</text>
+      <rect x="435" y="45" width="230" height="130" rx="18" class="d-core"/>
+      <text x="550" y="104" text-anchor="middle" font-size="17">origin</text>
+      <text x="550" y="130" text-anchor="middle" class="mono d-sub" font-size="12">copia en GitHub</text>
+      <rect x="835" y="45" width="230" height="130" rx="18" class="d-card"/>
+      <text x="950" y="104" text-anchor="middle" font-size="17">Tu compañero</text>
+      <text x="950" y="130" text-anchor="middle" class="mono d-sub" font-size="12">otra laptop</text>
+
+      <line x1="275" y1="82" x2="418" y2="82" class="d-link-on"/><polygon points="418,74 432,82 418,90" class="d-acc"/>
+      <text x="350" y="70" text-anchor="middle" class="mono d-acc-t" font-size="13">git push</text>
+      <line x1="425" y1="148" x2="282" y2="148" class="d-link-on"/><polygon points="282,140 268,148 282,156" class="d-acc"/>
+      <text x="350" y="172" text-anchor="middle" class="mono d-acc-t" font-size="13">git pull</text>
+
+      <line x1="675" y1="82" x2="818" y2="82" class="d-link-on"/><polygon points="818,74 832,82 818,90" class="d-acc"/>
+      <text x="750" y="70" text-anchor="middle" class="mono d-acc-t" font-size="13">git pull</text>
+      <line x1="825" y1="148" x2="682" y2="148" class="d-link-on"/><polygon points="682,140 668,148 682,156" class="d-acc"/>
+      <text x="750" y="172" text-anchor="middle" class="mono d-acc-t" font-size="13">git push</text>
+
+      <rect class="pk1 pkt" x="290" y="74" width="22" height="16" rx="4"/>
+      <rect class="pk2 pkt" x="690" y="74" width="22" height="16" rx="4"/>
+      <rect class="pk3 pkt" x="790" y="140" width="22" height="16" rx="4"/>
+      <rect class="pk4 pkt" x="390" y="140" width="22" height="16" rx="4"/>
+    </svg>
+<pre class="code"><span class="k">git clone</span> <span class="st">https://github.com/usuario/proyecto.git</span>   <span class="c"># copia el remoto a tu laptop</span>
+<span class="k">git push</span> <span class="f">-u</span> origin main                              <span class="c"># sube tus commits</span>
+<span class="k">git pull</span>                                              <span class="c"># trae los de tus compañeros</span></pre>
+  </div>
+</section>
+
+<!-- ====== C1 · 11 · DESHACER ====== -->
+<section class="s tight">
+  <div class="s-in">
+    <div class="kicker">6 · Deshacer</div>
+    <h2>Deshacer cambios</h2>
+    <div class="cols two" style="margin-top:16px">
+      <div class="box">
+        <h3><code>git revert &lt;id&gt;</code> <span class="pill on" style="font-size:11px;padding:3px 12px;margin-left:8px;vertical-align:middle">seguro</span></h3>
+        <p>Crea un commit nuevo que deshace los cambios de un commit específico. Es lo indicado en repositorios compartidos.</p>
+      </div>
+      <div class="box">
+        <h3><code>git reset &lt;id&gt;</code> <span class="pill on" style="font-size:11px;padding:3px 12px;margin-left:8px;vertical-align:middle">último recurso</span></h3>
+        <p>Mueve HEAD a un commit anterior y saca los cambios del historial, como si nunca hubieran ocurrido.</p>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th style="width:24%">Modo de reset</th><th>HEAD</th><th>Staging</th><th>Directorio de trabajo</th><th style="width:30%">En una frase</th></tr></thead>
+      <tbody>
+        <tr class="hl" style="--d:0s"><td><code>--soft</code></td><td>Se mueve</td><td>Se queda igual</td><td>Se queda igual</td><td>Deshace el commit; los cambios siguen en staging</td></tr>
+        <tr class="hl" style="--d:3s"><td><code>--mixed</code> (por defecto)</td><td>Se mueve</td><td>Se vacía</td><td>Se queda igual</td><td>Deshace el commit y saca los archivos del staging</td></tr>
+        <tr class="hl" style="--d:6s"><td><code>--hard</code></td><td>Se mueve</td><td>Se vacía</td><td>Se descarta</td><td>Borra todo, incluidos los cambios en el código</td></tr>
+      </tbody>
+    </table>
+    <div class="note">
+      <b>Para inspeccionar</b> — <code>git show &lt;id|tag&gt;</code> muestra el detalle de un commit o de un tag, y también combinaciones de ramas y archivos.
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 11b · FLUJO CON RAMAS CORTAS (equipos pequeños) ====== -->
+<section class="s dark tight">
+  <div class="glow"></div>
+  <div class="s-in">
+    <div class="kicker">Flujo de equipo</div>
+    <h2>Ramas cortas, integración por PR</h2>
+    <svg class="diagram" viewBox="0 0 1100 330" style="--T:16s" role="img" aria-label="main estable; dos ramas cortas, feature/login-google y fix/error-total, se integran a main mediante Pull Request y merge">
+      <text x="20" y="75" class="tc cg sf sf-0" font-size="15">main</text>
+
+      <path d="M60 70 H230" class="ln cg gl sd-2" pathLength="1"/>
+      <circle cx="110" cy="70" r="12" class="nd cg gl sa-4"/>
+      <circle cx="230" cy="70" r="12" class="nd cg gl sa-8"/>
+
+      <path d="M230 70 V140 Q230 170 260 170 H500" class="ln cr gl sd-10" pathLength="1"/>
+      <circle cx="330" cy="170" r="12" class="nd cr gl sa-16"/>
+      <circle cx="420" cy="170" r="12" class="nd cr gl sa-22"/>
+      <text x="375" y="208" text-anchor="middle" class="mono tc cr sf sf-12" font-size="12">feature/login-google</text>
+
+      <path d="M500 170 C580 170 570 70 640 70" class="ln cr gl sd-44" pathLength="1"/>
+      <path d="M230 70 H640" class="ln cg gl sd-44" pathLength="1"/>
+      <circle cx="640" cy="70" r="18" class="nd cg gl sa-52"/>
+      <text x="640" y="36" text-anchor="middle" class="mono tc cg sf sf-52" font-size="13">Merge PR #1</text>
+
+      <path d="M640 70 C710 70 700 260 760 260" class="ln cw gl sd-54" pathLength="1"/>
+      <circle cx="760" cy="260" r="12" class="nd cw gl sa-60"/>
+      <text x="760" y="292" text-anchor="middle" class="mono tc cw sf sf-58" font-size="12">fix/error-total</text>
+
+      <path d="M760 260 H850 C920 260 910 70 980 70" class="ln cw gl sd-70" pathLength="1"/>
+      <path d="M640 70 H980" class="ln cg gl sd-70" pathLength="1"/>
+      <circle cx="980" cy="70" r="18" class="nd cg gl sa-78"/>
+      <text x="980" y="36" text-anchor="middle" class="mono tc cg sf sf-78" font-size="13">Merge PR #2</text>
+      <g class="sf sf-30"><rect x="478" y="154" width="64" height="32" rx="16" style="fill:#0C0D0F;stroke:var(--c-repo);stroke-width:2"/><text x="510" y="175" text-anchor="middle" class="mono tc cr" font-size="12">PR #1</text></g>
+      <g class="sf sf-64"><rect x="830" y="244" width="64" height="32" rx="16" style="fill:#0C0D0F;stroke:var(--c-work);stroke-width:2"/><text x="862" y="265" text-anchor="middle" class="mono tc cw" font-size="12">PR #2</text></g>
+      <text x="1040" y="318" text-anchor="end" class="d-sub sf sf-80" font-size="12">main siempre queda listo para desplegar</text>
+    </svg>
+    <div class="cols two eq" style="margin-top:10px">
+      <div>
+<pre class="code" style="margin-top:0"><span class="k">git switch</span> <span class="f">-c</span> <span class="st">feature/login-google</span>
+<span class="k">git push</span> <span class="f">-u</span> origin <span class="st">feature/login-google</span>
+<span class="c"># Pull Request → revisión + CI → merge a main</span>
+<span class="k">git switch</span> main <span class="c">&amp;&amp;</span> <span class="k">git pull</span>
+<span class="k">git branch</span> <span class="f">-d</span> <span class="st">feature/login-google</span></pre>
+      </div>
+      <div class="box" style="margin-top:0;padding:18px 22px">
+        <h3>Reglas del flujo</h3>
+        <ul>
+          <li><code>main</code> siempre estable y desplegable</li>
+          <li>Ramas cortas con nombre descriptivo: <code>feature/…</code>, <code>fix/…</code></li>
+          <li>Todo entra por Pull Request (revisión y CI) y después la rama se borra</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== C1 · 12 · CIERRE ====== -->
+<section class="s dark end">
+  <div class="glow"></div>
+  <div class="s-in">
+    <div class="kicker">Resumen</div>
+    <h2>Lo que te llevas</h2>
+    <div class="cols three">
+      <div class="box"><h3>Staging</h3><p><code>git add</code> elige qué entra. <code>git commit</code> lo guarda en la historia.</p></div>
+      <div class="box"><h3>Ramas</h3><p>Una rama es solo un apuntador.<code>git merge</code> une el trabajo.</p></div>
+      <div class="box"><h3>Remotos</h3><p><code>origin</code> es otra copia del repo. <code>push</code> sube, <code>pull</code> trae.</p></div>
+    </div>
+    <div class="quote">Commits pequeños, mensajes claros y ramas de vida corta.</div>
+  </div>
+</section>
+
+
+</div><!-- /.deck -->
+
+<!-- ==========================================================================
+     MOTOR: navegación (barra, contador, teclado, botones) + cambio de acento.
+     Detecta automáticamente cuántas slides hay. No requiere edición.
+     ========================================================================== -->
+<script>
+  const deck   = document.getElementById('deck');
+  const slides = Array.from(deck.querySelectorAll('.s'));
+  const fill   = document.getElementById('fill');
+  const cur    = document.getElementById('cur');
+  document.getElementById('tot').textContent = slides.length;   // total automático
+
+  function idx(){
+    const top = deck.scrollTop; let best=0, bd=Infinity;
+    slides.forEach((s,i)=>{ const d=Math.abs(s.offsetTop-top); if(d<bd){bd=d;best=i;} });
+    return best;
+  }
+  function paint(){
+    cur.textContent = idx()+1;
+    const max = deck.scrollHeight - deck.clientHeight;
+    fill.style.width = (max>0 ? (deck.scrollTop/max)*100 : 0) + '%';
+  }
+  function go(dir){
+    const t = Math.min(slides.length-1, Math.max(0, idx()+dir));
+    deck.scrollTo({ top: slides[t].offsetTop, behavior:'smooth' });
+  }
+  deck.addEventListener('scroll', paint, { passive:true });
+
+  /* ---- Cambio de color de acento (puntos del HUD + teclas 1/2/3) ---- */
+  const dots = Array.from(document.querySelectorAll('.accsw .dot'));
+  function setAccent(a){
+    document.body.dataset.accent = a;
+    dots.forEach(d => d.classList.toggle('active', d.dataset.accent === a));
+  }
+  dots.forEach(d => d.addEventListener('click', () => setAccent(d.dataset.accent)));
+  setAccent(document.body.dataset.accent || 'green');
+
+  /* ---- Teclado ---- */
+  const ACCENTS = { '1':'green', '2':'orange', '3':'blue' };
+  document.addEventListener('keydown', e => {
+    if (['ArrowDown','PageDown',' '].includes(e.key)) { e.preventDefault(); go(1); }
+    if (['ArrowUp','PageUp'].includes(e.key))         { e.preventDefault(); go(-1); }
+    if (e.key === 'Home') { e.preventDefault(); deck.scrollTo({top:0,behavior:'smooth'}); }
+    if (e.key === 'End')  { e.preventDefault(); deck.scrollTo({top:deck.scrollHeight,behavior:'smooth'}); }
+    if (ACCENTS[e.key])   { setAccent(ACCENTS[e.key]); }
+  });
+
+  paint();
+</script>
+</body>
+</html>
