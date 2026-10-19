@@ -15,7 +15,7 @@ This page is generated from `data/repositories.yaml`. Do not edit it by hand: ed
 | [`ros2-anymal-slam`](https://github.com/Alponcho6594/ros2-anymal-slam) | SLAM and localisation | Genaro R | Active | Private | Confirmed |
 | [`ros1-anymal-client`](https://github.com/Alponcho6594/ros1-anymal-client) | Communication / ROS 1 | Genaro R | Active | Private | Confirmed |
 | [`FLOWMAS-ANYmal`](https://github.com/carloAdr1/FLOWMAS-ANYmal) | Navigation / Generative models | [carloAdr1](https://github.com/carloAdr1) | Research | Private | Confirmed |
-| [`anymal-slam`](https://github.com/carloAdr1/anymal-slam) | SLAM and localisation (mirror) | [carloAdr1](https://github.com/carloAdr1) | Active | Private | Confirmed |
+| [`anymal-slam`](https://github.com/carloAdr1/anymal-slam) | SLAM and planning | [carloAdr1](https://github.com/carloAdr1) | Active | Private | Confirmed |
 | [`ANYmal_data_management`](https://github.com/Dravid-hex/ANYmal_data_management) | Operator interface | [Dravid](https://github.com/Dravid-hex) | Active | Private | Confirmed |
 
 - **Confirmed** — read directly from the repository or from a public source.
@@ -37,8 +37,8 @@ Reinforcement-learning training of locomotion policies for the ANYmal D on NVIDI
 | Maintainer | [Jesús M. B.](https://github.com/jesusMBhuy) |
 | Status | Active |
 | Primary language | Python |
-| License | BSD-3-Clause |
-| Last push | 2025-06-23 |
+| License | No LICENSE file |
+| Last push | 2026-06-23 |
 | Access | Public |
 | Data confidence | Confirmed |
 
@@ -53,8 +53,8 @@ CUDA-accelerated SLAM and Monte Carlo Localization framework on ROS 2. It implem
 | Maintainer | Genaro R |
 | Status | Active |
 | Primary language | C++ / CUDA |
-| License | To confirm |
-| Last push | 2026-08-20 |
+| License | No LICENSE file |
+| Last push | 2026-08-21 |
 | Access | Private |
 | Data confidence | Confirmed |
 
@@ -69,8 +69,8 @@ A Docker environment with a ROS 1 client for talking to the ANYmal's ROS master 
 | Maintainer | Genaro R |
 | Status | Active |
 | Primary language | Python / Docker |
-| License | To confirm |
-| Last push | 2026-08-02 |
+| License | No LICENSE file |
+| Last push | 2026-08-03 |
 | Access | Private |
 | Data confidence | Confirmed |
 
@@ -85,30 +85,30 @@ Trajectory generation with flow matching, successor to the ICRA 2025 poster work
 | Maintainer | [carloAdr1](https://github.com/carloAdr1) |
 | Status | Research |
 | Primary language | Python |
-| License | To confirm |
-| Last push | 2025-08-30 |
+| License | No LICENSE file |
+| Last push | 2025-08-29 |
 | Access | Private |
 | Data confidence | Confirmed |
 
 ### anymal-slam
 
-A copy of `ros2-anymal-slam`: it points at exactly the same commit (c666d203), with the same 55 files. It is not a second SLAM stack but another location of the same code, used to connect the ANYmal (ROS 1) to the user's computer (ROS 2) and run SLAM on the physical robot. The technical documentation is in [SLAM and localisation](/en/docs/05-software/slam).
+It started as a copy of `ros2-anymal-slam` and is no longer one. The default branch, `genaro-baseline`, keeps Genaro's baseline untouched (commit c666d203); the work of its own lives on `develop`, four commits ahead, and on two A* planning branches (`feature/astar-planning`, `feature/astar-real-launcher`). What has been added on top of the baseline: SLAM data layout and experiment documentation, a CUDA 12.8 build candidate for Ubuntu 24.04, and a QoS fix for the `/scan` subscriber. The SLAM stack itself is still documented in [SLAM and localisation](/en/docs/05-software/slam).
 
 | | |
 | --- | --- |
 | Repository | [github.com/carloAdr1/anymal-slam](https://github.com/carloAdr1/anymal-slam) |
-| Area | SLAM and localisation (mirror) |
+| Area | SLAM and planning |
 | Maintainer | [carloAdr1](https://github.com/carloAdr1) |
 | Status | Active |
 | Primary language | C++ / CUDA |
-| License | To confirm |
-| Last push | 2026-08-20 |
+| License | No LICENSE file |
+| Last push | 2026-09-30 |
 | Access | Private |
 | Data confidence | Confirmed |
 
 ### ANYmal_data_management
 
-A Tkinter application for the touchscreen of the Jetson mounted as the ANYmal payload. It orchestrates the full data chain: starting and monitoring the `ros1-anymal-client` and `ros2-anymal-slam` containers, showing the status of all three links (robot, ROS 1 bridge, ROS 2 bridge), and exposing tabs for actions, ROS data, LiDAR and cameras. It ships a simulated-data node for testing the UI without a robot.
+A Tkinter application for the touchscreen of the Jetson mounted as the ANYmal payload. It orchestrates the full data chain: starting and monitoring the `ros1-anymal-client` and `ros2-anymal-slam` containers, showing the status of all three links (robot, ROS 1 bridge, ROS 2 bridge), and exposing tabs for actions, ROS data, LiDAR and cameras. It ships a simulated-data node for testing the UI without a robot, test scripts for the inspection payload (pan/tilt sweeps over ROS 1), and an RViz packaged in Docker with the robot's configuration.
 
 | | |
 | --- | --- |
@@ -117,8 +117,8 @@ A Tkinter application for the touchscreen of the Jetson mounted as the ANYmal pa
 | Maintainer | [Dravid](https://github.com/Dravid-hex) |
 | Status | Active |
 | Primary language | Python (Tkinter) |
-| License | To confirm |
-| Last push | 2026-08-31 |
+| License | No LICENSE file |
+| Last push | 2026-09-21 |
 | Access | Private |
 | Data confidence | Confirmed |
 

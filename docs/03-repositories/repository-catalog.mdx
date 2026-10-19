@@ -15,7 +15,7 @@ Esta página se genera automáticamente desde `data/repositories.yaml`. No la ed
 | [`ros2-anymal-slam`](https://github.com/Alponcho6594/ros2-anymal-slam) | SLAM y localización | Genaro R | Activo | Privado | Confirmado |
 | [`ros1-anymal-client`](https://github.com/Alponcho6594/ros1-anymal-client) | Comunicación / ROS 1 | Genaro R | Activo | Privado | Confirmado |
 | [`FLOWMAS-ANYmal`](https://github.com/carloAdr1/FLOWMAS-ANYmal) | Navegación / Modelos generativos | [carloAdr1](https://github.com/carloAdr1) | Investigación | Privado | Confirmado |
-| [`anymal-slam`](https://github.com/carloAdr1/anymal-slam) | SLAM y localización (espejo) | [carloAdr1](https://github.com/carloAdr1) | Activo | Privado | Confirmado |
+| [`anymal-slam`](https://github.com/carloAdr1/anymal-slam) | SLAM y planificación | [carloAdr1](https://github.com/carloAdr1) | Activo | Privado | Confirmado |
 | [`ANYmal_data_management`](https://github.com/Dravid-hex/ANYmal_data_management) | Interfaz de operación | [Dravid](https://github.com/Dravid-hex) | Activo | Privado | Confirmado |
 
 - **Confirmado** — leído directamente del repositorio o de una fuente pública.
@@ -37,8 +37,8 @@ Entrenamiento por refuerzo de políticas de locomoción para el ANYmal D en NVID
 | Responsable | [Jesús M. B.](https://github.com/jesusMBhuy) |
 | Estado | Activo |
 | Lenguaje principal | Python |
-| Licencia | BSD-3-Clause |
-| Último push | 2025-06-23 |
+| Licencia | Sin archivo LICENSE |
+| Último push | 2026-06-23 |
 | Acceso | Público |
 | Confianza del dato | Confirmado |
 
@@ -53,8 +53,8 @@ Framework de SLAM y localización Monte Carlo acelerado por CUDA sobre ROS 2. Im
 | Responsable | Genaro R |
 | Estado | Activo |
 | Lenguaje principal | C++ / CUDA |
-| Licencia | Por confirmar |
-| Último push | 2026-08-20 |
+| Licencia | Sin archivo LICENSE |
+| Último push | 2026-08-21 |
 | Acceso | Privado |
 | Confianza del dato | Confirmado |
 
@@ -69,14 +69,14 @@ Entorno Docker con un cliente ROS 1 para hablar con el máster ROS del ANYmal si
 | Responsable | Genaro R |
 | Estado | Activo |
 | Lenguaje principal | Python / Docker |
-| Licencia | Por confirmar |
-| Último push | 2026-08-02 |
+| Licencia | Sin archivo LICENSE |
+| Último push | 2026-08-03 |
 | Acceso | Privado |
 | Confianza del dato | Confirmado |
 
 ### FLOWMAS-ANYmal
 
-Generación de trayectorias con flow matching, sucesor del trabajo del póster de ICRA 2025. Los 18 commits están firmados por [@saucesaft](https://github.com/saucesaft), Eduardo Hernández Valdez, que es quien presentó ese póster. El paquete se llama `trajectory`. Entrena sobre capturas RGB + profundidad almacenadas en Zarr, con dos codificadores ResNet-18 separados —uno para color y otro para profundidad— y predice trayectorias en SE(3): 3 de traslación más 6 de rotación. Incluye variantes UNet, transformer y UNet con memoria espacial, y flow matching restringido. El código no menciona al ANYmal en ninguna parte: es agnóstico a la plataforma, pensado para reutilizarse en otros robots.
+Generación de trayectorias con flow matching, sucesor del trabajo del póster de ICRA 2025. Los 18 commits están firmados por [@saucesaft](https://github.com/saucesaft), Eduardo Hernández Valdez, que es quien presentó ese póster. El paquete se llama `trajectory`. Entrena sobre capturas RGB + profundidad almacenadas en Zarr, con dos codificadores ResNet-18 separados —uno para color y otro para profundidad— y predice trayectorias en SE(3): 3 de traslación más 6 de rotación. Incluye variantes UNet, transformer y UNet con memoria espacial, y flow matching restringido. El código no menciona al ANYmal en ninguna parte: es agnóstico a la plataforma, pensado para reutilizarse en otros robots. `main` no se ha movido desde agosto de 2025, aunque el repositorio registra empujes posteriores en otras ramas.
 
 | | |
 | --- | --- |
@@ -85,30 +85,30 @@ Generación de trayectorias con flow matching, sucesor del trabajo del póster d
 | Responsable | [carloAdr1](https://github.com/carloAdr1) |
 | Estado | Investigación |
 | Lenguaje principal | Python |
-| Licencia | Por confirmar |
-| Último push | 2025-08-30 |
+| Licencia | Sin archivo LICENSE |
+| Último push | 2025-08-29 |
 | Acceso | Privado |
 | Confianza del dato | Confirmado |
 
 ### anymal-slam
 
-Copia de `ros2-anymal-slam`: apunta exactamente al mismo commit (c666d203), con los mismos 55 archivos. No es una segunda pila de SLAM, sino otra ubicación del mismo código, usada para conectar el ANYmal (ROS 1) con la computadora del usuario (ROS 2) y correr SLAM sobre el robot físico. La documentación técnica está en [SLAM y localización](/es/docs/05-software/slam).
+Empezó como copia de `ros2-anymal-slam` y ya dejó de serlo. La rama por defecto, `genaro-baseline`, conserva intacta la línea base de Genaro (commit c666d203); el trabajo propio vive en `develop`, cuatro commits por delante, y en dos ramas de planificación A* (`feature/astar-planning`, `feature/astar-real-launcher`). Lo añadido sobre la línea base: organización de los datos de SLAM y la documentación de experimentos, un candidato de build con CUDA 12.8 para Ubuntu 24.04 y corrección del QoS del suscriptor de `/scan`. La pila de SLAM en sí sigue documentada en [SLAM y localización](/es/docs/05-software/slam).
 
 | | |
 | --- | --- |
 | Repositorio | [github.com/carloAdr1/anymal-slam](https://github.com/carloAdr1/anymal-slam) |
-| Área | SLAM y localización (espejo) |
+| Área | SLAM y planificación |
 | Responsable | [carloAdr1](https://github.com/carloAdr1) |
 | Estado | Activo |
 | Lenguaje principal | C++ / CUDA |
-| Licencia | Por confirmar |
-| Último push | 2026-08-20 |
+| Licencia | Sin archivo LICENSE |
+| Último push | 2026-09-30 |
 | Acceso | Privado |
 | Confianza del dato | Confirmado |
 
 ### ANYmal_data_management
 
-Aplicación en Tkinter para la pantalla táctil de la Jetson montada como payload del ANYmal. Orquesta la cadena de datos completa: arranca y monitorea los contenedores de `ros1-anymal-client` y `ros2-anymal-slam`, muestra el estado de los tres eslabones (robot, puente ROS 1, puente ROS 2) y expone pestañas de acciones, datos ROS, LiDAR y cámaras. Incluye un nodo de datos simulados para probar la interfaz sin robot.
+Aplicación en Tkinter para la pantalla táctil de la Jetson montada como payload del ANYmal. Orquesta la cadena de datos completa: arranca y monitorea los contenedores de `ros1-anymal-client` y `ros2-anymal-slam`, muestra el estado de los tres eslabones (robot, puente ROS 1, puente ROS 2) y expone pestañas de acciones, datos ROS, LiDAR y cámaras. Incluye un nodo de datos simulados para probar la interfaz sin robot, scripts de prueba del inspection payload (barridos pan/tilt sobre ROS 1) y un RViz empaquetado en Docker con la configuración del robot.
 
 | | |
 | --- | --- |
@@ -117,8 +117,8 @@ Aplicación en Tkinter para la pantalla táctil de la Jetson montada como payloa
 | Responsable | [Dravid](https://github.com/Dravid-hex) |
 | Estado | Activo |
 | Lenguaje principal | Python (Tkinter) |
-| Licencia | Por confirmar |
-| Último push | 2026-08-31 |
+| Licencia | Sin archivo LICENSE |
+| Último push | 2026-09-21 |
 | Acceso | Privado |
 | Confianza del dato | Confirmado |
 

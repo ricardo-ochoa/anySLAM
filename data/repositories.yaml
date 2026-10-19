@@ -10,7 +10,13 @@
 #   inferred  : deducido de contexto (póster ICRA, nombre del repo). Verificar.
 #   unknown   : no tenemos acceso. Pendiente de que su responsable lo complete.
 #
-# Última verificación: 2026-09-01 (contenido leído directamente de cada repositorio)
+# Campo `last_push` — fecha del último commit en la rama por defecto, no del
+# último empuje al repositorio. Son cosas distintas: FLOWMAS-ANYmal registra
+# actividad reciente en otras ramas mientras `main` lleva parado desde agosto
+# de 2025, y lo que importa aquí es si el código principal se movió.
+#
+# Última verificación: 2026-10-19 (leído con la API de GitHub y los README de
+# cada repositorio)
 # ---------------------------------------------------------------------------
 
 repositories:
@@ -24,8 +30,8 @@ repositories:
     owner_name: Jesús M. B.
     status: Active
     language: Python
-    license: BSD-3-Clause
-    last_push: 2025-06-23
+    license: None
+    last_push: 2026-06-23
     confidence: confirmed
     description: >-
       Entrenamiento por refuerzo de políticas de locomoción para el ANYmal D en
@@ -51,8 +57,8 @@ repositories:
     owner_url: none
     status: Active
     language: C++ / CUDA
-    license: Unknown
-    last_push: 2026-08-20
+    license: None
+    last_push: 2026-08-21
     confidence: confirmed
     description: >-
       Framework de SLAM y localización Monte Carlo acelerado por CUDA sobre
@@ -82,8 +88,8 @@ repositories:
     owner_url: none
     status: Active
     language: Python / Docker
-    license: Unknown
-    last_push: 2026-08-02
+    license: None
+    last_push: 2026-08-03
     confidence: confirmed
     description: >-
       Entorno Docker con un cliente ROS 1 para hablar con el máster ROS del
@@ -110,8 +116,8 @@ repositories:
     owner_name: carloAdr1
     status: Research
     language: Python
-    license: Unknown
-    last_push: 2025-08-30
+    license: None
+    last_push: 2025-08-29
     confidence: confirmed
     description: >-
       Generación de trayectorias con flow matching, sucesor del trabajo del
@@ -124,7 +130,8 @@ repositories:
       rotación. Incluye variantes UNet, transformer y UNet con memoria espacial,
       y flow matching restringido. El código no menciona al ANYmal en ninguna
       parte: es agnóstico a la plataforma, pensado para reutilizarse en otros
-      robots.
+      robots. `main` no se ha movido desde agosto de 2025, aunque el repositorio
+      registra empujes posteriores en otras ramas.
     description_en: >-
       Trajectory generation with flow matching, successor to the ICRA 2025 poster
       work. All 18 commits are authored by
@@ -141,28 +148,34 @@ repositories:
     name: anymal-slam
     url: https://github.com/carloAdr1/anymal-slam
     visibility: private
-    area: SLAM y localización (espejo)
-    area_en: SLAM and localisation (mirror)
+    area: SLAM y planificación
+    area_en: SLAM and planning
     owner: carloAdr1
     owner_name: carloAdr1
     status: Active
     language: C++ / CUDA
-    license: Unknown
-    last_push: 2026-08-20
+    license: None
+    last_push: 2026-09-30
     confidence: confirmed
     description: >-
-      Copia de `ros2-anymal-slam`: apunta exactamente al mismo commit
-      (c666d203), con los mismos 55 archivos. No es una segunda pila de SLAM,
-      sino otra ubicación del mismo código, usada para conectar el ANYmal
-      (ROS 1) con la computadora del usuario (ROS 2) y correr SLAM sobre el
-      robot físico. La documentación técnica está en
-      [SLAM y localización](/es/docs/05-software/slam).
+      Empezó como copia de `ros2-anymal-slam` y ya dejó de serlo. La rama por
+      defecto, `genaro-baseline`, conserva intacta la línea base de Genaro
+      (commit c666d203); el trabajo propio vive en `develop`, cuatro commits por
+      delante, y en dos ramas de planificación A*
+      (`feature/astar-planning`, `feature/astar-real-launcher`). Lo añadido
+      sobre la línea base: organización de los datos de SLAM y la documentación
+      de experimentos, un candidato de build con CUDA 12.8 para Ubuntu 24.04 y
+      corrección del QoS del suscriptor de `/scan`. La pila de SLAM en sí sigue
+      documentada en [SLAM y localización](/es/docs/05-software/slam).
     description_en: >-
-      A copy of `ros2-anymal-slam`: it points at exactly the same commit
-      (c666d203), with the same 55 files. It is not a second SLAM stack but
-      another location of the same code, used to connect the ANYmal (ROS 1) to
-      the user's computer (ROS 2) and run SLAM on the physical robot. The
-      technical documentation is in
+      It started as a copy of `ros2-anymal-slam` and is no longer one. The
+      default branch, `genaro-baseline`, keeps Genaro's baseline untouched
+      (commit c666d203); the work of its own lives on `develop`, four commits
+      ahead, and on two A* planning branches (`feature/astar-planning`,
+      `feature/astar-real-launcher`). What has been added on top of the
+      baseline: SLAM data layout and experiment documentation, a CUDA 12.8
+      build candidate for Ubuntu 24.04, and a QoS fix for the `/scan`
+      subscriber. The SLAM stack itself is still documented in
       [SLAM and localisation](/en/docs/05-software/slam).
 
   - id: anymal-data-management
@@ -175,8 +188,8 @@ repositories:
     owner_name: Dravid
     status: Active
     language: Python (Tkinter)
-    license: Unknown
-    last_push: 2026-08-31
+    license: None
+    last_push: 2026-09-21
     confidence: confirmed
     description: >-
       Aplicación en Tkinter para la pantalla táctil de la Jetson montada como
@@ -184,14 +197,18 @@ repositories:
       monitorea los contenedores de `ros1-anymal-client` y `ros2-anymal-slam`,
       muestra el estado de los tres eslabones (robot, puente ROS 1, puente ROS 2)
       y expone pestañas de acciones, datos ROS, LiDAR y cámaras. Incluye un nodo
-      de datos simulados para probar la interfaz sin robot.
+      de datos simulados para probar la interfaz sin robot, scripts de prueba
+      del inspection payload (barridos pan/tilt sobre ROS 1) y un RViz
+      empaquetado en Docker con la configuración del robot.
     description_en: >-
       A Tkinter application for the touchscreen of the Jetson mounted as the
       ANYmal payload. It orchestrates the full data chain: starting and
       monitoring the `ros1-anymal-client` and `ros2-anymal-slam` containers,
       showing the status of all three links (robot, ROS 1 bridge, ROS 2 bridge),
       and exposing tabs for actions, ROS data, LiDAR and cameras. It ships a
-      simulated-data node for testing the UI without a robot.
+      simulated-data node for testing the UI without a robot, test scripts for
+      the inspection payload (pan/tilt sweeps over ROS 1), and an RViz packaged
+      in Docker with the robot's configuration.
 
 # Recursos que no son repositorios de código pero forman parte del conocimiento
 # del proyecto.

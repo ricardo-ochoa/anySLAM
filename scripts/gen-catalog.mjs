@@ -52,6 +52,7 @@ const L = {
       unknown: 'Sin datos',
     },
     unknown: 'Por confirmar',
+    noLicense: 'Sin archivo LICENSE',
     legend: [
       '**Confirmado** — leído directamente del repositorio o de una fuente pública.',
       '**Inferido** — deducido del contexto. Debe verificarse con el responsable.',
@@ -90,6 +91,7 @@ const L = {
       unknown: 'No data',
     },
     unknown: 'To confirm',
+    noLicense: 'No LICENSE file',
     legend: [
       '**Confirmed** — read directly from the repository or from a public source.',
       '**Inferred** — deduced from context. Must be verified with the maintainer.',
@@ -104,6 +106,14 @@ const L = {
 const cell = (v) => String(v ?? '').replaceAll('|', '\\|');
 
 const norm = (t, v) => (v === 'Unknown' || v == null ? t.unknown : v);
+
+/**
+ * La licencia tiene tres estados, no dos: la que conocemos, la que no hemos
+ * mirado (`Unknown` → "Por confirmar") y la ausencia comprobada de un archivo
+ * LICENSE (`None`). Mezclar los dos últimos haría parecer pendiente algo que ya
+ * se verificó, y en un proyecto que va a publicarse la diferencia importa.
+ */
+const license = (t, v) => (v === 'None' ? t.noLicense : norm(t, v));
 
 /** Estado del repositorio, traducido cuando conocemos el término. */
 const status = (t, r) => t.status[r.status] ?? norm(t, r.status);
@@ -177,7 +187,7 @@ function render(lang) {
     lines.push(`| ${t.fields.owner} | ${ownerLink(r)} |`);
     lines.push(`| ${t.fields.status} | ${cell(status(t, r))} |`);
     lines.push(`| ${t.fields.language} | ${cell(norm(t, r.language))} |`);
-    lines.push(`| ${t.fields.license} | ${cell(norm(t, r.license))} |`);
+    lines.push(`| ${t.fields.license} | ${cell(license(t, r.license))} |`);
     lines.push(`| ${t.fields.last_push} | ${cell(norm(t, r.last_push))} |`);
     lines.push(`| ${t.fields.visibility} | ${cell(t.visibility[r.visibility] ?? r.visibility)} |`);
     lines.push(
