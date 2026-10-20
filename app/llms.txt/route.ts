@@ -1,4 +1,5 @@
 import { buildLLMsIndex } from '@/lib/llms';
+import { canReadDocsFeed, docsFeedDenied } from '@/lib/docs-access';
 
 /**
  * `/llms.txt` — el índice que leen los asistentes de IA (llmstxt.org).
@@ -10,14 +11,18 @@ import { buildLLMsIndex } from '@/lib/llms';
  * `proxy.ts` tiene que dejar pasar esta ruta: el middleware de idioma la
  * mandaría a /es/llms.txt y los rastreadores la piden sin prefijo.
  */
-export const revalidate = false;
-export const dynamic = 'force-static';
+// Ya no se puede prerrenderizar: la respuesta depende de quién la pide.
+export const dynamic = 'force-dynamic';
 
-export function GET() {
+export async function GET(request: Request) {
+  if (!(await canReadDocsFeed(request))) return docsFeedDenied();
+
   return new Response(buildLLMsIndex('es'), {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'public, max-age=0, must-revalidate',
+      // Privada: la respuesta depende de la credencial, así que no debe
+      // quedarse en ninguna caché compartida.
+      'Cache-Control': 'private, no-store',
     },
   });
 }

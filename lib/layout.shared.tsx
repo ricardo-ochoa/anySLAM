@@ -2,6 +2,7 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { uiTranslations } from 'fumadocs-ui/i18n';
 import { i18n } from '@/lib/i18n';
 import { SlamLogo } from '@/components/slam-logo';
+import { AuthNav } from '@/components/auth-nav';
 
 /**
  * Fumadocs no publica un language pack para español (@fumadocs/language solo
@@ -77,11 +78,13 @@ const strings = {
     docs: 'Bienvenida',
     catalog: 'Repositorios',
     onboarding: 'Onboarding',
+    chat: 'Preguntar',
   },
   en: {
     docs: 'Welcome',
     catalog: 'Repositories',
     onboarding: 'Onboarding',
+    chat: 'Ask',
   },
 } as const;
 
@@ -100,6 +103,9 @@ export function baseOptions(locale: string): BaseLayoutProps {
       { type: 'main', text: t.docs, url: `/${locale}/docs` },
       { type: 'main', text: t.catalog, url: `/${locale}/docs/03-repositories/repository-catalog` },
       { type: 'main', text: t.onboarding, url: `/${locale}/docs/08-onboarding/getting-started` },
+      { type: 'main', text: t.chat, url: `/${locale}/chat` },
+      // `secondary` lo manda al extremo derecho, junto al cambio de tema.
+      { type: 'custom', secondary: true, children: <AuthNav /> },
     ],
   };
 }

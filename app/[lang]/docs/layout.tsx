@@ -1,9 +1,15 @@
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
+import { auth } from '@clerk/nextjs/server';
 import { source } from '@/lib/source';
 import { baseOptions } from '@/lib/layout.shared';
 import { HoverBot } from '@/components/hover-bot';
 
 export default async function Layout({ params, children }: LayoutProps<'/[lang]/docs'>) {
+  // Toda la documentación queda detrás de la sesión. La comprobación va aquí,
+  // en el layout que envuelve cada página, y no en el middleware: así protege
+  // el recurso y no un patrón de ruta que puede dejar de coincidir.
+  await auth.protect();
+
   const { lang } = await params;
 
   return (

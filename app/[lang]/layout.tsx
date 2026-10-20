@@ -1,6 +1,7 @@
 import 'fumadocs-ui/style.css';
 import './global.css';
 import { RootProvider } from 'fumadocs-ui/provider/next';
+import { ClerkProvider } from '@clerk/nextjs';
 import { i18nProvider } from 'fumadocs-ui/i18n';
 import { Doto, Inter, Mulish } from 'next/font/google';
 import type { Metadata } from 'next';
@@ -70,7 +71,9 @@ export default async function Layout({ params, children }: LayoutProps<'/[lang]'
           minHeight: '100vh',
         }}
       >
-        <RootProvider i18n={i18nProvider(translations, lang)}>{children}</RootProvider>
+        <ClerkProvider>
+          <RootProvider i18n={i18nProvider(translations, lang)}>{children}</RootProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
