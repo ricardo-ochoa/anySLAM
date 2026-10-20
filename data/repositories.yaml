@@ -5,7 +5,12 @@
 # Las tablas en docs/03-repositories/repository-catalog.{mdx,en.mdx} se
 # GENERAN desde aquí con `npm run gen:catalog`. No las edites a mano.
 #
-# Campo `confidence` — qué tan verificada está la entrada:
+# Campo `confidence` — NO se publica. Es una nota para quien mantiene este
+# archivo: dice si la entrada se verificó o se dedujo. Salía como una columna
+# "Confianza del dato" en la página y nadie entendía a qué se refería, así que
+# se quitó de la tabla y se quedó aquí, que es donde sirve.
+#
+# Qué tan verificada está la entrada:
 #   confirmed : leído directamente del repositorio o de una fuente pública
 #   inferred  : deducido de contexto (póster ICRA, nombre del repo). Verificar.
 #   unknown   : no tenemos acceso. Pendiente de que su responsable lo complete.

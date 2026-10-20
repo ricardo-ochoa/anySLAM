@@ -35,15 +35,18 @@ It requires Microsoft Entra sign-in, so this portal cannot read it: the board is
 truth for *what is being worked on this week*, and the portal is the source of truth for *how the
 system is built*.
 
-| Board area | Corresponding repository | Confidence |
-| --- | --- | --- |
-| SLAM | [`ros2-anymal-slam`](/en/docs/05-software/slam) | Confirmed |
-| RL IsaacLab | [`Anymal-Research`](/en/docs/05-software/learning) | Confirmed |
-| Navegación | [`FLOWMAS-ANYmal`](/en/docs/05-software/vision) | Inferred |
-| Gestión de Datos_plus_Viz | [`ANYmal_data_management`](/en/docs/06-infrastructure/docker) | Inferred |
-| Integración Software | [`ros1-anymal-client`](/en/docs/05-software/ros) | Inferred |
-| — | [`anymal-slam`](/en/docs/05-software/slam) — mirror of `ros2-anymal-slam` | Confirmed |
-| Comm Larga Distancia | **none** | — |
+| Board area | Corresponding repository |
+| --- | --- |
+| SLAM | [`ros2-anymal-slam`](/en/docs/05-software/slam) |
+| RL IsaacLab | [`Anymal-Research`](/en/docs/05-software/learning) |
+| Navegación | [`FLOWMAS-ANYmal`](/en/docs/05-software/vision) — to confirm |
+| Gestión de Datos_plus_Viz | [`ANYmal_data_management`](/en/docs/06-infrastructure/docker) — to confirm |
+| Integración Software | [`ros1-anymal-client`](/en/docs/05-software/ros) — to confirm |
+| — | [`anymal-slam`](/en/docs/05-software/slam) — started from `ros2-anymal-slam`, now with planning work of its own |
+| Comm Larga Distancia | **none** |
+
+"To confirm" means we inferred the match from the area's name; nobody on the team confirmed it
+to us.
 
 <Callout type="warn" title="One area with no repository">
 **Comm Larga Distancia** appears as a work area but has no matching repository in the catalog.

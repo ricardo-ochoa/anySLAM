@@ -31,7 +31,7 @@ const L = {
     reposHeading: 'Repositorios',
     resourcesHeading: 'Otros recursos del proyecto',
     detailHeading: 'Detalle por repositorio',
-    cols: ['Repositorio', 'Área', 'Responsable', 'Estado', 'Acceso', 'Confianza'],
+    cols: ['Repositorio', 'Área', 'Responsable', 'Estado', 'Acceso'],
     resCols: ['Recurso', 'Tipo', 'Responsable'],
     fields: {
       repo: 'Repositorio',
@@ -42,22 +42,11 @@ const L = {
       license: 'Licencia',
       last_push: 'Último push',
       visibility: 'Acceso',
-      confidence: 'Confianza del dato',
     },
     visibility: { public: 'Público', private: 'Privado' },
     status: { Active: 'Activo', Development: 'En desarrollo', Experimental: 'Experimental', Research: 'Investigación', Deprecated: 'Obsoleto' },
-    confidence: {
-      confirmed: 'Confirmado',
-      inferred: 'Inferido',
-      unknown: 'Sin datos',
-    },
     unknown: 'Por confirmar',
     noLicense: 'Sin archivo LICENSE',
-    legend: [
-      '**Confirmado** — leído directamente del repositorio o de una fuente pública.',
-      '**Inferido** — deducido del contexto. Debe verificarse con el responsable.',
-      '**Sin datos** — no tenemos acceso al repositorio. Pendiente de su responsable.',
-    ],
     sectionLinks:
       'Por qué el proyecto son varios repositorios y no uno está en [cómo se organizan los repositorios](/es/docs/03-repositories/overview). Lo que falta por documentar y de quién depende, en [datos pendientes](/es/docs/03-repositories/missing-data).',
   },
@@ -70,7 +59,7 @@ const L = {
     reposHeading: 'Repositories',
     resourcesHeading: 'Other project resources',
     detailHeading: 'Repository details',
-    cols: ['Repository', 'Area', 'Maintainer', 'Status', 'Access', 'Confidence'],
+    cols: ['Repository', 'Area', 'Maintainer', 'Status', 'Access'],
     resCols: ['Resource', 'Kind', 'Maintainer'],
     fields: {
       repo: 'Repository',
@@ -81,22 +70,11 @@ const L = {
       license: 'License',
       last_push: 'Last push',
       visibility: 'Access',
-      confidence: 'Data confidence',
     },
     visibility: { public: 'Public', private: 'Private' },
     status: { Active: 'Active', Development: 'Development', Experimental: 'Experimental', Research: 'Research', Deprecated: 'Deprecated' },
-    confidence: {
-      confirmed: 'Confirmed',
-      inferred: 'Inferred',
-      unknown: 'No data',
-    },
     unknown: 'To confirm',
     noLicense: 'No LICENSE file',
-    legend: [
-      '**Confirmed** — read directly from the repository or from a public source.',
-      '**Inferred** — deduced from context. Must be verified with the maintainer.',
-      '**No data** — we have no access to the repository. Pending on its owner.',
-    ],
     sectionLinks:
       'Why the project is several repositories instead of one is covered in [how the repositories are organised](/en/docs/03-repositories/overview). What is still undocumented, and who it depends on, is tracked in [missing data](/en/docs/03-repositories/missing-data).',
   },
@@ -160,12 +138,10 @@ function render(lang) {
         r,
       )} | ${cell(status(t, r))} | ${cell(
         t.visibility[r.visibility] ?? r.visibility,
-      )} | ${cell(t.confidence[r.confidence] ?? r.confidence)} |`,
+      )} |`,
     );
   }
 
-  lines.push('');
-  for (const item of t.legend) lines.push(`- ${item}`);
   lines.push('');
   lines.push(t.sectionLinks);
   lines.push('');
@@ -190,9 +166,6 @@ function render(lang) {
     lines.push(`| ${t.fields.license} | ${cell(license(t, r.license))} |`);
     lines.push(`| ${t.fields.last_push} | ${cell(norm(t, r.last_push))} |`);
     lines.push(`| ${t.fields.visibility} | ${cell(t.visibility[r.visibility] ?? r.visibility)} |`);
-    lines.push(
-      `| ${t.fields.confidence} | ${cell(t.confidence[r.confidence] ?? r.confidence)} |`,
-    );
     lines.push('');
   }
 
