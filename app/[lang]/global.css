@@ -851,3 +851,113 @@
   border-color: var(--anyslam-blue);
   color: var(--anyslam-blue);
 }
+
+/* --- Chat — components/chat.tsx ------------------------------------------ */
+
+.anyslam-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.anyslam-chat-log {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-height: 16rem;
+}
+
+.anyslam-chat-empty {
+  color: var(--color-fd-muted-foreground);
+  font-size: 0.95rem;
+}
+
+.anyslam-chat-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* La pregunta se alinea a la derecha y la respuesta ocupa el ancho completo:
+   lo que se lee de corrido es la respuesta, no la pregunta. */
+.anyslam-chat-user {
+  align-items: flex-end;
+}
+
+.anyslam-chat-user .anyslam-chat-body {
+  background: var(--anyslam-blue-tint);
+  border: 1px solid var(--anyslam-blue-line);
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  max-width: 85%;
+}
+
+.anyslam-chat-body {
+  white-space: pre-wrap;
+  line-height: 1.65;
+}
+
+.anyslam-chat-sources {
+  font-size: 0.85rem;
+  color: var(--color-fd-muted-foreground);
+  border-top: 1px solid var(--color-fd-border);
+  padding-top: 0.6rem;
+}
+
+.anyslam-chat-sources ul {
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+}
+
+.anyslam-chat-sources a {
+  color: var(--anyslam-blue);
+}
+
+.anyslam-chat-error {
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.anyslam-chat-input {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-end;
+  position: sticky;
+  bottom: 1rem;
+  background: var(--color-fd-background);
+  padding-top: 0.5rem;
+}
+
+.anyslam-chat-input textarea {
+  flex: 1;
+  resize: vertical;
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--color-fd-border);
+  background: var(--color-fd-card);
+  color: var(--color-fd-foreground);
+}
+
+.anyslam-chat-input textarea:focus {
+  outline: 0;
+  border-color: var(--anyslam-blue);
+}
+
+.anyslam-chat-input button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media (prefers-color-scheme: dark) {
+  .anyslam-chat-error {
+    color: #f87171;
+  }
+}
