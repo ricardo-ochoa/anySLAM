@@ -8,15 +8,12 @@ const content = {
     labels: {
       placeholder: '¿Por qué el proyecto usa ROS 1 y ROS 2 a la vez?',
       send: 'Preguntar',
-      sending: 'Pensando…',
+      cancel: 'Detener',
+      copy: 'Copiar',
+      reload: 'Reintentar',
       sources: 'Fuentes',
-      // Plantilla con marcadores, no una función: entre un componente de
-      // servidor y uno de cliente solo cruzan datos serializables, y una
-      // función no lo es. El reemplazo se hace en el cliente.
-      spend: '{in} tokens de entrada, {out} de salida — ${cost} USD',
       empty: 'Todavía no has preguntado nada. Escribe abajo.',
-      failed: 'No se pudo generar la respuesta. Inténtalo de nuevo.',
-      offline: 'El Company Brain todavía no está conectado a este portal.',
+      spent: 'Esta sesión lleva ${cost} USD.',
     },
   },
   en: {
@@ -25,18 +22,17 @@ const content = {
     labels: {
       placeholder: 'Why does the project use ROS 1 and ROS 2 at the same time?',
       send: 'Ask',
-      sending: 'Thinking…',
+      cancel: 'Stop',
+      copy: 'Copy',
+      reload: 'Retry',
       sources: 'Sources',
-      spend: '{in} input tokens, {out} output — ${cost} USD',
       empty: 'Nothing asked yet. Type below.',
-      failed: 'The answer could not be generated. Try again.',
-      offline: 'The Company Brain is not connected to this portal yet.',
+      spent: 'This session has cost ${cost} USD.',
     },
   },
 } as const;
 
 export default async function ChatPage({ params }: PageProps<'/[lang]/chat'>) {
-  // Misma comprobación que la documentación, junto al recurso que protege.
   await auth.protect();
 
   const { lang } = await params;

@@ -1,3 +1,7 @@
+// El orden de estas tres líneas es significativo; está explicado en
+// tailwind.css. Resumen: las utilidades de Tailwind primero, el CSS de
+// Fumadocs encima, y nuestros estilos propios al final.
+import './tailwind.css';
 import 'fumadocs-ui/style.css';
 import './global.css';
 import { RootProvider } from 'fumadocs-ui/provider/next';

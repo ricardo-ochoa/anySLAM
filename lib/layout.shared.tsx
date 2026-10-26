@@ -88,7 +88,16 @@ const strings = {
   },
 } as const;
 
-export function baseOptions(locale: string): BaseLayoutProps {
+/**
+ * `sidebarAuth` lo usa el layout de documentación: ahí la barra es vertical y
+ * el control de sesión queda suelto entre los enlaces de sección. En esas
+ * páginas se saca de aquí y se monta abajo, junto al idioma y al cambio de
+ * tema, que es donde el usuario espera encontrarlo.
+ */
+export function baseOptions(
+  locale: string,
+  { sidebarAuth = false }: { sidebarAuth?: boolean } = {},
+): BaseLayoutProps {
   const t = strings[locale as keyof typeof strings] ?? strings.es;
 
   return {
@@ -104,8 +113,11 @@ export function baseOptions(locale: string): BaseLayoutProps {
       { type: 'main', text: t.catalog, url: `/${locale}/docs/03-repositories/repository-catalog` },
       { type: 'main', text: t.onboarding, url: `/${locale}/docs/08-onboarding/getting-started` },
       { type: 'main', text: t.chat, url: `/${locale}/chat` },
-      // `secondary` lo manda al extremo derecho, junto al cambio de tema.
-      { type: 'custom', secondary: true, children: <AuthNav /> },
+      // En la barra superior `secondary` lo manda al extremo derecho, junto al
+      // cambio de tema. En la lateral no hay tal extremo, así que ahí no va.
+      ...(sidebarAuth
+        ? []
+        : [{ type: 'custom' as const, secondary: true, children: <AuthNav /> }]),
     ],
   };
 }

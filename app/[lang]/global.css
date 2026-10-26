@@ -1,41 +1,3 @@
-/* --- Tailwind, solo para el chat ----------------------------------------
-   Se importan el tema y las utilidades, pero NO `preflight.css`: ese es el
-   reinicio global de Tailwind y reescribiría márgenes, listas y encabezados
-   de todo el portal. Omitirlo es lo que mantiene este cambio acotado.
-
-   Los tokens de abajo son los que esperan `streamdown` y `assistant-ui`
-   —nacidos en proyectos shadcn— mapeados a los colores que el portal ya usa.
-   Así el chat no trae su propia paleta: hereda la nuestra, y cambia de tono
-   con el modo oscuro sin hacer nada. */
-@layer theme, base, components, utilities;
-@import 'tailwindcss/theme.css' layer(theme);
-@import 'tailwindcss/utilities.css' layer(utilities);
-
-/* Qué archivos escanea Tailwind en busca de clases.
-
-   El tercero no es opcional: `streamdown` no trae CSS propio, emite clases de
-   Tailwind desde su JavaScript ya compilado. Como esas clases no están
-   escritas en nuestro código, sin este `@source` Tailwind no las ve y no
-   genera ni una — el chat saldría con el HTML correcto y sin estilo.
-   node_modules está excluido por defecto, de ahí que haya que nombrarlo. */
-@source '../../components';
-@source '../../app';
-@source '../../node_modules/streamdown/dist';
-
-@theme inline {
-  --color-background: var(--color-fd-background);
-  --color-foreground: var(--color-fd-foreground);
-  --color-muted: var(--color-fd-muted);
-  --color-muted-foreground: var(--color-fd-muted-foreground);
-  --color-border: var(--color-fd-border);
-  --color-primary: var(--anyslam-blue);
-  --color-primary-foreground: #fff;
-  --color-secondary: var(--color-fd-secondary);
-  --color-accent: var(--color-fd-accent);
-  --color-sidebar: var(--color-fd-card);
-  --color-destructive: #dc2626;
-}
-
 :root {
   /* --- Color --------------------------------------------------------------
      Secundario del portal: #0037FF. Se usa para iconos, enlaces y estados
@@ -1036,23 +998,61 @@
   text-align: left;
 }
 
+/* Las fuentes llegan antes que el texto, así que se pintan encima: se ve de
+   dónde va a salir la respuesta antes de leerla. Si el mensaje no trae
+   ninguna, el contenedor queda vacío y no ocupa nada. */
 .anyslam-chat-sources {
-  font-size: 0.85rem;
-  color: var(--color-fd-muted-foreground);
-  border-top: 1px solid var(--color-fd-border);
-  padding-top: 0.6rem;
-}
-
-.anyslam-chat-sources ul {
-  list-style: none;
-  margin: 0.35rem 0 0;
-  padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem 1rem;
+  gap: 0.35rem;
 }
 
-.anyslam-chat-sources a {
+.anyslam-chat-sources:empty {
+  display: none;
+}
+
+.anyslam-chat-source {
+  font-size: 0.76rem;
+  line-height: 1.3;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--anyslam-blue-line);
+  background: var(--anyslam-blue-tint);
+  color: var(--anyslam-blue);
+  text-decoration: none;
+}
+
+.anyslam-chat-source:hover {
+  background: var(--anyslam-blue-solid);
+  border-color: var(--anyslam-blue-solid);
+  color: #fff;
+}
+
+/* Copiar y reintentar. Discretos hasta que pasas por encima de la respuesta:
+   son acciones secundarias y no deben competir con el texto. */
+.anyslam-chat-actions {
+  display: flex;
+  gap: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.anyslam-chat-msg:hover .anyslam-chat-actions,
+.anyslam-chat-actions:focus-within {
+  opacity: 1;
+}
+
+.anyslam-chat-action {
+  font: inherit;
+  font-size: 0.78rem;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-fd-muted-foreground);
+}
+
+.anyslam-chat-action:hover {
   color: var(--anyslam-blue);
 }
 
@@ -1071,7 +1071,7 @@
   padding-top: 0.5rem;
 }
 
-.anyslam-chat-input textarea {
+.anyslam-chat-field {
   flex: 1;
   resize: vertical;
   font: inherit;
@@ -1084,7 +1084,7 @@
   color: var(--color-fd-foreground);
 }
 
-.anyslam-chat-input textarea:focus {
+.anyslam-chat-field:focus {
   outline: 0;
   border-color: var(--anyslam-blue);
 }
@@ -1107,4 +1107,30 @@
   font-size: 0.78rem;
   color: var(--color-fd-muted-foreground);
   font-variant-numeric: tabular-nums;
+}
+
+/* El control de sesión dentro de la barra lateral de documentación.
+
+   Comparte el slot `footer` con el robot, que lleva `order: -1` para subirse
+   del todo. Este se queda abajo, debajo del selector de idioma y a la altura
+   del cambio de tema, que es donde la gente lo busca. */
+/* El avatar comparte fila con el cambio de tema de la barra lateral
+   (components/sidebar-theme-switch.tsx). La fila ya trae borde, fondo y
+   padding propios, así que aquí solo se ajusta el hueco del avatar; el botón
+   de «Entrar» pierde su borde para no dibujar una caja dentro de otra. */
+.anyslam-authnav-sidebar {
+  justify-content: flex-start;
+  min-height: 1.75rem;
+  padding-inline-start: 0.125rem;
+}
+
+.anyslam-authnav-sidebar .anyslam-authnav-btn {
+  padding: 0.15rem 0.55rem;
+  border-color: transparent;
+  background: transparent;
+  color: inherit;
+}
+
+.anyslam-authnav-sidebar .anyslam-authnav-btn:hover {
+  color: var(--color-fd-foreground);
 }

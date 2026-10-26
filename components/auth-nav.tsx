@@ -15,15 +15,17 @@ import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
  * acepta sin rechistar y el fallo solo aparece al pedir la página. El sustituto
  * es `useAuth()`.
  */
-export function AuthNav() {
+export function AuthNav({ className }: { className?: string } = {}) {
   const { isLoaded, isSignedIn } = useAuth();
 
   // Mientras Clerk resuelve, el hueco se queda vacío pero reservado: el ancho
   // mínimo está en CSS para que la barra no dé un salto al decidirse.
-  if (!isLoaded) return <span className="anyslam-authnav" aria-hidden="true" />;
+  const classes = ['anyslam-authnav', className].filter(Boolean).join(' ');
+
+  if (!isLoaded) return <span className={classes} aria-hidden="true" />;
 
   return (
-    <span className="anyslam-authnav">
+    <span className={classes}>
       {isSignedIn ? (
         <UserButton />
       ) : (
