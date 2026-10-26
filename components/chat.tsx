@@ -103,20 +103,24 @@ export function Chat({ labels }: { labels: ChatLabels }) {
 
           if (event.type === 'text' && event.text) {
             const text = event.text;
+            // Sin mutar: se reemplaza el último mensaje por uno nuevo.
+            //
+            // React en StrictMode invoca dos veces cada actualizador para
+            // destapar justo esto. Con `last.content += text` el texto salía
+            // duplicado carácter por carácter en desarrollo — y en producción
+            // no, que es lo que lo hacía peligroso.
             setMessages((prev) => {
-              const next = [...prev];
-              const last = next.at(-1);
-              if (last?.role === 'assistant') last.content += text;
-              return next;
+              const last = prev.at(-1);
+              if (last?.role !== 'assistant') return prev;
+              return [...prev.slice(0, -1), { ...last, content: last.content + text }];
             });
             scroll();
           } else if (event.type === 'sources' && event.sources) {
             const sources = event.sources;
             setMessages((prev) => {
-              const next = [...prev];
-              const last = next.at(-1);
-              if (last?.role === 'assistant') last.sources = sources;
-              return next;
+              const last = prev.at(-1);
+              if (last?.role !== 'assistant') return prev;
+              return [...prev.slice(0, -1), { ...last, sources }];
             });
           } else if (event.type === 'error') {
             setError(event.message ?? labels.failed);
