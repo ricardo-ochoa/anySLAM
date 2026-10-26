@@ -1,6 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 /**
  * La interfaz de chat del portal.
@@ -143,7 +145,22 @@ export function Chat({ labels }: { labels: ChatLabels }) {
         {messages.map((message, index) => (
           <div key={index} className={`anyslam-chat-msg anyslam-chat-${message.role}`}>
             <div className="anyslam-chat-body">
-              {message.content || (busy && index === messages.length - 1 ? '…' : '')}
+              {message.role === 'assistant' ? (
+                /* El modelo escribe en Markdown: negritas, listas, enlaces y
+                   código. Sin renderizarlo se leían los asteriscos crudos.
+                   Se reconstruye en cada fragmento del stream, y mientras el
+                   Markdown está a medias —un `**` sin cerrar— se muestra tal
+                   cual durante un instante y se resuelve al llegar el resto.
+
+                   A propósito NO se habilita HTML embebido: esto es texto que
+                   genera un modelo a partir de documentos, y tratarlo como no
+                   confiable es gratis aquí. */
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {message.content || (busy && index === messages.length - 1 ? '…' : '')}
+                </Markdown>
+              ) : (
+                message.content
+              )}
             </div>
 
             {message.sources && message.sources.length > 0 && (
