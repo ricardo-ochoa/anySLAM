@@ -41,7 +41,8 @@ export interface ChatLabels {
   send: string;
   sending: string;
   sources: string;
-  spend: (input: number, output: number, cost: string) => string;
+  /** Plantilla con los marcadores `{in}`, `{out}` y `{cost}`. */
+  spend: string;
   empty: string;
   failed: string;
   offline: string;
@@ -187,11 +188,10 @@ export function Chat({ labels }: { labels: ChatLabels }) {
 
             {message.usage && (
               <p className="anyslam-chat-spend">
-                {labels.spend(
-                  message.usage.input_tokens,
-                  message.usage.output_tokens,
-                  (message.cost ?? 0).toFixed(5),
-                )}
+                {labels.spend
+                  .replace('{in}', String(message.usage.input_tokens))
+                  .replace('{out}', String(message.usage.output_tokens))
+                  .replace('{cost}', (message.cost ?? 0).toFixed(5))}
               </p>
             )}
 

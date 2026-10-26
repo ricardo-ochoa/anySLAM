@@ -59,22 +59,28 @@ export default async function Layout({ params, children }: LayoutProps<'/[lang]'
   const { lang } = await params;
 
   return (
-    <html
-      lang={lang}
-      className={`${inter.variable} ${mulish.variable} ${doto.variable}`}
-      suppressHydrationWarning
-    >
-      <body
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '100vh',
-        }}
+    // ClerkProvider envuelve al <html>, que es la forma documentada, y no al
+    // revés. Dentro del <body> dejaba al RootProvider de Fumadocs bajo un
+    // componente de cliente, y ese provider inyecta un <script> que fija el
+    // tema antes del primer pintado — para que no se vea un destello claro
+    // antes de cargar el modo oscuro. Los <script> renderizados en el cliente
+    // no se ejecutan nunca, así que ese arreglo quedaba muerto.
+    <ClerkProvider>
+      <html
+        lang={lang}
+        className={`${inter.variable} ${mulish.variable} ${doto.variable}`}
+        suppressHydrationWarning
       >
-        <ClerkProvider>
+        <body
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
+          }}
+        >
           <RootProvider i18n={i18nProvider(translations, lang)}>{children}</RootProvider>
-        </ClerkProvider>
-      </body>
-    </html>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
