@@ -23,10 +23,17 @@ interface Source {
   score: number;
 }
 
+interface Usage {
+  input_tokens: number;
+  output_tokens: number;
+}
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   sources?: Source[];
+  usage?: Usage;
+  cost?: number;
 }
 
 export interface ChatLabels {
@@ -34,6 +41,7 @@ export interface ChatLabels {
   send: string;
   sending: string;
   sources: string;
+  spend: (input: number, output: number, cost: string) => string;
   empty: string;
   failed: string;
   offline: string;
@@ -96,7 +104,14 @@ export function Chat({ labels }: { labels: ChatLabels }) {
           const line = part.split('\n').find((l) => l.startsWith('data: '));
           if (!line) continue;
 
-          let event: { type: string; text?: string; sources?: Source[]; message?: string };
+          let event: {
+            type: string;
+            text?: string;
+            sources?: Source[];
+            message?: string;
+            usage?: Usage;
+            cost?: number;
+          };
           try {
             event = JSON.parse(line.slice(6));
           } catch {
@@ -123,6 +138,13 @@ export function Chat({ labels }: { labels: ChatLabels }) {
               const last = prev.at(-1);
               if (last?.role !== 'assistant') return prev;
               return [...prev.slice(0, -1), { ...last, sources }];
+            });
+          } else if (event.type === 'done') {
+            const { usage, cost } = event;
+            setMessages((prev) => {
+              const last = prev.at(-1);
+              if (last?.role !== 'assistant') return prev;
+              return [...prev.slice(0, -1), { ...last, usage, cost }];
             });
           } else if (event.type === 'error') {
             setError(event.message ?? labels.failed);
@@ -162,6 +184,16 @@ export function Chat({ labels }: { labels: ChatLabels }) {
                 message.content
               )}
             </div>
+
+            {message.usage && (
+              <p className="anyslam-chat-spend">
+                {labels.spend(
+                  message.usage.input_tokens,
+                  message.usage.output_tokens,
+                  (message.cost ?? 0).toFixed(5),
+                )}
+              </p>
+            )}
 
             {message.sources && message.sources.length > 0 && (
               <div className="anyslam-chat-sources">

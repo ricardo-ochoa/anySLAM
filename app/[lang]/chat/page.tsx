@@ -10,6 +10,8 @@ const content = {
       send: 'Preguntar',
       sending: 'Pensando…',
       sources: 'Fuentes',
+      spend: (input: number, output: number, cost: string) =>
+        `${input} tokens de entrada, ${output} de salida — $${cost} USD`,
       empty: 'Todavía no has preguntado nada. Escribe abajo.',
       failed: 'No se pudo generar la respuesta. Inténtalo de nuevo.',
       offline: 'El Company Brain todavía no está conectado a este portal.',
@@ -23,6 +25,8 @@ const content = {
       send: 'Ask',
       sending: 'Thinking…',
       sources: 'Sources',
+      spend: (input: number, output: number, cost: string) =>
+        `${input} input tokens, ${output} output — $${cost} USD`,
       empty: 'Nothing asked yet. Type below.',
       failed: 'The answer could not be generated. Try again.',
       offline: 'The Company Brain is not connected to this portal yet.',

@@ -1061,3 +1061,12 @@
     color: #f87171;
   }
 }
+
+/* El coste de cada respuesta. Discreto a propósito: es un dato de control, no
+   parte de la respuesta — pero verlo evita sorpresas al final del mes. */
+.anyslam-chat-spend {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  color: var(--color-fd-muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
