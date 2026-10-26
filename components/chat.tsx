@@ -1,8 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { Streamdown } from 'streamdown';
+import 'streamdown/styles.css';
 
 /**
  * La interfaz de chat del portal.
@@ -168,18 +168,18 @@ export function Chat({ labels }: { labels: ChatLabels }) {
           <div key={index} className={`anyslam-chat-msg anyslam-chat-${message.role}`}>
             <div className="anyslam-chat-body">
               {message.role === 'assistant' ? (
-                /* El modelo escribe en Markdown: negritas, listas, enlaces y
-                   código. Sin renderizarlo se leían los asteriscos crudos.
-                   Se reconstruye en cada fragmento del stream, y mientras el
-                   Markdown está a medias —un `**` sin cerrar— se muestra tal
-                   cual durante un instante y se resuelve al llegar el resto.
+                /* Streamdown en vez de react-markdown porque entiende el
+                   Markdown a medias: mientras llega el stream hay `**` sin
+                   cerrar y enlaces partidos, y él los compone en vez de
+                   enseñar los asteriscos durante medio segundo.
 
-                   A propósito NO se habilita HTML embebido: esto es texto que
-                   genera un modelo a partir de documentos, y tratarlo como no
-                   confiable es gratis aquí. */
-                <Markdown remarkPlugins={[remarkGfm]}>
+                   `linkSafety` desactivado a propósito: por defecto convierte
+                   cada enlace en un botón que abre un modal de confirmación,
+                   y aquí los enlaces van a la documentación del propio portal
+                   — son justo lo que queremos que se pueda pulsar. */
+                <Streamdown linkSafety={{ enabled: false }}>
                   {message.content || (busy && index === messages.length - 1 ? '…' : '')}
-                </Markdown>
+                </Streamdown>
               ) : (
                 message.content
               )}

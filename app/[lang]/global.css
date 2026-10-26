@@ -1,3 +1,41 @@
+/* --- Tailwind, solo para el chat ----------------------------------------
+   Se importan el tema y las utilidades, pero NO `preflight.css`: ese es el
+   reinicio global de Tailwind y reescribiría márgenes, listas y encabezados
+   de todo el portal. Omitirlo es lo que mantiene este cambio acotado.
+
+   Los tokens de abajo son los que esperan `streamdown` y `assistant-ui`
+   —nacidos en proyectos shadcn— mapeados a los colores que el portal ya usa.
+   Así el chat no trae su propia paleta: hereda la nuestra, y cambia de tono
+   con el modo oscuro sin hacer nada. */
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* Qué archivos escanea Tailwind en busca de clases.
+
+   El tercero no es opcional: `streamdown` no trae CSS propio, emite clases de
+   Tailwind desde su JavaScript ya compilado. Como esas clases no están
+   escritas en nuestro código, sin este `@source` Tailwind no las ve y no
+   genera ni una — el chat saldría con el HTML correcto y sin estilo.
+   node_modules está excluido por defecto, de ahí que haya que nombrarlo. */
+@source '../../components';
+@source '../../app';
+@source '../../node_modules/streamdown/dist';
+
+@theme inline {
+  --color-background: var(--color-fd-background);
+  --color-foreground: var(--color-fd-foreground);
+  --color-muted: var(--color-fd-muted);
+  --color-muted-foreground: var(--color-fd-muted-foreground);
+  --color-border: var(--color-fd-border);
+  --color-primary: var(--anyslam-blue);
+  --color-primary-foreground: #fff;
+  --color-secondary: var(--color-fd-secondary);
+  --color-accent: var(--color-fd-accent);
+  --color-sidebar: var(--color-fd-card);
+  --color-destructive: #dc2626;
+}
+
 :root {
   /* --- Color --------------------------------------------------------------
      Secundario del portal: #0037FF. Se usa para iconos, enlaces y estados
